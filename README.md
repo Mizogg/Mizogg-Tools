@@ -59,10 +59,11 @@ Using Bit Library made in Python Only 1 file needed
     *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *    
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
+    *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid        =  11    *
     *                                                                           *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-      Type You Choice Here Enter 1-10 : 
+      Type You Choice Here Enter 1-11 : 
     7
     Hexadecimal to Bitcoin Address Tool
     Hexadecimal HEX ->  1
