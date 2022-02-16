@@ -76,3 +76,44 @@ Using Bit Library made in Python Only 1 file needed
     {'address': '1EHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm', 'final_balance': 0, 'n_tx': 1391, 'total_received': 781873722, 'total_sent': 781873722}
     {'address': '3JvL6Ymt8MVWiCNHC7oWU6nLeHNJKLZGLN', 'final_balance': 0, 'n_tx': 2, 'total_received': 1000, 'total_sent': 1000}
     {'address': '1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH', 'final_balance': 0, 'n_tx': 62, 'total_received': 15211855, 'total_sent': 15211855}
+    
+NEW RSZ ADDED
+
+    ************************ Main Menu Mizogg's Tools ***************************
+    *                                                                           *
+    *    Option 1.Bitcoin Address with Balance Check                   =  1     *
+    *    Option 2.Bitcoin Address to HASH160                           =  2     *
+    *    Option 3.HASH160 to Bitcoin Address(Not Working)              =  3     *
+    *    Option 4.Brain Wallet Bitcoin with Balance Check              =  4     *
+    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)                   =  5     *
+    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)                   =  6     *
+    *    Option 7.Hexadecimal to Bitcoin Address with Balance Check    =  7     *
+    *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
+    *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
+    *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
+    *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid        =  11    *
+    *                                                                           *
+    ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
+
+      Type You Choice Here Enter 1-11 :
+      11
+
+        1-txid  blockchain API R,S,Z calculation starts. [Internet required]
+        2-rawtx R,S,Z,Pubkey for each of the inputs present in the rawtx data. [No Internet required]
+        Type 1-2 to Start
+        1
+      Enter Your -txid = 82e5e1689ee396c8416b94c86aed9f4fe793a0fa2fa729df4a8312a287bc2d5e
+
+      Starting Program...
+      ======================================================================
+      [Input Index #: 0]
+     R: 009bf436ce1f12979ff47b4671f16b06a71e74269005c19178384e9d267e50bbe9
+     S: 00c7eabd8cf796a78d8a7032f99105cdcb1ae75cd8b518ed4efe14247fb00c9622
+     Z: 9f4503ab6cae01b9fc124e40de9f3ec3cb7a794129aa3a5c2dfec3809f04c354
+      PubKey: 04e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6c
+      ======================================================================
+      [Input Index #: 1]
+     R: 0094b12a2dd0f59b3b4b84e6db0eb4ba4460696a4f3abf5cc6e241bbdb08163b45
+     S: 07eaf632f320b5d9d58f1e8d186ccebabea93bad4a6a282a3c472393fe756bfb
+     Z: 94bbf25ba5b93ba78ee017eff80c986ee4e87804bee5770fae5b486f05608d95
+      PubKey: 04e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6c
