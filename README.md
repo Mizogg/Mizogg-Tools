@@ -43,7 +43,7 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
 
 Введите свой выбор здесь Enter 1-9 :
 
-## Miz_Tools_bit.py Version 1
+## Miz_Tools_bit.py Version 1 Coming Soon or Check https://mizogg.co.uk
 
 Using Bit Library made in Python Only 1 file needed
 
