@@ -1,5 +1,5 @@
 '''
-Сделано Mizogg Tools для помощи в поиске биткойнов. Удачи и счастливой охоты Miz_Tools_ice_RU.py Версия 1
+Сделано Mizogg Tools для помощи в поиске биткойнов. Удачи и счастливой охоты Miz_Tools_ice_RU.py Версия 2
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
@@ -10,7 +10,7 @@ from bit.base58 import b58decode_check
 from bit.utils import bytes_to_hex
 import secp256k1 as ice
 from mnemonic import Mnemonic
-
+from bit import *
 
 def get_balance(addr):
     contents = requests.get('https://sochain.com/api/v2/get_address_balance/BTC/' + addr, timeout=10)
@@ -126,10 +126,12 @@ prompt= '''
     *  Вариант 7. Шестнадцатеричный адрес в биткойн с проверкой баланса      =  7         *
     *  Вариант 8. Десятичный адрес в биткойн с проверкой баланса             =  8         *
     *  Вариант 9. Мнемонические слова для биткойн-адреса с проверкой баланса =  9         *
+    *  Вариант 10.WIF на биткойн-адрес с проверкой баланса                  =  10         *
+    *  Вариант 11.Получить подпись ECDSA R, S, Z с помощью инструмента rawtx или txid = 11*
     *                                                                                     *
     ************ Главное меню Mizogg's Tools Using iceland2k14 secp256k1 ******************
 
-Введите свой выбор здесь Enter 1-9 : 
+Введите свой выбор здесь Enter 1-11 : 
 '''
 
 
@@ -229,7 +231,40 @@ while True:
         data_wallet()
         for target_wallet in data:
             print('\nmnemonic_words  : ', mnemonic_words, '\nDerivation Path : ', target_wallet['path'], '\nBitcoin Address : ', target_wallet['address'], ' Balance = ', get_balance(target_wallet['address']), ' BTC', '\nPrivatekey WIF  : ', target_wallet['privatekey'])
-      
+    elif start == 10:
+        print('WIF to Bitcoin Address Tool')
+        WIF = str(input('Enter Your Wallet Import Format WIF = '))
+        addr = Key(WIF).address
+        print('\nWallet Import Format WIF = ', WIF)
+        print('Bitcoin Address  = ', addr, '    Balance = ', get_balance(addr), ' BTC')
+    elif start == 11:
+        promptrsz= '''
+    ********************** Получить подпись ECDSA R, S, Z инструмент rawtx или txid ********************************* 
+    *                                                                                                               *
+    *1-txid  Начинается расчет R,S,Z API блокчейна. [Требуется Интернет]                                            *
+    *2-rawtx R, S, Z, Pubkey для каждого из входных данных, присутствующих в данных rawtx. [Интернет не требуется]  *
+    *    Введите 1-2, чтобы начать                                                                                  *
+    *                                                                                                               *
+    ********************** Получить подпись ECDSA R, S, Z инструмент rawtx или txid ********************************* 
+        '''
+        startrsz=int(input(promptrsz))
+        if startrsz == 1:
+            txid = str(input('Введите ваш -txid = ')) #'82e5e1689ee396c8416b94c86aed9f4fe793a0fa2fa729df4a8312a287bc2d5e'
+            rawtx = get_rawtx_from_blockchain(txid)
+        elif startrsz == 2:
+            rawtx =str(input('Введите ваш -rawtx = ')) #'01000000028370ef64eb83519fd14f9d74826059b4ce00eae33b5473629486076c5b3bf215000000008c4930460221009bf436ce1f12979ff47b4671f16b06a71e74269005c19178384e9d267e50bbe9022100c7eabd8cf796a78d8a7032f99105cdcb1ae75cd8b518ed4efe14247fb00c9622014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffffb0385cd9a933545628469aa1b7c151b85cc4a087760a300e855af079eacd25c5000000008b48304502210094b12a2dd0f59b3b4b84e6db0eb4ba4460696a4f3abf5cc6e241bbdb08163b45022007eaf632f320b5d9d58f1e8d186ccebabea93bad4a6a282a3c472393fe756bfb014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffff01404b4c00000000001976a91402d8103ac969fe0b92ba04ca8007e729684031b088ac00000000'
+        else:
+            print("НЕПРАВИЛЬНЫЙ НОМЕР!!! ДОЛЖЕН ВЫБРАТЬ 1 - 2 ")
+            break
+
+        print('\nСтартовая программа...')
+
+        m = parseTx(rawtx)
+        e = getSignableTxn(m)
+
+        for i in range(len(e)):
+            print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
+                      
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 9 ")
+        print("НЕПРАВИЛЬНЫЙ НОМЕР!!! ДОЛЖЕН ВЫБРАТЬ 1 - 11 ")
         break
