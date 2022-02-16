@@ -12,7 +12,7 @@ then to run use any of the start.bat files
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
 
-    ************************ Main Menu Mizogg's Tools ***************************
+      ************************ Main Menu Mizogg's Tools ***************************
     *                                                                           *
     *    Option 1.Bitcoin Address with Balance Check                   =  1     *
     *    Option 2.Bitcoin Address to HASH160                           =  2     *
@@ -23,11 +23,14 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *    Option 7.Hexadecimal to Bitcoin Address with Balance Check    =  7     *
     *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
+    *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
+    *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
     *                                                                           *
-    ************ Main Menu Mizogg's Tools Using iceland2k14 secp256k1 ***********
+    ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
+      Type You Choice Here Enter 1-11 :
 
-    ************************ Главное меню Mizogg's Tools **********************************
+      ************************ Главное меню Mizogg's Tools **********************************
     *                                                                                     *
     *  Вариант 1. Биткойн-адрес с проверкой баланса                          =  1         *
     *  Вариант 2. Биткойн-адрес на HASH160                                   =  2         *
@@ -38,10 +41,12 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *  Вариант 7. Шестнадцатеричный адрес в биткойн с проверкой баланса      =  7         *
     *  Вариант 8. Десятичный адрес в биткойн с проверкой баланса             =  8         *
     *  Вариант 9. Мнемонические слова для биткойн-адреса с проверкой баланса =  9         *
+    *  Вариант 10.WIF на биткойн-адрес с проверкой баланса                  =  10         *
+    *  Вариант 11.Получить подпись ECDSA R, S, Z с помощью инструмента rawtx или txid = 11*
     *                                                                                     *
     ************ Главное меню Mizogg's Tools Using iceland2k14 secp256k1 ******************
 
-Введите свой выбор здесь Enter 1-9 :
+      Введите свой выбор здесь Enter 1-11 :
 
 ## Miz_Tools_bit.py Version 1 Coming Soon or Check https://mizogg.co.uk
 
