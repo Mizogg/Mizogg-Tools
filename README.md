@@ -7,7 +7,7 @@ Install_libraries.bat to get started( Only needs to be done once)
 
 then to run use any of the start.bat files
 
-## Miz_Tools_ice.py Version 1
+## Miz_Tools_ice.py Version 3
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
@@ -26,9 +26,17 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
     *                                                                           *
-    ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
+    *                    Generators & Multi Check Tools                         *
+    *    Option 12.Bitcoin Addresses from file with Balance Check      = 12     *
+    *    Option 13.Bitcoin Addresses from file to HASH160 file         = 13     *
+    *    Option 14.Brain Wallet list from file with Balance Check      = 14     *
+    *    Option 15.Mnemonic Words Generator Random Choice [Offline]    = 15     *
+    *    Option 16.Bitcoin random scan randomly in Range [Offline]     = 16     *
+    *    Option 17.Bitcoin Sequence scan sequentially in Range division= 17     *
+    *                                                                           *
+    **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
 
-      Type You Choice Here Enter 1-11 :
+     Type You Choice Here Enter 1-17 :
 
       ************************ Главное меню Mizogg's Tools **********************************
     *                                                                                     *
@@ -43,11 +51,19 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *  Вариант 9. Мнемонические слова для биткойн-адреса с проверкой баланса =  9         *
     *  Вариант 10.WIF на биткойн-адрес с проверкой баланса                  =  10         *
     *  Вариант 11.Получить подпись ECDSA R, S, Z с помощью инструмента rawtx или txid = 11*
-    *                                                                                     *
-    ************ Главное меню Mizogg's Tools Using iceland2k14 secp256k1 ******************
+    *                                                                                               *
+    *                    Генераторы и мультипроверочные инструменты                                 *
+    *  Вариант 12. Биткойн-адреса из файла с проверкой баланса                      = 12            *
+    *  Вариант 13. Биткойн-адреса из файла в файл HASH160                           = 13            *
+    *  Вариант 14. Список Brain Wallet из файла с проверкой баланса                 = 14            *
+    *  Вариант 15. Генератор мнемонических слов, случайный выбор [офлайн]           = 15            *
+    *  Вариант 16. Случайное сканирование биткойнов в случайном порядке в диапазоне = 16            *
+    *  Вариант 17. Последовательность биткойнов сканируется последовательно в диапазоне деления= 17 *
+    *                                                                                               *
+    ************ Главное меню Mizogg's Tools Using iceland2k14 secp256k1 ****************************
 
-      Введите свой выбор здесь Enter 1-11 :
-
+     Введите свой выбор здесь Enter 1-17 :
+     
 ## Miz_Tools_bit.py Version 1 Coming Soon or Check https://mizogg.co.uk
 
 Using Bit Library made in Python Only 1 file needed
@@ -66,9 +82,18 @@ Using Bit Library made in Python Only 1 file needed
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid        =  11    *
     *                                                                           *
+    *                    Generators & Multi Check Tools                         *
+    *    Option 12.Bitcoin Addresses from file with Balance Check      = 12     *
+    *    Option 13.Bitcoin Addresses from file to HASH160 file         = 13     *
+    *    Option 14.Brain Wallet list from file with Balance Check      = 14     *
+    *    Option 15.Mnemonic Words Generator Random Choice [Offline]    = 15     *
+    *    Option 16.Bitcoin random scan randomly in Range [Offline]     = 16     *
+    *    Option 17.Bitcoin Sequence scan sequentially [Offline]        = 17     *
+    *                                                                           *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-      Type You Choice Here Enter 1-11 : 
+     Type You Choice Here Enter 1-17 :
+
     7
     Hexadecimal to Bitcoin Address Tool
     Hexadecimal HEX ->  1
@@ -99,9 +124,18 @@ NEW RSZ ADDED
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid        =  11    *
     *                                                                           *
+    *                    Generators & Multi Check Tools                         *
+    *    Option 12.Bitcoin Addresses from file with Balance Check      = 12     *
+    *    Option 13.Bitcoin Addresses from file to HASH160 file         = 13     *
+    *    Option 14.Brain Wallet list from file with Balance Check      = 14     *
+    *    Option 15.Mnemonic Words Generator Random Choice [Offline]    = 15     *
+    *    Option 16.Bitcoin random scan randomly in Range [Offline]     = 16     *
+    *    Option 17.Bitcoin Sequence scan sequentially [Offline]        = 17     *
+    *                                                                           *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-      Type You Choice Here Enter 1-11 :
+     Type You Choice Here Enter 1-17 :
+
       11
 
         1-txid  blockchain API R,S,Z calculation starts. [Internet required]
