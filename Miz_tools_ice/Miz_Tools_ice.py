@@ -1,16 +1,19 @@
+# -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 2
+Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 3
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
 https://mizogg.co.uk
 '''
-import requests, codecs, hashlib, ecdsa, bip32utils, binascii
+import requests, codecs, hashlib, ecdsa, bip32utils, binascii, sys, time, random
 from bit.base58 import b58decode_check
 from bit.utils import bytes_to_hex
 import secp256k1 as ice
 from mnemonic import Mnemonic
 from bit import *
+from urllib.request import urlopen
+from time import sleep
 
 def get_balance(addr):
     contents = requests.get('https://sochain.com/api/v2/get_address_balance/BTC/' + addr, timeout=10)
@@ -113,10 +116,114 @@ def data_wallet():
                 'publickey': binascii.hexlify(bip32_child_key_obj.PublicKey()).decode(),
                 'privatekey': bip32_child_key_obj.WalletImportFormat(),
             })
+"""
+@author: iceland
+"""
+
+def get_rs(sig):
+    rlen = int(sig[2:4], 16)
+    r = sig[4:4+rlen*2]
+#    slen = int(sig[6+rlen*2:8+rlen*2], 16)
+    s = sig[8+rlen*2:]
+    return r, s
+    
+def split_sig_pieces(script):
+    sigLen = int(script[2:4], 16)
+    sig = script[2+2:2+sigLen*2]
+    r, s = get_rs(sig[4:])
+    pubLen = int(script[4+sigLen*2:4+sigLen*2+2], 16)
+    pub = script[4+sigLen*2+2:]
+    assert(len(pub) == pubLen*2)
+    return r, s, pub
+
+
+# Returns list of this list [first, sig, pub, rest] for each input
+def parseTx(txn):
+    if len(txn) <130:
+        print('[WARNING] rawtx most likely incorrect. Please check..')
+        sys.exit(1)
+    inp_list = []
+    ver = txn[:8]
+    if txn[8:12] == '0001':
+        print('UnSupported Tx Input. Presence of Witness Data')
+        sys.exit(1)
+    inp_nu = int(txn[8:10], 16)
+    
+    first = txn[0:10]
+    cur = 10
+    for m in range(inp_nu):
+        prv_out = txn[cur:cur+64]
+        var0 = txn[cur+64:cur+64+8]
+        cur = cur+64+8
+        scriptLen = int(txn[cur:cur+2], 16)
+        script = txn[cur:2+cur+2*scriptLen] #8b included
+        r, s, pub = split_sig_pieces(script)
+        seq = txn[2+cur+2*scriptLen:10+cur+2*scriptLen]
+        inp_list.append([prv_out, var0, r, s, pub, seq])
+        cur = 10+cur+2*scriptLen
+    rest = txn[cur:]
+    return [first, inp_list, rest]
+
+#==============================================================================
+def get_rawtx_from_blockchain(txid):
+    try:
+        htmlfile = urlopen("https://blockchain.info/rawtx/%s?format=hex" % txid, timeout = 20)
+    except:
+        print('Unable to connect internet to fetch RawTx. Exiting..')
+        sys.exit(1)
+    else: res = htmlfile.read().decode('utf-8')
+    return res
+# =============================================================================
+
+def getSignableTxn(parsed):
+    res = []
+    first, inp_list, rest = parsed
+    tot = len(inp_list)
+    for one in range(tot):
+        e = first
+        for i in range(tot):
+            e += inp_list[i][0] # prev_txid
+            e += inp_list[i][1] # var0
+            if one == i: 
+                e += '1976a914' + HASH160(inp_list[one][4]) + '88ac'
+            else:
+                e += '00'
+            e += inp_list[i][5] # seq
+        e += rest + "01000000"
+        z = hashlib.sha256(hashlib.sha256(bytes.fromhex(e)).digest()).hexdigest()
+        res.append([inp_list[one][2], inp_list[one][3], z, inp_list[one][4], e])
+    return res
+#==============================================================================
+def HASH160(pubk_hex):
+    return hashlib.new('ripemd160', hashlib.sha256(bytes.fromhex(pubk_hex)).digest() ).hexdigest()
+
+def SEQ_wallet():
+    for i in range(0,rangediv):
+        percent = div * i
+        ran= start+percent
+        seed = str(ran)
+        HEX = "%064x" % ran
+        wifc = ice.btc_pvk_to_wif(HEX)
+        wifu = ice.btc_pvk_to_wif(HEX, False)
+        caddr = ice.privatekey_to_address(0, True, int(seed)) #Compressed
+        uaddr = ice.privatekey_to_address(0, False, int(seed))  #Uncompressed
+        p2sh = ice.privatekey_to_address(1, True, int(seed)) #p2sh
+        bech32 = ice.privatekey_to_address(2, True, int(seed))  #bech32
+        data.append({
+            'seed': seed,
+            'HEX': HEX,
+            'wifc': wifc,
+            'wifu': wifu,
+            'caddr': caddr,
+            'uaddr': uaddr,
+            'p2sh': p2sh,
+            'bech32': bech32,
+            'percent': f"Hex scan Percent {i}%",
+        })
 
 prompt= '''
-************************ Main Menu Mizogg's Tools ***************************
-    *                                                                           *
+    ************************ Main Menu Mizogg's Tools ***************************
+    *                       Single Check Tools                                  *
     *    Option 1.Bitcoin Address with Balance Check                   =  1     *
     *    Option 2.Bitcoin Address to HASH160                           =  2     *
     *    Option 3.HASH160 to Bitcoin Address(Not Working)              =  3     *
@@ -129,14 +236,28 @@ prompt= '''
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
     *                                                                           *
-    ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
+    *                    Generators & Multi Check Tools                         *
+    *    Option 12.Bitcoin Addresses from file with Balance Check      = 12     *
+    *    Option 13.Bitcoin Addresses from file to HASH160 file         = 13     *
+    *    Option 14.Brain Wallet list from file with Balance Check      = 14     *
+    *    Option 15.Mnemonic Words Generator Random Choice [Offline]    = 15     *
+    *    Option 16.Bitcoin random scan randomly in Range [Offline]     = 16     *
+    *    Option 17.Bitcoin Sequence scan sequentially in Range division= 17     *
+    *                                                                           *
+    **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
 
-Type You Choice Here Enter 1-11 : 
+Type You Choice Here Enter 1-17 : 
 '''
 
 
 while True:
     data = []
+    mylist = []
+    count=0
+    ammount = 0.00000000
+    total= 0
+    iteration = 0
+    start_time = time.time()
     start=int(input(prompt))
     if start == 1:
         print ('Address Balance Check Tool')
@@ -265,8 +386,322 @@ while True:
         for i in range(len(e)):
             print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
                 
-    
-    
+    elif start == 12:
+        promptchk= '''
+    ************************* Bitcoin Addresses from file with Balance Check ************************* 
+    *                                                                                                *
+    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses                   *
+    *    ** Your list of addresses will be check for Balance [Internet required]                     *
+    *    ** ANY BITCOIN WALLETS FOUND WITH BALANCE WILL BE SAVE TO (balance.txt)                     *
+    *                                                                                                *
+    ************************* Bitcoin Addresses from file with Balance Check *************************
+        '''
+        print(promptchk)
+        time.sleep(0.5)
+        print('Bitcoin Addresses loading please wait..................................:')
+        with open("btc.txt", "r") as file:
+            line_count = 0
+            for line in file:
+                line != "\n"
+                line_count += 1
+        with open('btc.txt', newline='', encoding='utf-8') as f:
+            for line in f:
+                mylist.append(line.strip())
+        print('Total Bitcoin Addresses Loaded now Checking Balance ', line_count)
+        remaining=line_count
+        for i in range(0,len(mylist)):
+            count+=1
+            remaining-=1
+            addr = mylist[i]
+            time.sleep(0.5)
+            if float (get_balance(addr)) > ammount:
+                print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
+                f=open('balance.txt','a')
+                f.write('\nBitcoin Address = ' + addr + '    Balance = ' + get_balance(addr) + ' BTC')
+                f.close()
+            else:
+                print ('\nScan Number = ',count, ' == Remaining = ', remaining)
+                print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
+    elif start == 13:
+        prompthash= '''
+    *********************** Bitcoin Addresses from file to HASH160 file Tool ************************* 
+    *                                                                                                *
+    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses                   *
+    *    ** Your list of addresses will be converted to HASH160 [NO Internet required]               *
+    *    ** HASH160 Addressess will be saved to a file called hash160.txt                            *
+    *                                                                                                *
+    *********************** Bitcoin Addresses from file to HASH160 file Tool *************************
+        '''
+        print(prompthash)
+        time.sleep(0.5)
+        print('Bitcoin Addresses loading please wait..................................:')
+        with open("btc.txt", "r") as file:
+            line_count = 0
+            for line in file:
+                line != "\n"
+                line_count += 1
+        with open('btc.txt', newline='', encoding='utf-8') as f:
+            for line in f:
+                mylist.append(line.strip())
+        print('Total Bitcoin Addresses Loaded now Converting to HASH160 ', line_count)
+        remaining=line_count
+        for i in range(0,len(mylist)):
+            count+=1
+            remaining-=1
+            addr = mylist[i]
+            hash160=b58decode_check(addr)
+            address_hash160 = bytes_to_hex(hash160)[2:]
+            print ('\nBitcoin Address = ', addr, '\nTo HASH160 = ', address_hash160)
+            f=open('hash160.txt','a')
+            f.write('\n' + address_hash160)
+            f.close()
+    elif start == 14:
+        promptbrain= '''
+    *********************** Brain Wallet list from file with Balance Check Tool **********************
+    *                                                                                                *
+    *    ** This Tool needs a file called brainwords.txt with a list of Brain Wallet words           *
+    *    ** Your list will be converted to Bitcoin and Balance Checked [Internet required]           *
+    *    ** ANY BRAIN WALLETS FOUND WITH BALANCE WILL BE SAVE TO (winner.txt)                        *
+    *                                                                                                *
+    *********************** Brain Wallet list from file with Balance Check Tool **********************
+        '''
+        print(promptbrain)
+        time.sleep(0.5)
+        print('BRAIN WALLET PASSWORD LIST LOADING>>>>')
+        with open("brainwords.txt", "r") as file:
+            line_count = 0
+            for line in file:
+                line != "\n"
+                line_count += 1
+        with open('brainwords.txt', newline='', encoding='utf-8') as f:
+            for line in f:
+                mylist.append(line.strip())
+        print('Total Brain Wallet Password Loaded:', line_count)
+        remaining=line_count
+        for i in range(0,len(mylist)):
+            time.sleep(0.5)
+            count+=1
+            remaining-=1
+            passphrase = mylist[i]
+            wallet = BrainWallet()
+            private_key, addr = wallet.generate_address_from_passphrase(passphrase)
+            if float (get_balance(addr)) > ammount:
+                print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
+                print('Passphrase       : ',passphrase)
+                print('Private Key      : ',private_key)
+                print('Scan Number : ', count, ' : Remaing Passwords : ', remaining)
+                f=open('winner.txt','a')
+                f.write('\nBitcoin Address = ' + addr + '    Balance = ' + get_balance(addr) + ' BTC')
+                f.write('\nPassphrase       : '+ passphrase)
+                f.write('\nPrivate Key      : '+ private_key)
+                f.close()
+            else:
+                print ('\nScan Number = ',count, ' == Remaining = ', remaining)
+                print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
+    elif start == 15:
+        promptMnemonic= '''
+    *********************** Mnemonic Words Generator Random [Offline] *****************************
+    *                                                                                             *
+    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database       *
+    *    ** ANY MNEMONIC WORDS FOUND THAT MATCH BTC DATABASE WILL SAVE TO  (winner.txt)           *
+    *                                                                                             *
+    *********************** Mnemonic Words Generator Random  [Offline] ****************************
+        '''
+        print(promptMnemonic)
+        time.sleep(0.5)
+        filename ='btc.txt'
+        with open(filename) as f:
+            line_count = 0
+            for line in f:
+                line != "\n"
+                line_count += 1        
+        with open(filename) as file:
+            add = file.read().split()
+        add = set(add)
+        print('Total Bitcoin Addresses Loaded ', line_count)        
+        print('Mnemonic 12/15/18/21/24 Words to Bitcoin Address Tool')
+        R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
+        if R == 12:
+            s1 = 128
+        elif R == 15:
+            s1 = 160
+        elif R == 18:
+            s1 = 192
+        elif R == 21:
+            s1 = 224
+        elif R == 24:
+            s1 = 256
+        else:
+            print("WRONG NUMBER!!! Starting with 24 Words")
+            s1 = 256
+        while True:
+            data=[]
+            count += 1
+            total += 20
+            mnemo = Mnemonic("english")
+            mnemonic_words = mnemo.generate(strength=s1)
+            seed = mnemo.to_seed(mnemonic_words, passphrase="")
+            entropy = mnemo.to_entropy(mnemonic_words)
+            data_wallet()
+            for target_wallet in data:
+                address = target_wallet['address']
+                if address in add:
+                    print('\nMatch Found')
+                    print('\nmnemonic_words  : ', mnemonic_words)
+                    print('Derivation Path : ', target_wallet['path'], ' : Bitcoin Address : ', target_wallet['address'])
+                    print('Privatekey WIF  : ', target_wallet['privatekey'])
+                    with open("winner.txt", "a") as f:
+                        f.write(f"""\nMnemonic_words:  {mnemonic_words}
+                        Derivation Path:  {target_wallet['path']}
+                        Privatekey WIF:  {target_wallet['privatekey']}
+                        Public Address Bitcoin:  {target_wallet['address']}
+                        =====Made by mizogg.co.uk Donations 3P7PZLbwSt2bqUMsHF9xDsaNKhafiGuWDB =====""")
+            else:
+                print(' [' + str(count) + '] ------------------------')
+                print('Total Checked [' + str(total) + '] ')
+                print('\nmnemonic_words  : ', mnemonic_words)
+                for bad_wallet in data:
+                    print('Derivation Path : ', bad_wallet['path'], ' : Bitcoin Address : ', bad_wallet['address'])
+                    print('Privatekey WIF  : ', bad_wallet['privatekey'])
+    elif start == 16:
+        promptrandom= '''
+    *********************** Bitcoin random scan randomly in Range Tool ************************
+    *                                                                                         *
+    *    ** Bitcoin random scan randomly in Range [Offline]                                   *
+    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database   *
+    *    ** ANY MATCHING WALLETS GENERATED THAT MATCH BTC DATABASE WILL SAVE TO(winner.txt)   *
+    *                                                                                         *
+    **************[+] Starting.........Please Wait.....Bitcoin Address List Loading.....*******
+        '''
+        print(promptrandom)
+        time.sleep(0.5)
+        filename ='btc.txt'
+        with open(filename) as f:
+            line_count = 0
+            for line in f:
+                line != "\n"
+                line_count += 1
+        with open(filename) as file:
+            add = file.read().split()
+        add = set(add)
+        print('Total Bitcoin Addresses Loaded and Checking : ',str (line_count)) 
+        start=int(input("start range Min 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
+        stop=int(input("stop range Max 115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
+        print("Starting search... Please Wait min range: " + str(start))
+        print("Max range: " + str(stop))
+        print("==========================================================")
+        print('Total Bitcoin Addresses Loaded and Checking : ',str (line_count))    
+        while True:
+            count += 4
+            iteration += 1
+            ran=random.randrange(start,stop)
+            seed = str(ran)
+            HEX = "%064x" % ran   
+            wifc = ice.btc_pvk_to_wif(HEX)
+            wifu = ice.btc_pvk_to_wif(HEX, False)
+            caddr = ice.privatekey_to_address(0, True, int(seed)) #Compressed
+            uaddr = ice.privatekey_to_address(0, False, int(seed))  #Uncompressed
+            P2SH = ice.privatekey_to_address(1, True, int(seed)) #p2sh
+            BECH32 = ice.privatekey_to_address(2, True, int(seed))  #bech32
+
+            if caddr in add or uaddr in add or P2SH in add or BECH32 in add :
+                print('\nMatch Found')
+                print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPrivatekey Uncompressed: ', wifu, '\nPrivatekey compressed: ', wifc, '\nPublic Address 1 Uncompressed: ', uaddr, '\nPublic Address 1 Compressed: ', caddr, '\nPublic Address 3 P2SH: ', P2SH, '\nPublic Address bc1 BECH32: ', BECH32)
+                f=open("winner.txt","a")
+                f.write('\nPrivatekey (dec): ' + seed)
+                f.write('\nPrivatekey (hex): ' + HEX)
+                f.write('\nPrivatekey Uncompressed: ' + wifu)
+                f.write('\nPrivatekey compressed: ' + wifc)
+                f.write('\nPublic Address 1 Compressed: ' + caddr)
+                f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
+                f.write('\nPublic Address 3 P2SH: ' + P2SH)
+                f.write('\nPublic Address bc1 BECH32: ' + BECH32)
+            else:
+                if iteration % 10000 == 0:
+                    elapsed = time.time() - start_time
+                    print(f'It/CPU={iteration} checked={count} Hex={HEX} Keys/Sec={iteration / elapsed:.1f}')
+    elif start == 17:
+        promptsequence= '''
+    *********************** Bitcoin sequence Divison in Range Tool ************************
+    *                                                                                         *
+    *    ** Bitcoin sequence & Range Divison by 1%-1000000%                                   *
+    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database   *
+    *    ** ANY MATCHING WALLETS GENERATED THAT MATCH BTC DATABASE WILL SAVE TO(winner.txt)   *
+    *                                                                                         *
+    **************[+] Starting.........Please Wait.....Bitcoin Address List Loading.....*******
+        '''
+        print(promptsequence)
+        time.sleep(0.5)
+        filename ='btc.txt'
+        with open(filename) as f:
+            line_count = 0
+            for line in f:
+                line != "\n"
+                line_count += 1
+        with open(filename) as file:
+            add = file.read().split()
+        add = set(add)
+        print('Total Bitcoin Addresses Loaded and Checking : ',str (line_count)) 
+        start=int(input("start range Min 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
+        stop=int(input("stop range Max 115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
+        mag=int(input("Magnitude Jump Stride -> "))
+        rangediv=int(input("Division of Range 1% t0 ???% ->  "))
+        display =int(input("Choose method Display Method: 1 - Less Details:(Fastest); 2 - Hex Details:(Slower); 3 - Wallet Details:(Slower)  "))
+        print("Starting search... Please Wait min range: " + str(start))
+        print("Max range: " + str(stop))
+        print('Total Bitcoin Addresses Loaded and Checking : ',str (line_count))
+
+        remainingtotal=stop-start
+        div = round(remainingtotal / rangediv)
+        finish = div + start
+        finishscan = round(stop / rangediv)
+        while start < finish:
+            try:
+                data = []
+                remainingtotal-=mag
+                finish-=mag
+                start+=mag
+                count += 1
+                total += rangediv*4
+                SEQ_wallet()
+                for data_w in data:
+                    caddr = data_w['caddr']
+                    uaddr = data_w['uaddr']
+                    p2sh = data_w['p2sh']
+                    bech32 = data_w['bech32']
+                    if caddr in add or uaddr in add or p2sh in add or bech32 in add:
+                        print('\nMatch Found IN : ', data_w['percent'])
+                        print('\nPrivatekey (dec): ', data_w['seed'], '\nPrivatekey (hex): ', data_w['HEX'], '\nPrivatekey Uncompressed: ', data_w['wifu'], '\nPrivatekey compressed: ', data_w['wifc'], '\nPublic Address 1 Uncompressed: ', data_w['uaddr'], '\nPublic Address 1 compressed: ', data_w['caddr'], '\nPublic Address 3 P2SH: ', data_w['p2sh'], '\nPublic Address bc1 BECH32: ', data_w['bech32'])
+                        with open("winner.txt", "a") as f:
+                            f.write(f"""\nMatch Found IN  {data_w['percent']}
+                            Privatekey (dec):  {data_w['seed']}
+                            Privatekey (hex): {data_w['HEX']}
+                            Privatekey Uncompressed:  {data_w['wifu']}
+                            Privatekey Compressed:  {data_w['wifc']}
+                            Public Address 1 Uncompressed:  {data_w['uaddr']}
+                            Public Address 1 Compressed:  {data_w['caddr']}
+                            Public Address 3 P2SH:  {data_w['p2sh']}
+                            Public Address bc1 BECH32:  {data_w['bech32']}
+                            =====Made by mizogg.co.uk Donations 3P7PZLbwSt2bqUMsHF9xDsaNKhafiGuWDB =====""")
+                            
+                    else:
+                        if display == 1:
+                            print('Scan: ', count , ' :Remaining: ', str(finish), ' :Total: ', str(total), end='\r')
+                        elif display == 2:
+                            for bad_wallet in data:
+                                print(bad_wallet['percent'], '\nPrivatekey (hex): ', bad_wallet['HEX'], end='\r')
+                        elif display == 3:
+                            for bad_wallet in data:
+                                print(bad_wallet['percent'])
+                                print('\nPrivatekey (dec): ', bad_wallet['seed'], '\nPrivatekey (hex): ', bad_wallet['HEX'], '\nPrivatekey Uncompressed: ', bad_wallet['wifu'], '\nPrivatekey compressed: ', bad_wallet['wifc'], '\nPublic Address 1 Uncompressed: ', bad_wallet['uaddr'], '\nPublic Address 1 compressed: ', bad_wallet['caddr'], '\nPublic Address 3 P2SH: ', bad_wallet['p2sh'], '\nPublic Address bc1 BECH32: ', bad_wallet['bech32'])
+                        else:
+                            print("WRONG NUMBER!!! MUST CHOSE 1, 2 or 3")
+                            break
+                        
+                                
+            except(KeyboardInterrupt, SystemExit):
+                exit('\nCTRL-C detected. Exiting gracefully.  Thank you and Happy Hunting')
+        
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 11 ")
+        print("WRONG NUMBER!!! MUST CHOSE 1 - 17 ")
         break
