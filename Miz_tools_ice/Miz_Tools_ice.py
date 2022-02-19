@@ -247,7 +247,7 @@ prompt= '''
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *    
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
-    *    Option 12.Range Divsion IN HEX or DEC tool                    =  13    *
+    *    Option 12.Range Divsion IN HEX or DEC tool                    =  12    *
     *                                                                           *
     *                    Generators & Multi Check Tools                         *
     *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
