@@ -69,6 +69,8 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
      
 ## Miz_Tools_bit.py Version 3  Check https://mizogg.co.uk for more tools and info
 
+test it here https://replit.com/@Mizogg/Mizogg-Bitcoin-Tools?v=1
+
 Using Bit Library made in Python Only 1 file needed
 
     ************************ Main Menu Mizogg's Tools ***************************
@@ -169,4 +171,4 @@ NEW RSZ ADDED
 
 test it here https://replit.com/@Mizogg/Mizogg-Bitcoin-Tools?v=1
 
-# Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
+## Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
