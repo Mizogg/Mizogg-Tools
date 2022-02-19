@@ -82,18 +82,19 @@ Using Bit Library made in Python Only 1 file needed
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *    
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid        =  11    *
+    *    Option 12.Range Divsion IN HEX or DEC tool                    =  12    *
     *                                                                           *
     *                    Generators & Multi Check Tools                         *
-    *    Option 12.Bitcoin Addresses from file with Balance Check      = 12     *
-    *    Option 13.Bitcoin Addresses from file to HASH160 file         = 13     *
-    *    Option 14.Brain Wallet list from file with Balance Check      = 14     *
-    *    Option 15.Mnemonic Words Generator Random Choice [Offline]    = 15     *
-    *    Option 16.Bitcoin random scan randomly in Range [Offline]     = 16     *
-    *    Option 17.Bitcoin Sequence scan sequentially [Offline]        = 17     *
+    *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
+    *    Option 14.Bitcoin Addresses from file to HASH160 file         = 14     *
+    *    Option 15.Brain Wallet list from file with Balance Check      = 15     *
+    *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
+    *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
+    *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *                                                                           *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-     Type You Choice Here Enter 1-17 :
+     Type You Choice Here Enter 1-18 :
 
     7
     Hexadecimal to Bitcoin Address Tool
@@ -124,18 +125,19 @@ NEW RSZ ADDED
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid        =  11    *
+    *    Option 12.Range Divsion IN HEX or DEC tool                    =  12    *
     *                                                                           *
     *                    Generators & Multi Check Tools                         *
-    *    Option 12.Bitcoin Addresses from file with Balance Check      = 12     *
-    *    Option 13.Bitcoin Addresses from file to HASH160 file         = 13     *
-    *    Option 14.Brain Wallet list from file with Balance Check      = 14     *
-    *    Option 15.Mnemonic Words Generator Random Choice [Offline]    = 15     *
-    *    Option 16.Bitcoin random scan randomly in Range [Offline]     = 16     *
-    *    Option 17.Bitcoin Sequence scan sequentially [Offline]        = 17     *
+    *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
+    *    Option 14.Bitcoin Addresses from file to HASH160 file         = 14     *
+    *    Option 15.Brain Wallet list from file with Balance Check      = 15     *
+    *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
+    *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
+    *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *                                                                           *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-     Type You Choice Here Enter 1-17 :
+     Type You Choice Here Enter 1-18 :
 
       11
 
