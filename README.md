@@ -7,12 +7,12 @@ Install_libraries.bat to get started( Only needs to be done once)
 
 then to run use any of the start.bat files
 
-## Miz_Tools_ice.py Version 4
+## Miz_Tools_ice.py Version 5
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
 
-     ************************ Main Menu Mizogg's Tools ***************************
+    ************************ Main Menu Mizogg's Tools ***************************
     *                       Single Check Tools                                  *
     *    Option 1.Bitcoin Address with Balance Check                   =  1     *
     *    Option 2.Bitcoin Address to HASH160                           =  2     *
@@ -25,7 +25,7 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
-    *    Option 12.Range Divsion IN HEX or DEC tool                    =  13    *
+    *    Option 12.Range Divsion IN HEX or DEC tool                    =  12    *
     *                                                                           *
     *                    Generators & Multi Check Tools                         *
     *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
@@ -34,10 +34,12 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
     *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
+    *    Option 19.Bitcoin random Inverse K position                   = 19     *
     *                                                                           *
+    *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
 
-     Type You Choice Here Enter 1-18 :
+    Type You Choice Here Enter 1-19 :
 
       ************************ Главное меню Mizogg's Tools **********************************
     *                                                                                     *
