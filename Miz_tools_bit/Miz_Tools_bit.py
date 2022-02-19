@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_bit.py Version 1
+Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_bit.py Version 2
 
 Using Bit Library made in Python
 https://mizogg.co.uk
@@ -197,8 +197,20 @@ def getSignableTxn(parsed):
 def HASH160(pubk_hex):
     return hashlib.new('ripemd160', hashlib.sha256(bytes.fromhex(pubk_hex)).digest() ).hexdigest()
 
+def divsion_wallet():
+    for i in range(0,rangediv):
+        percent = div * i
+        ran= start+percent
+        seed = str(ran)
+        HEX = "%064x" % ran
+        divsion.append({
+            'seed': seed,
+            'HEX': HEX,
+            'percent': f"{i}%",
+        })
+
 prompt= '''
-    ************************ Main Menu Mizogg's Tools ***************************
+************************ Main Menu Mizogg's Tools ***************************
     *                       Single Check Tools                                  *
     *    Option 1.Bitcoin Address with Balance Check                   =  1     *
     *    Option 2.Bitcoin Address to HASH160                           =  2     *
@@ -211,14 +223,15 @@ prompt= '''
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *    
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
+    *    Option 12.Range Divsion IN HEX or DEC tool                    =  12    *
     *                                                                           *
     *                    Generators & Multi Check Tools                         *
-    *    Option 12.Bitcoin Addresses from file with Balance Check      = 12     *
-    *    Option 13.Bitcoin Addresses from file to HASH160 file         = 13     *
-    *    Option 14.Brain Wallet list from file with Balance Check      = 14     *
-    *    Option 15.Mnemonic Words Generator Random Choice [Offline]    = 15     *
-    *    Option 16.Bitcoin random scan randomly in Range [Offline]     = 16     *
-    *    Option 17.Bitcoin Sequence scan sequentially [Offline]        = 17     *
+    *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
+    *    Option 14.Bitcoin Addresses from file to HASH160 file         = 14     *
+    *    Option 15.Brain Wallet list from file with Balance Check      = 15     *
+    *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
+    *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
+    *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *                                                                           *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
@@ -362,6 +375,55 @@ while True:
         for i in range(len(e)):
             print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
     elif start == 12:
+        prompt123= '''
+            ************************ Range Division Tools ***************************
+            *                       Divide Range in bits or bytes                  *
+            *                       Option.1  Divide Range in bits  =1             *
+            *                       Option.2  Divide Range in bytes =2             *
+            ************************ Range Division Tools ***************************
+        Type You Choice Here Enter 1-2 :
+        '''
+        promptstart=int(input(prompt123))
+        if promptstart == 1:
+            x=int(input("start range bits Min 1-255 ->  "))
+            y=int(input("stop range bits Max 256 -> "))
+            start=2**x
+            stop=2**y
+            
+        elif promptstart == 2:    
+            start=int(input("start range Min bytes 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
+            stop=int(input("stop range Max bytes 115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
+
+        rangediv=int(input("Division of Range 1% t0 ???% ->  "))
+        display =int(input("Choose method Display Method: 1 - HEX:; 2 - DEC  "))
+
+        remainingtotal=stop-start
+        div = round(remainingtotal / rangediv)
+           
+        divsion = []
+               
+        if display == 1:
+            divsion = []
+            divsion_wallet()
+            for data_w in divsion:
+                HEX = data_w['HEX']
+                print('Percent', data_w['percent'], ' : Privatekey (hex): ', data_w['HEX'])
+                with open("hex.txt", "a") as f:
+                    f.write(f"""\nPercent{data_w['percent']} Privatekey (hex): {data_w['HEX']}""")
+                    f.close
+        elif display == 2:
+            divsion = []
+            divsion_wallet()
+            for data_w in divsion:
+                seed = data_w['seed']
+                print('Percent', data_w['percent'], ' : Privatekey (dec): ', data_w['seed'])
+                with open("dec.txt", "a") as f:
+                    f.write(f"""\nPercent{data_w['percent']} Privatekey (dec): {data_w['seed']}""")
+                    f.close
+        else:
+            print("WRONG NUMBER!!! MUST CHOSE 1 - 2 ")
+                
+    elif start == 13:
         promptchk= '''
     ************************* Bitcoin Addresses from file with Balance Check ************************* 
     *                                                                                                *
@@ -652,5 +714,5 @@ while True:
             
             
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 17 ")
+        print("WRONG NUMBER!!! MUST CHOSE 1 - 18 ")
         break
