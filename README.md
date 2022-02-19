@@ -166,3 +166,7 @@ NEW RSZ ADDED
      S: 07eaf632f320b5d9d58f1e8d186ccebabea93bad4a6a282a3c472393fe756bfb
      Z: 94bbf25ba5b93ba78ee017eff80c986ee4e87804bee5770fae5b486f05608d95
       PubKey: 04e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6c
+
+test it here https://replit.com/@Mizogg/Mizogg-Bitcoin-Tools?v=1
+
+# Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
