@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 4
+Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 5 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
@@ -14,6 +14,8 @@ from mnemonic import Mnemonic
 from bit import *
 from urllib.request import urlopen
 from time import sleep
+
+n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
 
 def get_balance(addr):
     contents = requests.get('https://sochain.com/api/v2/get_address_balance/BTC/' + addr, timeout=10)
@@ -244,7 +246,7 @@ prompt= '''
     *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)                   =  6     *
     *    Option 7.Hexadecimal to Bitcoin Address with Balance Check    =  7     *
     *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
-    *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *    
+    *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
     *    Option 12.Range Divsion IN HEX or DEC tool                    =  12    *
@@ -256,10 +258,12 @@ prompt= '''
     *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
     *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
+    *    Option 19.Bitcoin random Inverse K position                   = 19     *
     *                                                                           *
+    *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
 
-Type You Choice Here Enter 1-18 : 
+Type You Choice Here Enter 1-19 : 
 '''
 
 
@@ -400,11 +404,11 @@ while True:
             print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
     elif start == 12:
         prompt123= '''
-            ************************ Rane Division Tools ***************************
+            ************************ Range Division Tools ***************************
             *                       Divide Range in bits or bytes                  *
             *                       Option.1  Divide Range in bits  =1             *
             *                       Option.2  Divide Range in bytes =2             *
-            ************************ Rane Division Tools ***************************
+            ************************ Range Division Tools ***************************
         Type You Choice Here Enter 1-2 :
         '''
         promptstart=int(input(prompt123))
@@ -618,7 +622,8 @@ while True:
                         f.write(f"""\nMnemonic_words:  {mnemonic_words}
                         Derivation Path:  {target_wallet['path']}
                         Privatekey WIF:  {target_wallet['privatekey']}
-                        Public Address Bitcoin:  {target_wallet['address']}""")
+                        Public Address Bitcoin:  {target_wallet['address']}
+                        =====Made by mizogg.co.uk Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 =====""")
             else:
                 print(' [' + str(count) + '] ------------------------')
                 print('Total Checked [' + str(total) + '] ')
@@ -745,7 +750,7 @@ while True:
                             Public Address 1 Compressed:  {data_w['caddr']}
                             Public Address 3 P2SH:  {data_w['p2sh']}
                             Public Address bc1 BECH32:  {data_w['bech32']}
-                            =====Made by mizogg.co.uk Donations 3P7PZLbwSt2bqUMsHF9xDsaNKhafiGuWDB =====""")
+                            =====Made by mizogg.co.uk Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 =====""")
                             
                     else:
                         if display == 1:
@@ -764,7 +769,85 @@ while True:
                                 
             except(KeyboardInterrupt, SystemExit):
                 exit('\nCTRL-C detected. Exiting gracefully.  Thank you and Happy Hunting')
-        
+    
+    elif start == 19:
+        promptinverse= '''
+    *********************** Bitcoin Random Inverse K Range Tool *******************************
+    *                                                                                         *
+    *    ** Bitcoin Random Inverse K Range                                                    *
+    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database   *
+    *    ** ANY MATCHING WALLETS GENERATED THAT MATCH BTC DATABASE WILL SAVE TO(winner.txt)   *
+    *                                                                                         *
+    **************[+] Starting.........Please Wait.....Bitcoin Address List Loading.....*******
+        '''
+        print(promptinverse)
+        time.sleep(0.5)
+        filename ='btc.txt'
+        with open(filename) as f:
+            line_count = 0
+            for line in f:
+                line != "\n"
+                line_count += 1
+        with open(filename) as file:
+            add = file.read().split()
+        add = set(add)
+        print('Total Bitcoin Addresses Loaded and Checking : ',str (line_count))  
+        start = int(input("start range Min 1-57896044618658097711785492504343953926418782139537452191302581570759080747168 ->  "))
+        stop = int(input("start range MAX 57896044618658097711785492504343953926418782139537452191302581570759080747169 ->  "))
+        print("Starting search... Please Wait min range: " + str(start))
+        print("Max range: " + str(stop))
+        print("==========================================================")
+        print('Total Bitcoin Addresses Loaded and Checking : ',str (line_count))
+        while True:
+            count += 8
+            iteration += 1
+            ran=random.randrange(start,stop)
+            k1 = int(ran)
+            HEXk1 = "%064x" % k1
+            k2 = (k1*(n-1))%n
+            HEXk2 = "%064x" % k2
+            wifck1 = ice.btc_pvk_to_wif(HEXk1)
+            wifuk1 = ice.btc_pvk_to_wif(HEXk1, False)
+            caddrk1 = ice.privatekey_to_address(0, True, k1) #Compressed
+            uaddrk1 = ice.privatekey_to_address(0, False, k1)  #Uncompressed
+            P2SHk1 = ice.privatekey_to_address(1, True, k1) #p2sh
+            BECH32k1 = ice.privatekey_to_address(2, True, k1)  #bech32
+            
+            wifck2 = ice.btc_pvk_to_wif(HEXk2)
+            wifuk2 = ice.btc_pvk_to_wif(HEXk2, False)
+            caddrk2 = ice.privatekey_to_address(0, True, k2) #Compressed
+            uaddrk2 = ice.privatekey_to_address(0, False, k2)  #Uncompressed
+            P2SHk2 = ice.privatekey_to_address(1, True, k2) #p2sh
+            BECH32k2 = ice.privatekey_to_address(2, True, k2)  #bech32    
+            if caddrk1 in add or uaddrk1 in add or P2SHk1 in add or BECH32k1 in add :
+                print('\nMatch Found')
+                print('\nPrivatekey (dec): ', k1,'\nPrivatekey (hex): ', HEXk1, '\nPrivatekey Uncompressed: ', wifuk1, '\nPrivatekey compressed: ', wifck1, '\nPublic Address 1 Uncompressed: ', uaddrk1, '\nPublic Address 1 Compressed: ', caddrk1, '\nPublic Address 3 P2SH: ', P2SHk1, '\nPublic Address bc1 BECH32: ', BECH32k1)
+                f=open("winner.txt","a")
+                f.write('\nPrivatekey (dec): ' + str(k1))
+                f.write('\nPrivatekey (hex): ' + HEXk1)
+                f.write('\nPrivatekey Uncompressed: ' + wifuk1)
+                f.write('\nPrivatekey compressed: ' + wifck1)
+                f.write('\nPublic Address 1 Compressed: ' + caddrk1)
+                f.write('\nPublic Address 1 Uncompressed: ' + uaddrk1)
+                f.write('\nPublic Address 3 P2SH: ' + P2SHk1)
+                f.write('\nPublic Address bc1 BECH32: ' + BECH32k1)
+            if caddrk2 in add or uaddrk2 in add or P2SHk2 in add or BECH32k2 in add :
+                print('\nMatch Found')
+                print('\nPrivatekey (dec): ', k2,'\nPrivatekey (hex): ', HEXk2, '\nPrivatekey Uncompressed: ', wifuk2, '\nPrivatekey compressed: ', wifck2, '\nPublic Address 1 Uncompressed: ', uaddrk2, '\nPublic Address 1 Compressed: ', caddrk2, '\nPublic Address 3 P2SH: ', P2SHk2, '\nPublic Address bc1 BECH32: ', BECH32k2)
+                f=open("winner.txt","a")
+                f.write('\nPrivatekey (dec): ' + str(k2))
+                f.write('\nPrivatekey (hex): ' + HEXk2)
+                f.write('\nPrivatekey Uncompressed: ' + wifuk2)
+                f.write('\nPrivatekey compressed: ' + wifck2)
+                f.write('\nPublic Address 1 Compressed: ' + caddrk2)
+                f.write('\nPublic Address 1 Uncompressed: ' + uaddrk2)
+                f.write('\nPublic Address 3 P2SH: ' + P2SHk2)
+                f.write('\nPublic Address bc1 BECH32: ' + BECH32k2)
+            else:
+                if iteration % 10000 == 0:
+                    elapsed = time.time() - start_time
+                    addper= round(iteration / elapsed)*8
+                    print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 18 ")
+        print("WRONG NUMBER!!! MUST CHOSE 1 - 19 ")
         break
