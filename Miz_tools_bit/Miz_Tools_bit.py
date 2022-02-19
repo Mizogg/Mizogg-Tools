@@ -235,7 +235,7 @@ prompt= '''
     *                                                                           *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-Type You Choice Here Enter 1-17 : 
+Type You Choice Here Enter 1-18 : 
 '''
 
 
