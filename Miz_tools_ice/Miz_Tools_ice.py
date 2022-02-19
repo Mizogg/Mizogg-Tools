@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 3
+Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 4
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
@@ -221,6 +221,18 @@ def SEQ_wallet():
             'percent': f"Hex scan Percent {i}%",
         })
 
+def divsion_wallet():
+    for i in range(0,rangediv):
+        percent = div * i
+        ran= start+percent
+        seed = str(ran)
+        HEX = "%064x" % ran
+        divsion.append({
+            'seed': seed,
+            'HEX': HEX,
+            'percent': f"{i}%",
+        })
+
 prompt= '''
     ************************ Main Menu Mizogg's Tools ***************************
     *                       Single Check Tools                                  *
@@ -235,18 +247,19 @@ prompt= '''
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *    
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
+    *    Option 12.Range Divsion IN HEX or DEC tool                    =  13    *
     *                                                                           *
     *                    Generators & Multi Check Tools                         *
-    *    Option 12.Bitcoin Addresses from file with Balance Check      = 12     *
-    *    Option 13.Bitcoin Addresses from file to HASH160 file         = 13     *
-    *    Option 14.Brain Wallet list from file with Balance Check      = 14     *
-    *    Option 15.Mnemonic Words Generator Random Choice [Offline]    = 15     *
-    *    Option 16.Bitcoin random scan randomly in Range [Offline]     = 16     *
-    *    Option 17.Bitcoin Sequence scan sequentially in Range division= 17     *
+    *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
+    *    Option 14.Bitcoin Addresses from file to HASH160 file         = 14     *
+    *    Option 15.Brain Wallet list from file with Balance Check      = 15     *
+    *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
+    *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
+    *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *                                                                           *
     **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
 
-Type You Choice Here Enter 1-17 : 
+Type You Choice Here Enter 1-18 : 
 '''
 
 
@@ -385,8 +398,56 @@ while True:
 
         for i in range(len(e)):
             print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
-                
     elif start == 12:
+        prompt123= '''
+            ************************ Rane Division Tools ***************************
+            *                       Divide Range in bits or bytes                  *
+            *                       Option.1  Divide Range in bits  =1             *
+            *                       Option.2  Divide Range in bytes =2             *
+            ************************ Rane Division Tools ***************************
+        Type You Choice Here Enter 1-2 :
+        '''
+        promptstart=int(input(prompt123))
+        if promptstart == 1:
+            x=int(input("start range bits Min 1-255 ->  "))
+            y=int(input("stop range bits Max 256 -> "))
+            start=2**x
+            stop=2**y
+            
+        elif promptstart == 2:    
+            start=int(input("start range Min bytes 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
+            stop=int(input("stop range Max bytes 115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
+
+        rangediv=int(input("Division of Range 1% t0 ???% ->  "))
+        display =int(input("Choose method Display Method: 1 - HEX:; 2 - DEC  "))
+
+        remainingtotal=stop-start
+        div = round(remainingtotal / rangediv)
+           
+        divsion = []
+               
+        if display == 1:
+            divsion = []
+            divsion_wallet()
+            for data_w in divsion:
+                HEX = data_w['HEX']
+                print('Percent', data_w['percent'], ' : Privatekey (hex): ', data_w['HEX'])
+                with open("hex.txt", "a") as f:
+                    f.write(f"""\nPercent{data_w['percent']} Privatekey (hex): {data_w['HEX']}""")
+                    f.close
+        elif display == 2:
+            divsion = []
+            divsion_wallet()
+            for data_w in divsion:
+                seed = data_w['seed']
+                print('Percent', data_w['percent'], ' : Privatekey (dec): ', data_w['seed'])
+                with open("dec.txt", "a") as f:
+                    f.write(f"""\nPercent{data_w['percent']} Privatekey (dec): {data_w['seed']}""")
+                    f.close
+        else:
+            print("WRONG NUMBER!!! MUST CHOSE 1 - 2 ")
+                
+    elif start == 13:
         promptchk= '''
     ************************* Bitcoin Addresses from file with Balance Check ************************* 
     *                                                                                                *
@@ -422,7 +483,7 @@ while True:
             else:
                 print ('\nScan Number = ',count, ' == Remaining = ', remaining)
                 print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    elif start == 13:
+    elif start == 14:
         prompthash= '''
     *********************** Bitcoin Addresses from file to HASH160 file Tool ************************* 
     *                                                                                                *
@@ -448,14 +509,17 @@ while True:
         for i in range(0,len(mylist)):
             count+=1
             remaining-=1
-            addr = mylist[i]
-            hash160=b58decode_check(addr)
-            address_hash160 = bytes_to_hex(hash160)[2:]
-            print ('\nBitcoin Address = ', addr, '\nTo HASH160 = ', address_hash160)
-            f=open('hash160.txt','a')
-            f.write('\n' + address_hash160)
-            f.close()
-    elif start == 14:
+            if mylist[i].startswith('1'):
+                addr = mylist[i]
+                hash160=b58decode_check(addr)
+                address_hash160 = bytes_to_hex(hash160)[2:]
+                if remaining != 0:
+                    address_hash160 = address_hash160+'\n'    
+                print ('\nBitcoin Address = ', addr, '\nTo HASH160 = ', address_hash160)
+                f=open('hash160.txt','a')
+                f.write(address_hash160)    
+                f.close()
+    elif start == 15:
         promptbrain= '''
     *********************** Brain Wallet list from file with Balance Check Tool **********************
     *                                                                                                *
@@ -498,7 +562,7 @@ while True:
             else:
                 print ('\nScan Number = ',count, ' == Remaining = ', remaining)
                 print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    elif start == 15:
+    elif start == 16:
         promptMnemonic= '''
     *********************** Mnemonic Words Generator Random [Offline] *****************************
     *                                                                                             *
@@ -554,8 +618,7 @@ while True:
                         f.write(f"""\nMnemonic_words:  {mnemonic_words}
                         Derivation Path:  {target_wallet['path']}
                         Privatekey WIF:  {target_wallet['privatekey']}
-                        Public Address Bitcoin:  {target_wallet['address']}
-                        =====Made by mizogg.co.uk Donations 3P7PZLbwSt2bqUMsHF9xDsaNKhafiGuWDB =====""")
+                        Public Address Bitcoin:  {target_wallet['address']}""")
             else:
                 print(' [' + str(count) + '] ------------------------')
                 print('Total Checked [' + str(total) + '] ')
@@ -563,7 +626,7 @@ while True:
                 for bad_wallet in data:
                     print('Derivation Path : ', bad_wallet['path'], ' : Bitcoin Address : ', bad_wallet['address'])
                     print('Privatekey WIF  : ', bad_wallet['privatekey'])
-    elif start == 16:
+    elif start == 17:
         promptrandom= '''
     *********************** Bitcoin random scan randomly in Range Tool ************************
     *                                                                                         *
@@ -620,7 +683,7 @@ while True:
                 if iteration % 10000 == 0:
                     elapsed = time.time() - start_time
                     print(f'It/CPU={iteration} checked={count} Hex={HEX} Keys/Sec={iteration / elapsed:.1f}')
-    elif start == 17:
+    elif start == 18:
         promptsequence= '''
     *********************** Bitcoin sequence Divison in Range Tool ************************
     *                                                                                         *
@@ -703,5 +766,5 @@ while True:
                 exit('\nCTRL-C detected. Exiting gracefully.  Thank you and Happy Hunting')
         
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 17 ")
+        print("WRONG NUMBER!!! MUST CHOSE 1 - 18 ")
         break
