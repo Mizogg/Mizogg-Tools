@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 5 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
-
+Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 6 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
+20 Bitcoin Tools
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
 https://mizogg.co.uk
 '''
-import requests, codecs, hashlib, ecdsa, bip32utils, binascii, sys, time, random
+import requests, codecs, hashlib, ecdsa, bip32utils, binascii, sys, time, random, itertools
 from bit.base58 import b58decode_check
 from bit.utils import bytes_to_hex
 import secp256k1 as ice
 from mnemonic import Mnemonic
 from bit import *
+from bit.format import bytes_to_wif
 from urllib.request import urlopen
 from time import sleep
 
 n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
-
+alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 def get_balance(addr):
     contents = requests.get('https://sochain.com/api/v2/get_address_balance/BTC/' + addr, timeout=10)
     res = contents.json()
@@ -234,6 +235,16 @@ def divsion_wallet():
             'HEX': HEX,
             'percent': f"{i}%",
         })
+def iter_all(count):
+    if count == 0:
+        yield start
+    else:
+        for a in alphabet:
+            if count == a:
+                continue
+            else:
+                for scan in iter_all(count-1):
+                    yield scan + a
 
 prompt= '''
     ************************ Main Menu Mizogg's Tools ***************************
@@ -259,11 +270,12 @@ prompt= '''
     *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *    Option 19.Bitcoin random Inverse K position                   = 19     *
+    *    Option 20.Bitcoin WIF Recovery or WIF Checker(Only starting 5)= 20     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
 
-Type You Choice Here Enter 1-19 : 
+Type You Choice Here Enter 1-20 : 
 '''
 
 
@@ -848,6 +860,57 @@ while True:
                     elapsed = time.time() - start_time
                     addper= round(iteration / elapsed)*8
                     print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
+    elif start == 20:
+        promptWIF= '''
+    *********************** Bitcoin WIF Recovery or WIF Checker Tool **************************
+    *                                                                                         *
+    *    ** Find the Missing parts of a Wallet Import format(WIF) for Bitcoin                 *
+    *    ** This Tool only works with WIF's Starting 5 ( Will Improve Later                   *
+    *    ** ANY MATCHING WIF's GENERATED THAT MATCH ADDRESS WILL SAVE TO(winner.txt)          *
+    *                                                                                         *
+    *********************** Bitcoin WIF Recovery or WIF Checker Tool **************************
+        '''
+        print(promptWIF)
+        time.sleep(0.5)   
+        start= str(input('Enter WIF HERE or Know Starting Part : '))
+        miss = int(input('How Many Missing Chars Enter 0 for none : '))
+        if miss == 0:
+            private_key_WIF = start
+            first_encode = base58.b58decode(private_key_WIF)
+            private_key_full = binascii.hexlify(first_encode)
+            private_key = private_key_full[2:-8]
+            key = Key.from_hex(str(private_key.decode('utf-8')))
+            wif = bytes_to_wif(key.to_bytes(), compressed=False)
+            wif1 = bytes_to_wif(key.to_bytes(), compressed=True)
+            key1 = Key(wif)
+            addr = key.address
+            addr1 = key1.address
+            print('\nPrivateKey= ', private_key.decode('utf-8'), '\nCompressed Address = ', addr, '\nCompressed WIF = ', wif1, '\nUncompressed = ', addr1, '\nUncompressed WIF = ', wif)
+            f=open('winner.txt','a')
+            f.write('\nPrivateKey= ' + private_key.decode('utf-8') + '\nCompressed Address = ' + addr + '\nCompressed WIF = ' + wif1 + '\nUncompressed = ' + addr1 + '\nUncompressed WIF = ' + wif)
+            f.close()
+        else:
+            stop = str(input('Leave Bank or Input Ending Part : '))
+            add= str(input('Enter Bitcoin address Looking to match WIF = '))
+            for a in iter_all(miss):
+                total+=1
+                private_key_WIF = a + stop
+                first_encode = base58.b58decode(private_key_WIF)
+                private_key_full = binascii.hexlify(first_encode)
+                private_key = private_key_full[2:-8]
+                key = Key.from_hex(str(private_key.decode('utf-8')))
+                wif = bytes_to_wif(key.to_bytes(), compressed=False)
+                wif1 = bytes_to_wif(key.to_bytes(), compressed=True)
+                key1 = Key(wif)
+                addr = key.address
+                addr1 = key1.address
+                print(' Scanning : ', total,' : Current TEST WIF= ', private_key_WIF, end='\r')
+                #print('\n GOOD LUCK AND HAPPY HUNTING', '\nPrivateKey= ', private_key.decode('utf-8'), '\nCompressed Address = ', addr, '\nCompressed WIF = ', wif1, '\nUncompressed = ', addr1, '\nUncompressed WIF = ', wif)
+                if addr in add or addr1 in add:
+                    print('\n Congraz FOUND!!!', '\nPrivateKey= ', private_key.decode('utf-8'), '\nCompressed Address = ', addr, '\nCompressed WIF = ', wif1, '\nUncompressed = ', addr1, '\nUncompressed WIF = ', wif)
+                    f=open('winner.txt','a')
+                    f.write('\n Congraz FOUND!!!' + '\nPrivateKey= ' + private_key.decode('utf-8') + '\nCompressed Address = ' + addr + '\nCompressed WIF = ' + wif1 + '\nUncompressed = ' + addr1 + '\nUncompressed WIF = ' + wif)
+                    f.close()
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 19 ")
+        print("WRONG NUMBER!!! MUST CHOSE 1 - 20 ")
         break
