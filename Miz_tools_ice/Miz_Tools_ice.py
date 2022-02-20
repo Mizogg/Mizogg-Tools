@@ -270,7 +270,7 @@ prompt= '''
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *    Option 19.Bitcoin random Inverse K position                   = 19     *
     *    Option 20.Bitcoin sequence Inverse K position                 = 20     *
-    *    Option 21.Bitcoin WIF Recovery or WIF Checker(Only starting 5)= 21     *
+    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L           = 21     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
@@ -948,20 +948,26 @@ while True:
     *********************** Bitcoin WIF Recovery or WIF Checker Tool **************************
     *                                                                                         *
     *    ** Find the Missing parts of a Wallet Import format(WIF) for Bitcoin                 *
-    *    ** This Tool only works with WIF's Starting 5 ( Will Improve Later                   *
+    *    ** This Tool only works with WIF's Starting  5 K L                                   *
     *    ** ANY MATCHING WIF's GENERATED THAT MATCH ADDRESS WILL SAVE TO(winner.txt)          *
     *                                                                                         *
     *********************** Bitcoin WIF Recovery or WIF Checker Tool **************************
         '''
         print(promptWIF)
         time.sleep(0.5)   
-        start= str(input('Enter WIF HERE or Know Starting Part : '))
         miss = int(input('How Many Missing Chars Enter 0 for none : '))
         if miss == 0:
-            private_key_WIF = start
-            first_encode = base58.b58decode(private_key_WIF)
-            private_key_full = binascii.hexlify(first_encode)
-            private_key = private_key_full[2:-8]
+            startsingle= str(input('Enter Your WIF HERE : '))
+            if startsingle[0] == '5':
+                private_key_WIF = startsingle
+                first_encode = base58.b58decode(private_key_WIF)
+                private_key_full = binascii.hexlify(first_encode)
+                private_key = private_key_full[2:-8]
+            elif startsingle[0] in ['L', 'K']:
+                private_key_WIF = startsingle
+                first_encode = base58.b58decode(private_key_WIF)
+                private_key_full = binascii.hexlify(first_encode)
+                private_key = private_key_full[2:-10]
             key = Key.from_hex(str(private_key.decode('utf-8')))
             wif = bytes_to_wif(key.to_bytes(), compressed=False)
             wif1 = bytes_to_wif(key.to_bytes(), compressed=True)
@@ -973,14 +979,21 @@ while True:
             f.write('\nPrivateKey= ' + private_key.decode('utf-8') + '\nCompressed Address = ' + addr + '\nCompressed WIF = ' + wif1 + '\nUncompressed = ' + addr1 + '\nUncompressed WIF = ' + wif)
             f.close()
         else:
+            start= str(input('Leave Bank or Input Starting Part : '))
             stop = str(input('Leave Bank or Input Ending Part : '))
             add= str(input('Enter Bitcoin address Looking to match WIF = '))
             for a in iter_all(miss):
                 total+=1
-                private_key_WIF = a + stop
-                first_encode = base58.b58decode(private_key_WIF)
-                private_key_full = binascii.hexlify(first_encode)
-                private_key = private_key_full[2:-8]
+                if start[0] == '5':
+                    private_key_WIF = a + stop
+                    first_encode = base58.b58decode(private_key_WIF)
+                    private_key_full = binascii.hexlify(first_encode)
+                    private_key = private_key_full[2:-8]
+                elif start[0] in ['L', 'K']:
+                    private_key_WIF = a + stop
+                    first_encode = base58.b58decode(private_key_WIF)
+                    private_key_full = binascii.hexlify(first_encode)
+                    private_key = private_key_full[2:-10]
                 key = Key.from_hex(str(private_key.decode('utf-8')))
                 wif = bytes_to_wif(key.to_bytes(), compressed=False)
                 wif1 = bytes_to_wif(key.to_bytes(), compressed=True)
