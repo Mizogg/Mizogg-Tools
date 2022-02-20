@@ -36,7 +36,7 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *    Option 19.Bitcoin random Inverse K position                   = 19     *
     *    Option 20.Bitcoin sequence Inverse K position                 = 20     *
-    *    Option 21.Bitcoin WIF Recovery or WIF Checker(Only starting 5)= 21     *
+    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L           = 21     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
@@ -67,7 +67,7 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *  Вариант 18. Последовательность биткойнов сканируется последовательно в диапазоне деления= 18 *
     *  Вариант 19. Биткойн случайная обратная позиция K                             = 19            *
     *  Вариант 20. Последовательность биткойнов, обратная K позиция                 = 20            *
-    *  Вариант 21. Биткойн WIF Recovery или WIF Checker (только начиная с 5)        = 21            *
+    *  Вариант 21. Биткойн WIF Recovery или WIF Checker 5 K L                       = 21            *
     *                                                                                               *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                                    *
     ************ Главное меню Mizogg's Tools Using iceland2k14 secp256k1 ****************************
@@ -104,7 +104,7 @@ Using Bit Library made in Python Only 1 file needed
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *    Option 19.Bitcoin random Inverse K position                   = 19     *
     *    Option 20.Bitcoin sequence Inverse K position                 = 20     *
-    *    Option 21.Bitcoin WIF Recovery or WIF Checker(Only starting 5)= 21     *
+    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L           = 21     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
@@ -151,7 +151,7 @@ NEW RSZ ADDED
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *    Option 19.Bitcoin random Inverse K position                   = 19     *
     *    Option 20.Bitcoin sequence Inverse K position                 = 20     *
-    *    Option 21.Bitcoin WIF Recovery or WIF Checker(Only starting 5)= 21     *
+    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L           = 21     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
