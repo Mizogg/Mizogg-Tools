@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
 Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_bit.py Version 4 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
- 20 Bitcoin Tools
+ 21 Bitcoin Tools
 Using Bit Library made in Python
 https://mizogg.co.uk
 '''
@@ -247,12 +247,13 @@ prompt= '''
     *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *    Option 19.Bitcoin random Inverse K position                   = 19     *
-    *    Option 20.Bitcoin WIF Recovery or WIF Checker(Only starting 5)= 20     *
+    *    Option 20.Bitcoin sequence Inverse K position                 = 20     *
+    *    Option 21.Bitcoin WIF Recovery or WIF Checker(Only starting 5)= 21     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-Type You Choice Here Enter 1-20 : 
+Type You Choice Here Enter 1-21 : 
 '''
 
 
@@ -639,8 +640,8 @@ while True:
             add = file.read().split()
         add = set(add)
         print('Total Bitcoin Addresses Loaded and Checking : ',str (line_count)) 
-        start=int(input("start range Min 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
-        stop=int(input("stop range Max 115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
+        start=int(input("START range Min 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
+        stop=int(input("STOP range Max 115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
         print("Starting search... Please Wait min range: " + str(start))
         print("Max range: " + str(stop))
         print("==========================================================")
@@ -694,8 +695,8 @@ while True:
             add = file.read().split()
         add = set(add)
         print('Total Bitcoin Addresses Loaded and Checking : ',str (line_count)) 
-        start=int(input("start range Min 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
-        stop=int(input("stop range Max 115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
+        start=int(input("START range Min 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
+        stop=int(input("STOP range Max 115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
         mag=int(input("Magnitude Jump Stride -> "))
         remainingtotal=stop-start
         while start < stop:
@@ -749,8 +750,8 @@ while True:
             add = file.read().split()
         add = set(add)
         print('Total Bitcoin Addresses Loaded and Checking : ',str (line_count))  
-        start = int(input("start range Min 1-57896044618658097711785492504343953926418782139537452191302581570759080747168 ->  "))
-        stop = int(input("start range MAX 57896044618658097711785492504343953926418782139537452191302581570759080747169 ->  "))
+        start = int(input("START range Min 1-57896044618658097711785492504343953926418782139537452191302581570759080747168 ->  "))
+        stop = int(input("STOP range MAX 57896044618658097711785492504343953926418782139537452191302581570759080747169 ->  "))
         print("Starting search... Please Wait min range: " + str(start))
         print("Max range: " + str(stop))
         print("==========================================================")
@@ -807,8 +808,90 @@ while True:
                 if iteration % 10000 == 0:
                     elapsed = time.time() - start_time
                     addper= round(iteration / elapsed)*8
-                    print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')            
+                    print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
     elif start == 20:
+        promptinversesq= '''
+    *********************** Bitcoin sequence Inverse K Range Tool *****************************
+    *                                                                                         *
+    *    ** Bitcoin sequence Inverse K Range                                                  *
+    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database   *
+    *    ** ANY MATCHING WALLETS GENERATED THAT MATCH BTC DATABASE WILL SAVE TO(winner.txt)   *
+    *                                                                                         *
+    **************[+] Starting.........Please Wait.....Bitcoin Address List Loading.....*******
+        '''
+        print(promptinversesq)
+        time.sleep(0.5)
+        filename ='btc.txt'
+        with open(filename) as f:
+            line_count = 0
+            for line in f:
+                line != "\n"
+                line_count += 1
+        with open(filename) as file:
+            add = file.read().split()
+        add = set(add)
+        print('Total Bitcoin Addresses Loaded and Checking : ',str (line_count))  
+        start = int(input("START range Min 1-57896044618658097711785492504343953926418782139537452191302581570759080747168 ->  "))
+        stop = int(input("STOP range MAX 57896044618658097711785492504343953926418782139537452191302581570759080747169 ->  "))
+        mag=int(input("Magnitude Jump Stride -> "))
+        print("Starting search... Please Wait min range: " + str(start))
+        print("Max range: " + str(stop))
+        print("==========================================================")
+        print('Total Bitcoin Addresses Loaded and Checking : ',str (line_count))
+        while start < stop:
+            count += 6
+            iteration += 1
+            start+=mag
+            k1 = int(start)
+            HEXk1 = "%064x" % k1
+            k2 = (k1*(n-1))%n
+            HEXk2 = "%064x" % k2
+            keyk1 = Key.from_int(k1)
+            wifuk1 = bytes_to_wif(keyk1.to_bytes(), compressed=False)
+            wifck1 = bytes_to_wif(keyk1.to_bytes(), compressed=True)
+            key1k1 = Key(wifuk1)
+            caddrk1 = keyk1.address
+            uaddrk1 = key1k1.address
+            saddrk1 = keyk1.segwit_address
+            
+            keyk2 = Key.from_int(k2)
+            wifuk2 = bytes_to_wif(keyk2.to_bytes(), compressed=False)
+            wifck2 = bytes_to_wif(keyk2.to_bytes(), compressed=True)
+            key1k2 = Key(wifuk2)
+            caddrk2 = keyk2.address
+            uaddrk2 = key1k2.address
+            saddrk2 = keyk2.segwit_address
+            
+            if caddrk1 in add or uaddrk1 in add or saddrk1 in add:
+                print('\nMatch Found')
+                print('\nPrivatekey (dec): ', k1,'\nPrivatekey (hex): ', HEXk1, '\nPrivatekey Uncompressed: ', wifuk1, '\nPrivatekey compressed: ', wifck1, '\nPublic Address 1 Uncompressed: ', uaddrk1, '\nPublic Address 1 Compressed: ', caddrk1, '\nPublic Address 3 P2SH: ', saddrk1)
+                f=open("winner.txt","a")
+                f.write('\nPrivatekey (dec): ' + str(k1))
+                f.write('\nPrivatekey (hex): ' + HEXk1)
+                f.write('\nPrivatekey Uncompressed: ' + wifuk1)
+                f.write('\nPrivatekey compressed: ' + wifck1)
+                f.write('\nPublic Address 1 Compressed: ' + caddrk1)
+                f.write('\nPublic Address 1 Uncompressed: ' + uaddrk1)
+                f.write('\nPublic Address 3 P2SH: ' + saddrk1)
+                f.close
+            if caddrk2 in add or uaddrk2 in add or saddrk2 in add:
+                print('\nMatch Found')
+                print('\nPrivatekey (dec): ', k2,'\nPrivatekey (hex): ', HEXk2, '\nPrivatekey Uncompressed: ', wifuk2, '\nPrivatekey compressed: ', wifck2, '\nPublic Address 1 Uncompressed: ', uaddrk2, '\nPublic Address 1 Compressed: ', caddrk2, '\nPublic Address 3 P2SH: ', saddrk2)
+                f=open("winner.txt","a")
+                f.write('\nPrivatekey (dec): ' + str(k2))
+                f.write('\nPrivatekey (hex): ' + HEXk2)
+                f.write('\nPrivatekey Uncompressed: ' + wifuk2)
+                f.write('\nPrivatekey compressed: ' + wifck2)
+                f.write('\nPublic Address 1 Compressed: ' + caddrk2)
+                f.write('\nPublic Address 1 Uncompressed: ' + uaddrk2)
+                f.write('\nPublic Address 3 P2SH: ' + saddrk2)
+                f.close
+            else:
+                if iteration % 10000 == 0:
+                    elapsed = time.time() - start_time
+                    addper= round(iteration / elapsed)*8
+                    print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')       
+    elif start == 21:
         promptWIF= '''
     *********************** Bitcoin WIF Recovery or WIF Checker Tool **************************
     *                                                                                         *
@@ -861,5 +944,5 @@ while True:
                     f.close()
             
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 20 ")
+        print("WRONG NUMBER!!! MUST CHOSE 1 - 21 ")
         break
