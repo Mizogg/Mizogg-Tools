@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 6 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
+Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 7 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
 21 Bitcoin Tools
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
 https://mizogg.co.uk
 '''
-import requests, codecs, hashlib, ecdsa, bip32utils, binascii, sys, time, random, itertools
-from bit.base58 import b58decode_check
-from bit.utils import bytes_to_hex
+import requests, codecs, hashlib, ecdsa, bip32utils, binascii, sys, time, random, itertools, multiprocessing
 import secp256k1 as ice
 from mnemonic import Mnemonic
 from bit import *
 from bit.format import bytes_to_wif
 from urllib.request import urlopen
 from time import sleep
+from multiprocessing import pool, Event, Process, Queue, Value, cpu_count
 
 n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
 alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
@@ -284,6 +283,7 @@ while True:
     data = []
     mylist = []
     count=0
+    skip = 0
     ammount = 0.00000000
     total= 0
     iteration = 0
@@ -296,8 +296,12 @@ while True:
     elif start == 2:
         print ('Address to HASH160 Tool')
         addr = str(input('Enter Your Bitcoin Address Here : '))
-        hash160=b58decode_check(addr)
-        address_hash160 = bytes_to_hex(hash160)[2:]
+        if addr.startswith('1'):
+            address_hash160 = (ice.address_to_h160(addr))
+        if addr.startswith('3'):
+            address_hash160 = (ice.address_to_h160(addr))
+        if addr.startswith('bc1') and len(addr.split('\t')[0])< 50 :
+            address_hash160 = (ice.bech32_address_decode(addr,coin_type=0))            
         print ('\nBitcoin Address = ', addr, '\nTo HASH160 = ', address_hash160)
     elif start == 3:
         print ('HASH160 to Bitcoin Address Tool')
@@ -506,36 +510,33 @@ while True:
     *                                                                                                *
     *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses                   *
     *    ** Your list of addresses will be converted to HASH160 [NO Internet required]               *
-    *    ** HASH160 Addressess will be saved to a file called hash160.txt                            *
+    *    ** HASH160 Addressess will be saved to a file called base_h160_1_bc1.txt & base_h160_3.txt  *
     *                                                                                                *
     *********************** Bitcoin Addresses from file to HASH160 file Tool *************************
         '''
         print(prompthash)
         time.sleep(0.5)
         print('Bitcoin Addresses loading please wait..................................:')
-        with open("btc.txt", "r") as file:
-            line_count = 0
-            for line in file:
-                line != "\n"
-                line_count += 1
-        with open('btc.txt', newline='', encoding='utf-8') as f:
-            for line in f:
-                mylist.append(line.strip())
-        print('Total Bitcoin Addresses Loaded now Converting to HASH160 ', line_count)
-        remaining=line_count
-        for i in range(0,len(mylist)):
-            count+=1
-            remaining-=1
-            if mylist[i].startswith('1'):
-                addr = mylist[i]
-                hash160=b58decode_check(addr)
-                address_hash160 = bytes_to_hex(hash160)[2:]
-                if remaining != 0:
-                    address_hash160 = address_hash160+'\n'    
-                print ('\nBitcoin Address = ', addr, '\nTo HASH160 = ', address_hash160)
-                f=open('hash160.txt','a')
-                f.write(address_hash160)    
-                f.close()
+        fname = 'btc.txt'
+        with open(fname) as textfile, open("base_h160_1_bc1.txt", 'w+') as f_1, open("base_h160_3.txt", 'w+') as f_2:
+            for line in textfile.readlines()[1:]:
+                addr = (line.rstrip('\n'))
+                if addr.startswith('1'):
+                    address = addr.split('\t')[0]
+                    f_1.write(ice.address_to_h160(address) + '\n')
+                    count +=1
+                if addr.startswith('3'):
+                    address = addr.split('\t')[0]
+                    f_2.write(ice.address_to_h160(address) + '\n')
+                    count +=1
+                if addr.startswith('bc1') and len(addr.split('\t')[0])< 50 :
+                    address = addr.split('\t')[0]
+                    f_1.write(ice.bech32_address_decode(address,coin_type=0) + '\n')
+                    count +=1
+            else:
+                skip += 1
+                print ('Total write address>',count, '-skiped address>',skip)
+ 
     elif start == 15:
         promptbrain= '''
     *********************** Brain Wallet list from file with Balance Check Tool **********************
@@ -895,6 +896,7 @@ while True:
             iteration += 1
             start+=mag
             k1 = int(start)
+            elapsed = time.time() - start_time
             HEXk1 = "%064x" % k1
             k2 = (k1*(n-1))%n
             HEXk2 = "%064x" % k2
@@ -937,7 +939,6 @@ while True:
                 f.write('\nPublic Address bc1 BECH32: ' + BECH32k2)
             else:
                 if iteration % 10000 == 0:
-                    elapsed = time.time() - start_time
                     addper= round(iteration / elapsed)*8
                     print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
         
