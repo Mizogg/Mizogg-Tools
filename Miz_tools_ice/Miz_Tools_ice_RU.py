@@ -7,8 +7,6 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
 https://mizogg.co.uk
 '''
 import requests, codecs, hashlib, ecdsa, bip32utils, binascii, sys, time, random, itertools
-from bit.base58 import b58decode_check
-from bit.utils import bytes_to_hex
 import secp256k1 as ice
 from mnemonic import Mnemonic
 from bit import *
@@ -284,6 +282,7 @@ while True:
     data = []
     mylist = []
     count=0
+    skip = 0
     ammount = 0.00000000
     total= 0
     iteration = 0
@@ -296,8 +295,12 @@ while True:
     elif start == 2:
         print ('Адрес для инструмента HASH160')
         addr = str(input('Введите здесь свой биткойн-адрес : '))
-        hash160=b58decode_check(addr)
-        address_hash160 = bytes_to_hex(hash160)[2:]
+        if addr.startswith('1'):
+            address_hash160 = (ice.address_to_h160(addr))
+        if addr.startswith('3'):
+            address_hash160 = (ice.address_to_h160(addr))
+        if addr.startswith('bc1') and len(addr.split('\t')[0])< 50 :
+            address_hash160 = (ice.bech32_address_decode(addr,coin_type=0))
         print ('\nBitcoin Address = ', addr, '\nTo HASH160 = ', address_hash160)
     elif start == 3:
         print ('Инструмент HASH160 для биткойн-адреса')
@@ -513,26 +516,26 @@ while True:
         print(prompthash)
         time.sleep(0.5)
         print('Биткойн-адреса загружаются, пожалуйста, подождите..................................:')
-        with open("btc.txt", "r") as file:
-            line_count = 0
-            for line in file:
-                line != "\n"
-                line_count += 1
-        with open('btc.txt', newline='', encoding='utf-8') as f:
-            for line in f:
-                mylist.append(line.strip())
-        print('Всего биткойн-адресов загружено теперь конвертируем в HASH160 ', line_count)
-        remaining=line_count
-        for i in range(0,len(mylist)):
-            count+=1
-            remaining-=1
-            addr = mylist[i]
-            hash160=b58decode_check(addr)
-            address_hash160 = bytes_to_hex(hash160)[2:]
-            print ('\nBitcoin Address = ', addr, '\nTo HASH160 = ', address_hash160)
-            f=open('hash160.txt','a')
-            f.write('\n' + address_hash160)
-            f.close()
+        fname = 'btc.txt'
+        with open(fname) as textfile, open("base_h160_1_bc1.txt", 'w+') as f_1, open("base_h160_3.txt", 'w+') as f_2:
+            for line in textfile.readlines()[1:]:
+                addr = (line.rstrip('\n'))
+                if addr.startswith('1'):
+                    address = addr.split('\t')[0]
+                    f_1.write(ice.address_to_h160(address) + '\n')
+                    count +=1
+                if addr.startswith('3'):
+                    address = addr.split('\t')[0]
+                    f_2.write(ice.address_to_h160(address) + '\n')
+                    count +=1
+                if addr.startswith('bc1') and len(addr.split('\t')[0])< 50 :
+                    address = addr.split('\t')[0]
+                    f_1.write(ice.bech32_address_decode(address,coin_type=0) + '\n')
+                    count +=1
+            else:
+                skip += 1
+                print ('Total write address>',count, '-skiped address>',skip)
+
     elif start == 15:
         promptbrain= '''
     *********************** Список кошельков Brain из файла с помощью инструмента проверки баланса ******
