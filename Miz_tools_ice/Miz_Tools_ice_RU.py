@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
 '''
-Сделано Mizogg Tools для помощи в поиске биткойнов. Удачи и счастливой охоты Miz_Tools_ice_RU.py Версия 3
-
+Сделано Mizogg Tools для помощи в поиске биткойнов. Удачи и счастливой охоты Miz_Tools_ice_RU.py Версия 4 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
+21 Bitcoin Tools
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
 https://mizogg.co.uk
 '''
-import requests, codecs, hashlib, ecdsa, bip32utils, binascii, sys, time, random
+import requests, codecs, hashlib, ecdsa, bip32utils, binascii, sys, time, random, itertools
 from bit.base58 import b58decode_check
 from bit.utils import bytes_to_hex
 import secp256k1 as ice
 from mnemonic import Mnemonic
 from bit import *
+from bit.format import bytes_to_wif
 from urllib.request import urlopen
 from time import sleep
 
+n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
+alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 def get_balance(addr):
     contents = requests.get('https://sochain.com/api/v2/get_address_balance/BTC/' + addr, timeout=10)
     res = contents.json()
@@ -221,6 +224,28 @@ def SEQ_wallet():
             'percent': f"Hex scan Percent {i}%",
         })
 
+def divsion_wallet():
+    for i in range(0,rangediv):
+        percent = div * i
+        ran= start+percent
+        seed = str(ran)
+        HEX = "%064x" % ran
+        divsion.append({
+            'seed': seed,
+            'HEX': HEX,
+            'percent': f"{i}%",
+        })
+def iter_all(count):
+    if count == 0:
+        yield start
+    else:
+        for a in alphabet:
+            if count == a:
+                continue
+            else:
+                for scan in iter_all(count-1):
+                    yield scan + a
+
 prompt= '''
     ************************ Главное меню Mizogg's Tools ********************************************
     *                       Инструменты одиночной проверки                                          *
@@ -235,18 +260,23 @@ prompt= '''
     *  Вариант 9. Мнемонические слова для биткойн-адреса с проверкой баланса        =  9            *
     *  Вариант 10.WIF на биткойн-адрес с проверкой баланса                          =  10           *
     *  Вариант 11.Получить подпись ECDSA R, S, Z с помощью инструмента rawtx или txid = 11          *
+    *  Вариант 12.Разделение диапазона IN HEX или DEC инструмент                   =  12            *
     *                                                                                               *
     *                    Генераторы и мультипроверочные инструменты                                 *
-    *  Вариант 12. Биткойн-адреса из файла с проверкой баланса                      = 12            *
-    *  Вариант 13. Биткойн-адреса из файла в файл HASH160                           = 13            *
-    *  Вариант 14. Список Brain Wallet из файла с проверкой баланса                 = 14            *
-    *  Вариант 15. Генератор мнемонических слов, случайный выбор [офлайн]           = 15            *
-    *  Вариант 16. Случайное сканирование биткойнов в случайном порядке в диапазоне = 16            *
-    *  Вариант 17. Последовательность биткойнов сканируется последовательно в диапазоне деления= 17 *
+    *  Вариант 13. Биткойн-адреса из файла с проверкой баланса                      = 13            *
+    *  Вариант 14. Биткойн-адреса из файла в файл HASH160                           = 14            *
+    *  Вариант 15. Список Brain Wallet из файла с проверкой баланса                 = 15            *
+    *  Вариант 16. Генератор мнемонических слов, случайный выбор [офлайн]           = 16            *
+    *  Вариант 17. Случайное сканирование биткойнов в случайном порядке в диапазоне = 17            *
+    *  Вариант 18. Последовательность биткойнов сканируется последовательно в диапазоне деления= 18 *
+    *  Вариант 19. Биткойн случайная обратная позиция K                             = 19            *
+    *  Вариант 20. Последовательность биткойнов, обратная K позиция                 = 20            *
+    *  Вариант 21. Биткойн WIF Recovery или WIF Checker (только начиная с 5)        = 21            *
+    *                                                                                               *
     *                                                                                               *
     ************ Главное меню Mizogg's Tools Using iceland2k14 secp256k1 ****************************
 
-Введите свой выбор здесь Enter 1-17 : 
+Введите свой выбор здесь Enter 1-21 : 
 '''
 
 
@@ -386,13 +416,62 @@ while True:
         for i in range(len(e)):
             print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
     elif start == 12:
+        prompt123= '''
+            **************** Инструменты разделения диапазона *********************
+            *          Разделить диапазон в битах или байтах                      *
+            *               Вариант 1 Разделить диапазон в битах = 1              *
+            *               Вариант 2 Разделить диапазон в байтах = 2             *
+            **************** Инструменты разделения диапазона *********************
+        Введите свой выбор здесь Введите 1-2 :
+        '''
+        promptstart=int(input(prompt123))
+        if promptstart == 1:
+            x=int(input("Биты начального диапазона Мин. 1–255 ->  "))
+            y=int(input("биты диапазона остановки Макс. 256 -> "))
+            start=2**x
+            stop=2**y
+            
+        elif promptstart == 2:    
+            start=int(input("начальный диапазон Мин. байт 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
+            stop=int(input("диапазон остановки Макс. байт 115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
+
+        rangediv=int(input("Раздел диапазона 1% t0 ???% ->  "))
+        display =int(input("Выберите метод Метод отображения: 1 - HEX:; 2 - ДЕК  "))
+
+        remainingtotal=stop-start
+        div = round(remainingtotal / rangediv)
+           
+        divsion = []
+               
+        if display == 1:
+            divsion = []
+            divsion_wallet()
+            for data_w in divsion:
+                HEX = data_w['HEX']
+                print('Процентов', data_w['percent'], ' : Privatekey (hex): ', data_w['HEX'])
+                with open("hex.txt", "a") as f:
+                    f.write(f"""\nПроцентов{data_w['percent']} Privatekey (hex): {data_w['HEX']}""")
+                    f.close
+        elif display == 2:
+            divsion = []
+            divsion_wallet()
+            for data_w in divsion:
+                seed = data_w['seed']
+                print('Процентов', data_w['percent'], ' : Privatekey (dec): ', data_w['seed'])
+                with open("dec.txt", "a") as f:
+                    f.write(f"""\nПроцентов{data_w['percent']} Privatekey (dec): {data_w['seed']}""")
+                    f.close
+        else:
+            print("НЕПРАВИЛЬНЫЙ НОМЕР!!! ДОЛЖЕН ВЫБРАТЬ 1 - 2 ")
+                
+    elif start == 13:
         promptchk= '''
     ************************* Биткойн-адреса из файла с проверкой баланса ************************* 
-    *                                                                                                *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses                   *
-    *    ** Your list of addresses will be check for Balance [Internet required]                     *
-    *    ** ANY BITCOIN WALLETS FOUND WITH BALANCE WILL BE SAVE TO (balance.txt)                     *
-    *                                                                                                *
+    *                                                                                             *
+    *    ** Этому инструменту нужен файл с именем bct.txt со списком биткойн-адресов.             *
+    *    ** Ваш список адресов будет проверен на наличие баланса [требуется Интернет]             *
+    *    ** ЛЮБЫЕ БИТКОИН-КОШЕЛЬКИ, НАЙДЕННЫЕ С БАЛАНСОМ, БУДУТ СОХРАНЕНЫ НА (balance.txt)        *
+    *                                                                                             *
     ************************* Биткойн-адреса из файла с проверкой баланса *************************
         '''
         print(promptchk)
@@ -414,22 +493,22 @@ while True:
             addr = mylist[i]
             time.sleep(0.5)
             if float (get_balance(addr)) > ammount:
-                print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
+                print ('\nBitcoin Address = ', addr, '    Остаток средств = ', get_balance(addr), ' BTC')
                 f=open('balance.txt','a')
-                f.write('\nBitcoin Address = ' + addr + '    Balance = ' + get_balance(addr) + ' BTC')
+                f.write('\nBitcoin Address = ' + addr + '    Остаток средств = ' + get_balance(addr) + ' BTC')
                 f.close()
             else:
-                print ('\nScan Number = ',count, ' == Remaining = ', remaining)
-                print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    elif start == 13:
+                print ('\nНомер сканирования = ',count, ' == Оставшийся = ', remaining)
+                print ('\nBitcoin Address = ', addr, '    Остаток средств = ', get_balance(addr), ' BTC')
+    elif start == 14:
         prompthash= '''
-    *********************** Биткойн-адреса из файла в файл HASH160 Инструмент ************************* 
+    *********************** Биткойн-адреса из файла в файл HASH160 Инструмент *********************** 
     *                                                                                                *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses                   *
-    *    ** Your list of addresses will be converted to HASH160 [NO Internet required]               *
-    *    ** HASH160 Addressess will be saved to a file called hash160.txt                            *
+    *    ** Этому инструменту нужен файл с именем bct.txt со списком биткойн-адресов.                *
+    *    ** Ваш список адресов будет преобразован в HASH160 [Интернет не требуется]                  *
+    *    ** Адреса HASH160 будут сохранены в файл с именем hash160.txt.                              *
     *                                                                                                *
-    *********************** Биткойн-адреса из файла в файл HASH160 Инструмент *************************
+    *********************** Биткойн-адреса из файла в файл HASH160 Инструмент ************************
         '''
         print(prompthash)
         time.sleep(0.5)
@@ -454,19 +533,19 @@ while True:
             f=open('hash160.txt','a')
             f.write('\n' + address_hash160)
             f.close()
-    elif start == 14:
+    elif start == 15:
         promptbrain= '''
-    *********************** Список кошельков Brain из файла с помощью инструмента проверки баланса **********************
-    *                                                                                                *
-    *    ** This Tool needs a file called brainwords.txt with a list of Brain Wallet words           *
-    *    ** Your list will be converted to Bitcoin and Balance Checked [Internet required]           *
-    *    ** ANY BRAIN WALLETS FOUND WITH BALANCE WILL BE SAVE TO (winner.txt)                        *
-    *                                                                                                *
-    *********************** Список кошельков Brain из файла с помощью инструмента проверки баланса **********************
+    *********************** Список кошельков Brain из файла с помощью инструмента проверки баланса ******
+    *                                                                                                   *
+    *    ** Для этого инструмента требуется файл с именем brainwords.txt со списком слов Brain Wallet.  *
+    *    ** Ваш список будет конвертирован в биткойны, а баланс проверен [требуется Интернет]           *
+    *    ** ЛЮБЫЕ КОШЕЛЬКИ BRAIN, НАЙДЕННЫЕ С БАЛАНСОМ, БУДУТ СОХРАНЯТЬСЯ В (winner.txt)                *
+    *                                                                                                   *
+    ************* Список кошельков Brain из файла с помощью инструмента проверки баланса ****************
         '''
         print(promptbrain)
         time.sleep(0.5)
-        print('BRAIN WALLET PASSWORD LIST LOADING>>>>')
+        print('ЗАГРУЗКА СПИСКА ПАРОЛЕЙ КОШЕЛЬКА BRAIN>>>>')
         with open("brainwords.txt", "r") as file:
             line_count = 0
             for line in file:
@@ -475,7 +554,7 @@ while True:
         with open('brainwords.txt', newline='', encoding='utf-8') as f:
             for line in f:
                 mylist.append(line.strip())
-        print('Total Brain Wallet Password Loaded:', line_count)
+        print('Всего загружен пароль кошелька Brain:', line_count)
         remaining=line_count
         for i in range(0,len(mylist)):
             time.sleep(0.5)
@@ -485,24 +564,24 @@ while True:
             wallet = BrainWallet()
             private_key, addr = wallet.generate_address_from_passphrase(passphrase)
             if float (get_balance(addr)) > ammount:
-                print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
+                print ('\nBitcoin Address = ', addr, '    Остаток средств = ', get_balance(addr), ' BTC')
                 print('Passphrase       : ',passphrase)
                 print('Private Key      : ',private_key)
-                print('Scan Number : ', count, ' : Remaing Passwords : ', remaining)
+                print('Номер сканирования : ', count, ' : Оставшиеся пароли : ', remaining)
                 f=open('winner.txt','a')
-                f.write('\nBitcoin Address = ' + addr + '    Balance = ' + get_balance(addr) + ' BTC')
+                f.write('\nBitcoin Address = ' + addr + '    Остаток средств = ' + get_balance(addr) + ' BTC')
                 f.write('\nPassphrase       : '+ passphrase)
                 f.write('\nPrivate Key      : '+ private_key)
                 f.close()
             else:
-                print ('\nScan Number = ',count, ' == Remaining = ', remaining)
-                print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    elif start == 15:
+                print ('\nScan Number = ',count, ' == Оставшиеся пароли = ', remaining)
+                print ('\nBitcoin Address = ', addr, '    Остаток средств = ', get_balance(addr), ' BTC')
+    elif start == 16:
         promptMnemonic= '''
     *********************** Генератор мнемонических слов Random [Offline] *************************
     *                                                                                             *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database       *
-    *    ** ANY MNEMONIC WORDS FOUND THAT MATCH BTC DATABASE WILL SAVE TO  (winner.txt)           *
+    *    ** Этому инструменту нужен файл с именем bct.txt со списком баз данных биткойн-адресов.  *
+    *    ** ЛЮБЫЕ МНЕМОНИЧЕСКИЕ СЛОВА, СООТВЕТСТВУЮЩИЕ БАЗЕ ДАННЫХ BTC, СОХРАНЯЮТСЯ В (winner.txt)*
     *                                                                                             *
     *********************** Генератор мнемонических слов Random [Offline] *************************
         '''
@@ -554,7 +633,7 @@ while True:
                         Derivation Path:  {target_wallet['path']}
                         Privatekey WIF:  {target_wallet['privatekey']}
                         Public Address Bitcoin:  {target_wallet['address']}
-                        =====Made by mizogg.co.uk Donations 3P7PZLbwSt2bqUMsHF9xDsaNKhafiGuWDB =====""")
+                        =====Made by mizogg.co.uk Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 =====""")
             else:
                 print(' [' + str(count) + '] ------------------------')
                 print('Total Checked [' + str(total) + '] ')
@@ -562,15 +641,15 @@ while True:
                 for bad_wallet in data:
                     print('Derivation Path : ', bad_wallet['path'], ' : Bitcoin Address : ', bad_wallet['address'])
                     print('Privatekey WIF  : ', bad_wallet['privatekey'])
-    elif start == 16:
+    elif start == 17:
         promptrandom= '''
-    *********************** Случайное сканирование биткойнов в случайном порядке в Range Tool ************************
-    *                                                                                         *
-    *    ** Bitcoin random scan randomly in Range [Offline]                                   *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database   *
-    *    ** ANY MATCHING WALLETS GENERATED THAT MATCH BTC DATABASE WILL SAVE TO(winner.txt)   *
-    *                                                                                         *
-    *******[+] Запуск....Пожалуйста, подождите....Загружается список биткойн-адресов....*******
+    *********************** Случайное сканирование биткойнов в случайном порядке в Range Tool ***********
+    *                                                                                                   *
+    *    ** Случайное сканирование биткойнов случайным образом в диапазоне [Offline]                    *
+    *    ** Этому инструменту нужен файл с именем bct.txt со списком баз данных биткойн-адресов.        *
+    *    ** ЛЮБЫЕ СООТВЕТСТВУЮЩИЕ КОШЕЛЬКИ, СООТВЕТСТВУЮЩИЕ БАЗЕ ДАННЫХ BTC, СОХРАНЯЮТ В (winner.txt)   *
+    *                                                                                                   *
+    *******[+] Запуск....Пожалуйста, подождите....Загружается список биткойн-адресов....*****************
         '''
         print(promptrandom)
         time.sleep(0.5)
@@ -586,8 +665,8 @@ while True:
         print('Всего биткойн-адресов загружено и проверено : ',str (line_count)) 
         start=int(input("начальный диапазон Мин. 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
         stop=int(input("диапазон остановки Макс.115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
-        print("Starting search... Please Wait min range: " + str(start))
-        print("Max range: " + str(stop))
+        print("Начинается поиск... Пожалуйста, подождите мин. диапазон: " + str(start))
+        print("Максимальный диапазон: " + str(stop))
         print("==========================================================")
         print('Всего биткойн-адресов загружено и проверено : ',str (line_count))    
         while True:
@@ -619,15 +698,15 @@ while True:
                 if iteration % 10000 == 0:
                     elapsed = time.time() - start_time
                     print(f'It/CPU={iteration} checked={count} Hex={HEX} Keys/Sec={iteration / elapsed:.1f}')
-    elif start == 17:
+    elif start == 18:
         promptsequence= '''
-    *********************** Биткойн-последовательность Division in Range Tool ************************
-    *                                                                                         *
-    *    ** Bitcoin sequence & Range Divison by 1%-1000000%                                   *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database   *
-    *    ** ANY MATCHING WALLETS GENERATED THAT MATCH BTC DATABASE WILL SAVE TO(winner.txt)   *
-    *                                                                                         *
-    *******[+] Запуск....Пожалуйста, подождите....Загружается список биткойн-адресов....*******
+    *********************** Биткойн-последовательность Division in Range Tool ***************************
+    *                                                                                                   *
+    *    ** Последовательность биткойнов и деление диапазона на 1%-1000000%                             *
+    *    ** Этому инструменту нужен файл с именем bct.txt со списком баз данных биткойн-адресов.        *
+    *    ** ЛЮБЫЕ СООТВЕТСТВУЮЩИЕ КОШЕЛЬКИ, СООТВЕТСТВУЮЩИЕ БАЗЕ ДАННЫХ BTC, СОХРАНЯЮТ В (winner.txt)   *
+    *                                                                                                   *
+    *******[+] Запуск....Пожалуйста, подождите....Загружается список биткойн-адресов....*****************
         '''
         print(promptsequence)
         time.sleep(0.5)
@@ -643,11 +722,11 @@ while True:
         print('Всего биткойн-адресов загружено и проверено : ',str (line_count)) 
         start=int(input("начальный диапазон Мин. 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
         stop=int(input("диапазон остановки Макс.115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
-        mag=int(input("Magnitude Jump Stride -> "))
-        rangediv=int(input("Division of Range 1% t0 ???% ->  "))
-        display =int(input("Choose method Display Method: 1 - Less Details:(Fastest); 2 - Hex Details:(Slower); 3 - Wallet Details:(Slower)  "))
-        print("Starting search... Please Wait min range: " + str(start))
-        print("Max range: " + str(stop))
+        mag=int(input("Величина прыжкового шага -> "))
+        rangediv=int(input("Раздел диапазона 1% t0 ???% ->  "))
+        display =int(input("Выберите метод Метод отображения: 1 - Меньше деталей: (Самый быстрый); 2 - Шестнадцатеричные детали: (медленнее); 3 - Детали кошелька: (медленнее)  "))
+        print("Начинается поиск... Пожалуйста, подождите мин. диапазон: " + str(start))
+        print("Максимальный диапазон: " + str(stop))
         print('Всего биткойн-адресов загружено и проверено : ',str (line_count))
 
         remainingtotal=stop-start
@@ -669,7 +748,7 @@ while True:
                     p2sh = data_w['p2sh']
                     bech32 = data_w['bech32']
                     if caddr in add or uaddr in add or p2sh in add or bech32 in add:
-                        print('\nMatch Found IN : ', data_w['percent'])
+                        print('\nСовпадение найдено в : ', data_w['percent'])
                         print('\nPrivatekey (dec): ', data_w['seed'], '\nPrivatekey (hex): ', data_w['HEX'], '\nPrivatekey Uncompressed: ', data_w['wifu'], '\nPrivatekey compressed: ', data_w['wifc'], '\nPublic Address 1 Uncompressed: ', data_w['uaddr'], '\nPublic Address 1 compressed: ', data_w['caddr'], '\nPublic Address 3 P2SH: ', data_w['p2sh'], '\nPublic Address bc1 BECH32: ', data_w['bech32'])
                         with open("winner.txt", "a") as f:
                             f.write(f"""\nMatch Found IN  {data_w['percent']}
@@ -681,11 +760,11 @@ while True:
                             Public Address 1 Compressed:  {data_w['caddr']}
                             Public Address 3 P2SH:  {data_w['p2sh']}
                             Public Address bc1 BECH32:  {data_w['bech32']}
-                            =====Made by mizogg.co.uk Donations 3P7PZLbwSt2bqUMsHF9xDsaNKhafiGuWDB =====""")
+                            =====Made by mizogg.co.uk Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 =====""")
                             
                     else:
                         if display == 1:
-                            print('Scan: ', count , ' :Remaining: ', str(finish), ' :Total: ', str(total), end='\r')
+                            print('Сканировать: ', count , ' :Оставшийся: ', str(finish), ' :Всего: ', str(total), end='\r')
                         elif display == 2:
                             for bad_wallet in data:
                                 print(bad_wallet['percent'], '\nPrivatekey (hex): ', bad_wallet['HEX'], end='\r')
@@ -700,8 +779,217 @@ while True:
                                 
             except(KeyboardInterrupt, SystemExit):
                 exit('\nОбнаружено сочетание клавиш CTRL-C. Выход изящно. Спасибо и удачной охоты')
-     
+    elif start == 19:
+        promptinverse= '''
+    *********************** Инструмент случайного обратного диапазона биткойнов K ***********************
+    *                                                                                                   *
+    *    ** Биткойн Случайный инверсный K-диапазон                                                      *
+    *    ** Этому инструменту нужен файл с именем bct.txt со списком баз данных биткойн-адресов.        *
+    *    ** ЛЮБЫЕ СООТВЕТСТВУЮЩИЕ КОШЕЛЬКИ, СООТВЕТСТВУЮЩИЕ БАЗЕ ДАННЫХ BTC, СОХРАНЯЮТ В (winner.txt)   *
+    *                                                                                                   *
+    ********[+] Запуск.........Пожалуйста, подождите.....Загружается список адресов биткойнов.....*******
+        '''
+        print(promptinverse)
+        time.sleep(0.5)
+        filename ='btc.txt'
+        with open(filename) as f:
+            line_count = 0
+            for line in f:
+                line != "\n"
+                line_count += 1
+        with open(filename) as file:
+            add = file.read().split()
+        add = set(add)
+        print('Всего биткойн-адресов загружено и проверено : ',str (line_count))  
+        start = int(input("начальный диапазон Мин. 1-57896044618658097711785492504343953926418782139537452191302581570759080747168 ->  "))
+        stop = int(input("диапазон остановки МАКС. 57896044618658097711785492504343953926418782139537452191302581570759080747169 ->  "))
+        print("Начинается поиск... Пожалуйста, подождите мин. диапазон: " + str(start))
+        print("Максимальный диапазон: " + str(stop))
+        print("==========================================================")
+        print('Всего биткойн-адресов загружено и проверено : ',str (line_count))
+        while True:
+            count += 8
+            iteration += 1
+            ran=random.randrange(start,stop)
+            k1 = int(ran)
+            HEXk1 = "%064x" % k1
+            k2 = (k1*(n-1))%n
+            HEXk2 = "%064x" % k2
+            wifck1 = ice.btc_pvk_to_wif(HEXk1)
+            wifuk1 = ice.btc_pvk_to_wif(HEXk1, False)
+            caddrk1 = ice.privatekey_to_address(0, True, k1) #Compressed
+            uaddrk1 = ice.privatekey_to_address(0, False, k1)  #Uncompressed
+            P2SHk1 = ice.privatekey_to_address(1, True, k1) #p2sh
+            BECH32k1 = ice.privatekey_to_address(2, True, k1)  #bech32
+            
+            wifck2 = ice.btc_pvk_to_wif(HEXk2)
+            wifuk2 = ice.btc_pvk_to_wif(HEXk2, False)
+            caddrk2 = ice.privatekey_to_address(0, True, k2) #Compressed
+            uaddrk2 = ice.privatekey_to_address(0, False, k2)  #Uncompressed
+            P2SHk2 = ice.privatekey_to_address(1, True, k2) #p2sh
+            BECH32k2 = ice.privatekey_to_address(2, True, k2)  #bech32    
+            if caddrk1 in add or uaddrk1 in add or P2SHk1 in add or BECH32k1 in add :
+                print('\nMatch Found')
+                print('\nPrivatekey (dec): ', k1,'\nPrivatekey (hex): ', HEXk1, '\nPrivatekey Uncompressed: ', wifuk1, '\nPrivatekey compressed: ', wifck1, '\nPublic Address 1 Uncompressed: ', uaddrk1, '\nPublic Address 1 Compressed: ', caddrk1, '\nPublic Address 3 P2SH: ', P2SHk1, '\nPublic Address bc1 BECH32: ', BECH32k1)
+                f=open("winner.txt","a")
+                f.write('\nPrivatekey (dec): ' + str(k1))
+                f.write('\nPrivatekey (hex): ' + HEXk1)
+                f.write('\nPrivatekey Uncompressed: ' + wifuk1)
+                f.write('\nPrivatekey compressed: ' + wifck1)
+                f.write('\nPublic Address 1 Compressed: ' + caddrk1)
+                f.write('\nPublic Address 1 Uncompressed: ' + uaddrk1)
+                f.write('\nPublic Address 3 P2SH: ' + P2SHk1)
+                f.write('\nPublic Address bc1 BECH32: ' + BECH32k1)
+            if caddrk2 in add or uaddrk2 in add or P2SHk2 in add or BECH32k2 in add :
+                print('\nMatch Found')
+                print('\nPrivatekey (dec): ', k2,'\nPrivatekey (hex): ', HEXk2, '\nPrivatekey Uncompressed: ', wifuk2, '\nPrivatekey compressed: ', wifck2, '\nPublic Address 1 Uncompressed: ', uaddrk2, '\nPublic Address 1 Compressed: ', caddrk2, '\nPublic Address 3 P2SH: ', P2SHk2, '\nPublic Address bc1 BECH32: ', BECH32k2)
+                f=open("winner.txt","a")
+                f.write('\nPrivatekey (dec): ' + str(k2))
+                f.write('\nPrivatekey (hex): ' + HEXk2)
+                f.write('\nPrivatekey Uncompressed: ' + wifuk2)
+                f.write('\nPrivatekey compressed: ' + wifck2)
+                f.write('\nPublic Address 1 Compressed: ' + caddrk2)
+                f.write('\nPublic Address 1 Uncompressed: ' + uaddrk2)
+                f.write('\nPublic Address 3 P2SH: ' + P2SHk2)
+                f.write('\nPublic Address bc1 BECH32: ' + BECH32k2)
+            else:
+                if iteration % 10000 == 0:
+                    elapsed = time.time() - start_time
+                    addper= round(iteration / elapsed)*8
+                    print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
+    elif start == 20:
+        promptinversesq= '''
+    *********************** Биткойн-последовательность Inverse K Range Tool *****************************
+    *                                                                                                   *
+    *    ** Биткойн-последовательность, обратный K-диапазон                                             *
+    *    ** Этому инструменту нужен файл с именем bct.txt со списком баз данных биткойн-адресов.        *
+    *    ** ЛЮБЫЕ СООТВЕТСТВУЮЩИЕ КОШЕЛЬКИ, СООТВЕТСТВУЮЩИЕ БАЗЕ ДАННЫХ BTC, СОХРАНЯЮТ В (winner.txt)   *
+    *                                                                                                   *
+    ******[+] Запуск.........Пожалуйста, подождите.....Загружается список адресов биткойнов.....*********
+        '''
+        print(promptinversesq)
+        time.sleep(0.5)
+        filename ='btc.txt'
+        with open(filename) as f:
+            line_count = 0
+            for line in f:
+                line != "\n"
+                line_count += 1
+        with open(filename) as file:
+            add = file.read().split()
+        add = set(add)
+        print('Всего биткойн-адресов загружено и проверено : ',str (line_count))  
+        start = int(input("начальный диапазон Мин. 1-57896044618658097711785492504343953926418782139537452191302581570759080747168 ->  "))
+        stop = int(input("диапазон остановки МАКС. 57896044618658097711785492504343953926418782139537452191302581570759080747169 ->  "))
+        mag=int(input("Величина прыжкового шага -> "))
+        print("Начинается поиск... Пожалуйста, подождите мин. диапазон: " + str(start))
+        print("Максимальный диапазон: " + str(stop))
+        print("==========================================================")
+        print('Всего биткойн-адресов загружено и проверено : ',str (line_count))
+        while start < stop:
+            count += 8
+            iteration += 1
+            start+=mag
+            k1 = int(start)
+            HEXk1 = "%064x" % k1
+            k2 = (k1*(n-1))%n
+            HEXk2 = "%064x" % k2
+            wifck1 = ice.btc_pvk_to_wif(HEXk1)
+            wifuk1 = ice.btc_pvk_to_wif(HEXk1, False)
+            caddrk1 = ice.privatekey_to_address(0, True, k1) #Compressed
+            uaddrk1 = ice.privatekey_to_address(0, False, k1)  #Uncompressed
+            P2SHk1 = ice.privatekey_to_address(1, True, k1) #p2sh
+            BECH32k1 = ice.privatekey_to_address(2, True, k1)  #bech32
+            
+            wifck2 = ice.btc_pvk_to_wif(HEXk2)
+            wifuk2 = ice.btc_pvk_to_wif(HEXk2, False)
+            caddrk2 = ice.privatekey_to_address(0, True, k2) #Compressed
+            uaddrk2 = ice.privatekey_to_address(0, False, k2)  #Uncompressed
+            P2SHk2 = ice.privatekey_to_address(1, True, k2) #p2sh
+            BECH32k2 = ice.privatekey_to_address(2, True, k2)  #bech32    
+            if caddrk1 in add or uaddrk1 in add or P2SHk1 in add or BECH32k1 in add :
+                print('\nMatch Found')
+                print('\nPrivatekey (dec): ', k1,'\nPrivatekey (hex): ', HEXk1, '\nPrivatekey Uncompressed: ', wifuk1, '\nPrivatekey compressed: ', wifck1, '\nPublic Address 1 Uncompressed: ', uaddrk1, '\nPublic Address 1 Compressed: ', caddrk1, '\nPublic Address 3 P2SH: ', P2SHk1, '\nPublic Address bc1 BECH32: ', BECH32k1)
+                f=open("winner.txt","a")
+                f.write('\nPrivatekey (dec): ' + str(k1))
+                f.write('\nPrivatekey (hex): ' + HEXk1)
+                f.write('\nPrivatekey Uncompressed: ' + wifuk1)
+                f.write('\nPrivatekey compressed: ' + wifck1)
+                f.write('\nPublic Address 1 Compressed: ' + caddrk1)
+                f.write('\nPublic Address 1 Uncompressed: ' + uaddrk1)
+                f.write('\nPublic Address 3 P2SH: ' + P2SHk1)
+                f.write('\nPublic Address bc1 BECH32: ' + BECH32k1)
+            if caddrk2 in add or uaddrk2 in add or P2SHk2 in add or BECH32k2 in add :
+                print('\nMatch Found')
+                print('\nPrivatekey (dec): ', k2,'\nPrivatekey (hex): ', HEXk2, '\nPrivatekey Uncompressed: ', wifuk2, '\nPrivatekey compressed: ', wifck2, '\nPublic Address 1 Uncompressed: ', uaddrk2, '\nPublic Address 1 Compressed: ', caddrk2, '\nPublic Address 3 P2SH: ', P2SHk2, '\nPublic Address bc1 BECH32: ', BECH32k2)
+                f=open("winner.txt","a")
+                f.write('\nPrivatekey (dec): ' + str(k2))
+                f.write('\nPrivatekey (hex): ' + HEXk2)
+                f.write('\nPrivatekey Uncompressed: ' + wifuk2)
+                f.write('\nPrivatekey compressed: ' + wifck2)
+                f.write('\nPublic Address 1 Compressed: ' + caddrk2)
+                f.write('\nPublic Address 1 Uncompressed: ' + uaddrk2)
+                f.write('\nPublic Address 3 P2SH: ' + P2SHk2)
+                f.write('\nPublic Address bc1 BECH32: ' + BECH32k2)
+            else:
+                if iteration % 10000 == 0:
+                    elapsed = time.time() - start_time
+                    addper= round(iteration / elapsed)*8
+                    print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
+        
+        
+    elif start == 21:
+        promptWIF= '''
+    *********************** Биткойн WIF Recovery или инструмент проверки WIF ************************
+    *                                                                                               *
+    *    ** Найдите недостающие части формата импорта кошелька (WIF) для биткойнов                  *
+    *    ** Этот инструмент работает только с WIF Starting 5 (позже будет улучшено)                 *
+    *    ** ЛЮБОЙ СООТВЕТСТВУЮЩИЙ WIF, СОЗДАННЫЙ ЭТОМУ АДРЕСУ СОВПАДЕНИЯ, СОХРАНИТ В (winner.txt)   *
+    *                                                                                               *
+    *********************** Биткойн WIF Recovery или инструмент проверки WIF ************************
+        '''
+        print(promptWIF)
+        time.sleep(0.5)   
+        start= str(input('Введите WIF ЗДЕСЬ или узнайте начальную часть : '))
+        miss = int(input('Сколько пропущенных символов Введите 0, если нет: '))
+        if miss == 0:
+            private_key_WIF = start
+            first_encode = base58.b58decode(private_key_WIF)
+            private_key_full = binascii.hexlify(first_encode)
+            private_key = private_key_full[2:-8]
+            key = Key.from_hex(str(private_key.decode('utf-8')))
+            wif = bytes_to_wif(key.to_bytes(), compressed=False)
+            wif1 = bytes_to_wif(key.to_bytes(), compressed=True)
+            key1 = Key(wif)
+            addr = key.address
+            addr1 = key1.address
+            print('\nPrivateKey= ', private_key.decode('utf-8'), '\nCompressed Address = ', addr, '\nCompressed WIF = ', wif1, '\nUncompressed = ', addr1, '\nUncompressed WIF = ', wif)
+            f=open('winner.txt','a')
+            f.write('\nPrivateKey= ' + private_key.decode('utf-8') + '\nCompressed Address = ' + addr + '\nCompressed WIF = ' + wif1 + '\nUncompressed = ' + addr1 + '\nUncompressed WIF = ' + wif)
+            f.close()
+        else:
+            stop = str(input('Выйти из банка или ввести конечную часть : '))
+            add= str(input('Введите биткойн-адрес Ищете совпадение с WIF = '))
+            for a in iter_all(miss):
+                total+=1
+                private_key_WIF = a + stop
+                first_encode = base58.b58decode(private_key_WIF)
+                private_key_full = binascii.hexlify(first_encode)
+                private_key = private_key_full[2:-8]
+                key = Key.from_hex(str(private_key.decode('utf-8')))
+                wif = bytes_to_wif(key.to_bytes(), compressed=False)
+                wif1 = bytes_to_wif(key.to_bytes(), compressed=True)
+                key1 = Key(wif)
+                addr = key.address
+                addr1 = key1.address
+                print(' Scanning : ', total,' : Current TEST WIF= ', private_key_WIF, end='\r')
+                #print('\n GOOD LUCK AND HAPPY HUNTING', '\nPrivateKey= ', private_key.decode('utf-8'), '\nCompressed Address = ', addr, '\nCompressed WIF = ', wif1, '\nUncompressed = ', addr1, '\nUncompressed WIF = ', wif)
+                if addr in add or addr1 in add:
+                    print('\n Congraz FOUND!!!', '\nPrivateKey= ', private_key.decode('utf-8'), '\nCompressed Address = ', addr, '\nCompressed WIF = ', wif1, '\nUncompressed = ', addr1, '\nUncompressed WIF = ', wif)
+                    f=open('winner.txt','a')
+                    f.write('\n Congraz FOUND!!!' + '\nPrivateKey= ' + private_key.decode('utf-8') + '\nCompressed Address = ' + addr + '\nCompressed WIF = ' + wif1 + '\nUncompressed = ' + addr1 + '\nUncompressed WIF = ' + wif)
+                    f.close()     
                           
     else:
-        print("НЕПРАВИЛЬНЫЙ НОМЕР!!! ДОЛЖЕН ВЫБРАТЬ 1 - 17 ")
+        print("НЕПРАВИЛЬНЫЙ НОМЕР!!! ДОЛЖЕН ВЫБРАТЬ 1 - 21 ")
         break
