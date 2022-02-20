@@ -7,7 +7,7 @@ Install_libraries.bat to get started( Only needs to be done once)
 
 then to run use any of the start.bat files
 
-## Miz_Tools_ice.py Version 5
+## Miz_Tools_ice.py Version 6
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
@@ -35,11 +35,12 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *    Option 19.Bitcoin random Inverse K position                   = 19     *
+    *    Option 20.Bitcoin WIF Recovery or WIF Checker(Only starting 5)= 20     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
 
-    Type You Choice Here Enter 1-19 :
+    Type You Choice Here Enter 1-20 :
 
       ************************ Главное меню Mizogg's Tools **********************************
     *                                                                                     *
@@ -67,7 +68,7 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
 
      Введите свой выбор здесь Enter 1-17 :
      
-## Miz_Tools_bit.py Version 3  Check https://mizogg.co.uk for more tools and info
+## Miz_Tools_bit.py Version 4  Check https://mizogg.co.uk for more tools and info
 
 test it here https://replit.com/@Mizogg/Mizogg-Bitcoin-Tools?v=1
 
@@ -96,11 +97,12 @@ Using Bit Library made in Python Only 1 file needed
     *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *    Option 19.Bitcoin random Inverse K position                   = 19     *
+    *    Option 20.Bitcoin WIF Recovery or WIF Checker(Only starting 5)= 20     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-      Type You Choice Here Enter 1-19 :
+      Type You Choice Here Enter 1-20 :
 
     7
     Hexadecimal to Bitcoin Address Tool
@@ -141,11 +143,12 @@ NEW RSZ ADDED
     *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
     *    Option 19.Bitcoin random Inverse K position                   = 19     *
+    *    Option 20.Bitcoin WIF Recovery or WIF Checker(Only starting 5)= 20     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-      Type You Choice Here Enter 1-19 :
+      Type You Choice Here Enter 1-20 :
 
       11
 
