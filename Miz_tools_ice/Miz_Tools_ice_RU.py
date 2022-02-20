@@ -273,7 +273,7 @@ prompt= '''
     *  Вариант 20. Последовательность биткойнов, обратная K позиция                 = 20            *
     *  Вариант 21. Биткойн WIF Recovery или WIF Checker (только начиная с 5)        = 21            *
     *                                                                                               *
-    *                                                                                               *
+    *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                                    *
     ************ Главное меню Mizogg's Tools Using iceland2k14 secp256k1 ****************************
 
 Введите свой выбор здесь Enter 1-21 : 
