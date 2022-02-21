@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
-Сделано Mizogg Tools для помощи в поиске биткойнов. Удачи и счастливой охоты Miz_Tools_ice_RU.py Версия 4 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
-21 Bitcoin Tools
+Сделано Mizogg Tools для помощи в поиске биткойнов. Удачи и счастливой охоты Miz_Tools_ice_RU.py Версия 5 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
+22 Bitcoin Tools
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
 https://mizogg.co.uk
@@ -270,11 +270,13 @@ prompt= '''
     *  Вариант 19. Биткойн случайная обратная позиция K                             = 19            *
     *  Вариант 20. Последовательность биткойнов, обратная K позиция                 = 20            *
     *  Вариант 21. Биткойн WIF Recovery или WIF Checker 5 K L                       = 21            *
+    *  Вариант 22. Биткойн-адреса из файла в открытый ключ                          = 22            *
+    *                                                                                               *
     *                                                                                               *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                                    *
     ************ Главное меню Mizogg's Tools Using iceland2k14 secp256k1 ****************************
 
-Введите свой выбор здесь Enter 1-21 : 
+Введите свой выбор здесь Enter 1-22 : 
 '''
 
 
@@ -1005,7 +1007,37 @@ while True:
                     f=open('winner.txt','a')
                     f.write('\n Congraz FOUND!!!' + '\nPrivateKey= ' + private_key.decode('utf-8') + '\nCompressed Address = ' + addr + '\nCompressed WIF = ' + wif1 + '\nUncompressed = ' + addr1 + '\nUncompressed WIF = ' + wif)
                     f.close()     
-                          
+    elif start == 22:
+        promptPUB= '''
+    *********************** Биткойн-адреса из файла в инструмент открытого ключа ***********************
+    *                                                                                                  *
+    *    ** Этому инструменту нужен файл с именем bct.txt со списком биткойн-адресов.                  *
+    *    ** Ваш список адресов будет проверен на наличие известных открытых ключей [требуется Интернет]*
+    *    ** ЛЮБОЙ БИТКОИН-АДРЕС С ОТКРЫТЫМ КЛЮЧЕМ БУДЕТ СОХРАНЕН В (pubkeys.txt)                       *
+    *                                                                                                  *
+    *********************** Биткойн-адреса из файла в инструмент открытого ключа ***********************
+        '''
+        print(promptPUB)
+        time.sleep(0.5)
+        print('Биткойн-адреса загружаются для проверки открытых ключей, пожалуйста, подождите................:')
+        with open('btc.txt', newline='', encoding='utf-8') as f:
+            for line in f:
+                mylist.append(line.strip())
+        print('Биткойн-адреса загружены сейчас Проверка открытых ключей ')
+        myfile = open('pubkeys.txt', 'w')
+
+        for i in range(0,len(mylist)):
+            address = mylist[i]
+            link = f"https://blockchain.info/q/pubkeyaddr/{address}"
+            time.sleep(0.5)
+            f = requests.get(link)
+            if(f.text == ''):
+                pass
+            else:
+                myfile.write("%s\n" % f.text)
+                print(f.text)
+
+        myfile.close()
     else:
-        print("НЕПРАВИЛЬНЫЙ НОМЕР!!! ДОЛЖЕН ВЫБРАТЬ 1 - 21 ")
+        print("НЕПРАВИЛЬНЫЙ НОМЕР!!! ДОЛЖЕН ВЫБРАТЬ 1 - 22 ")
         break
