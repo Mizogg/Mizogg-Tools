@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 7 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
-21 Bitcoin Tools
+Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 8 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
+22 Bitcoin Tools
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
 https://mizogg.co.uk
@@ -249,33 +249,34 @@ prompt= '''
     ************************ Main Menu Mizogg's Tools ***************************
     *                       Single Check Tools                                  *
     *    Option 1.Bitcoin Address with Balance Check                   =  1     *
-    *    Option 2.Bitcoin Address to HASH160                           =  2     *
+    *    Option 2.Bitcoin Address to HASH160 Addresses starting 1,3,bc1=  2     *
     *    Option 3.HASH160 to Bitcoin Address(Not Working)              =  3     *
     *    Option 4.Brain Wallet Bitcoin with Balance Check              =  4     *
-    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)                   =  5     *
-    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)                   =  6     *
+    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)     [Offline]     =  5     *
+    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)     [Offline]     =  6     *
     *    Option 7.Hexadecimal to Bitcoin Address with Balance Check    =  7     *
     *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
-    *    Option 12.Range Divsion IN HEX or DEC tool                    =  12    *
+    *    Option 12.Range Divsion IN HEX or DEC tool      [Offline]     =  12    *
     *                                                                           *
     *                    Generators & Multi Check Tools                         *
     *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
-    *    Option 14.Bitcoin Addresses from file to HASH160 file         = 14     *
+    *    Option 14.Bitcoin Addresses from file to HASH160 file 1,3,bc1 = 14     *
     *    Option 15.Brain Wallet list from file with Balance Check      = 15     *
     *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
-    *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
+    *    Option 17.Bitcoin random scan randomly in Range  [Offline]    = 17     *
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
-    *    Option 19.Bitcoin random Inverse K position                   = 19     *
-    *    Option 20.Bitcoin sequence Inverse K position                 = 20     *
-    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L           = 21     *
+    *    Option 19.Bitcoin random Inverse K position      [Offline]    = 19     *
+    *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
+    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
+    *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
 
-Type You Choice Here Enter 1-21 : 
+Type You Choice Here Enter 1-22 : 
 '''
 
 
@@ -942,7 +943,6 @@ while True:
                     addper= round(iteration / elapsed)*8
                     print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
         
-        
     elif start == 21:
         promptWIF= '''
     *********************** Bitcoin WIF Recovery or WIF Checker Tool **************************
@@ -954,7 +954,7 @@ while True:
     *********************** Bitcoin WIF Recovery or WIF Checker Tool **************************
         '''
         print(promptWIF)
-        time.sleep(0.5)   
+        time.sleep(0.5)
         miss = int(input('How Many Missing Chars Enter 0 for none : '))
         if miss == 0:
             startsingle= str(input('Enter Your WIF HERE : '))
@@ -1007,6 +1007,38 @@ while True:
                     f=open('winner.txt','a')
                     f.write('\n Congraz FOUND!!!' + '\nPrivateKey= ' + private_key.decode('utf-8') + '\nCompressed Address = ' + addr + '\nCompressed WIF = ' + wif1 + '\nUncompressed = ' + addr1 + '\nUncompressed WIF = ' + wif)
                     f.close()
+
+    elif start == 22:
+        promptPUB= '''
+    *********************** Bitcoin Addresses from file to Public Key Tool ********************
+    *                                                                                         *
+    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses            *
+    *    ** Your list of addresses will be check for Known Public keys [Internet required]    *
+    *    ** ANY BITCOIN ADDRESS WITH A PUBLIC KEY WILL BE SAVE TO (pubkeys.txt)               *
+    *                                                                                         *
+    *********************** Bitcoin Addresses from file to Public Key Tool ********************
+        '''
+        print(promptPUB)
+        time.sleep(0.5)
+        print('Bitcoin Addresses loading to check for public keys please wait ................:')
+        with open('btc.txt', newline='', encoding='utf-8') as f:
+            for line in f:
+                mylist.append(line.strip())
+        print('Bitcoin Addresses Loaded now Checking for Public Keys ')
+        myfile = open('pubkeys.txt', 'w')
+
+        for i in range(0,len(mylist)):
+            address = mylist[i]
+            link = f"https://blockchain.info/q/pubkeyaddr/{address}"
+            time.sleep(0.5)
+            f = requests.get(link)
+            if(f.text == ''):
+                pass
+            else:
+                myfile.write("%s\n" % f.text)
+                print(f.text)
+
+        myfile.close()
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 21 ")
+        print("WRONG NUMBER!!! MUST CHOSE 1 - 22 ")
         break
