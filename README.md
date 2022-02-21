@@ -11,37 +11,37 @@ then to run use any of the start.bat files
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
-
     ************************ Main Menu Mizogg's Tools ***************************
     *                       Single Check Tools                                  *
     *    Option 1.Bitcoin Address with Balance Check                   =  1     *
-    *    Option 2.Bitcoin Address to HASH160                           =  2     *
+    *    Option 2.Bitcoin Address to HASH160 Addresses starting 1,3,bc1=  2     *
     *    Option 3.HASH160 to Bitcoin Address(Not Working)              =  3     *
     *    Option 4.Brain Wallet Bitcoin with Balance Check              =  4     *
-    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)                   =  5     *
-    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)                   =  6     *
+    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)     [Offline]     =  5     *
+    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)     [Offline]     =  6     *
     *    Option 7.Hexadecimal to Bitcoin Address with Balance Check    =  7     *
     *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
-    *    Option 12.Range Divsion IN HEX or DEC tool                    =  12    *
+    *    Option 12.Range Divsion IN HEX or DEC tool      [Offline]     =  12    *
     *                                                                           *
     *                    Generators & Multi Check Tools                         *
     *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
-    *    Option 14.Bitcoin Addresses from file to HASH160 file         = 14     *
+    *    Option 14.Bitcoin Addresses from file to HASH160 file 1,3,bc1 = 14     *
     *    Option 15.Brain Wallet list from file with Balance Check      = 15     *
     *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
-    *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
+    *    Option 17.Bitcoin random scan randomly in Range  [Offline]    = 17     *
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
-    *    Option 19.Bitcoin random Inverse K position                   = 19     *
-    *    Option 20.Bitcoin sequence Inverse K position                 = 20     *
-    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L           = 21     *
+    *    Option 19.Bitcoin random Inverse K position      [Offline]    = 19     *
+    *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
+    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
+    *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
 
-    Type You Choice Here Enter 1-21 :
+    Type You Choice Here Enter 1-22 :
 
      ************************ Главное меню Mizogg's Tools ********************************************
     *                       Инструменты одиночной проверки                                          *
@@ -83,33 +83,34 @@ Using Bit Library made in Python Only 1 file needed
     ************************ Main Menu Mizogg's Tools ***************************
     *                       Single Check Tools                                  *
     *    Option 1.Bitcoin Address with Balance Check                   =  1     *
-    *    Option 2.Bitcoin Address to HASH160                           =  2     *
+    *    Option 2.Bitcoin Address to HASH160 Only Addresses starting 1 =  2     *
     *    Option 3.HASH160 to Bitcoin Address(Not Working)              =  3     *
     *    Option 4.Brain Wallet Bitcoin with Balance Check              =  4     *
-    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)                   =  5     *
-    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)                   =  6     *
+    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)     [Offline]     =  5     *
+    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)     [Offline]     =  6     *
     *    Option 7.Hexadecimal to Bitcoin Address with Balance Check    =  7     *
     *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
-    *    Option 12.Range Divsion IN HEX or DEC tool                    =  12    *
+    *    Option 12.Range Divsion IN HEX or DEC tool      [Offline]     =  12    *
     *                                                                           *
     *                    Generators & Multi Check Tools                         *
     *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
-    *    Option 14.Bitcoin Addresses from file to HASH160 file         = 14     *
+    *    Option 14.Bitcoin Addresses from file to HASH160 file  Only 1 = 14     *
     *    Option 15.Brain Wallet list from file with Balance Check      = 15     *
     *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
-    *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
+    *    Option 17.Bitcoin random scan randomly in Range  [Offline]    = 17     *
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
-    *    Option 19.Bitcoin random Inverse K position                   = 19     *
-    *    Option 20.Bitcoin sequence Inverse K position                 = 20     *
-    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L           = 21     *
+    *    Option 19.Bitcoin random Inverse K position      [Offline]    = 19     *
+    *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
+    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
+    *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-      Type You Choice Here Enter 1-21 :
+    Type You Choice Here Enter 1-22 :
 
     7
     Hexadecimal to Bitcoin Address Tool
@@ -130,33 +131,34 @@ NEW RSZ ADDED
     ************************ Main Menu Mizogg's Tools ***************************
     *                       Single Check Tools                                  *
     *    Option 1.Bitcoin Address with Balance Check                   =  1     *
-    *    Option 2.Bitcoin Address to HASH160                           =  2     *
+    *    Option 2.Bitcoin Address to HASH160 Only Addresses starting 1 =  2     *
     *    Option 3.HASH160 to Bitcoin Address(Not Working)              =  3     *
     *    Option 4.Brain Wallet Bitcoin with Balance Check              =  4     *
-    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)                   =  5     *
-    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)                   =  6     *
+    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)     [Offline]     =  5     *
+    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)     [Offline]     =  6     *
     *    Option 7.Hexadecimal to Bitcoin Address with Balance Check    =  7     *
     *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
-    *    Option 12.Range Divsion IN HEX or DEC tool                    =  12    *
+    *    Option 12.Range Divsion IN HEX or DEC tool      [Offline]     =  12    *
     *                                                                           *
     *                    Generators & Multi Check Tools                         *
     *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
-    *    Option 14.Bitcoin Addresses from file to HASH160 file         = 14     *
+    *    Option 14.Bitcoin Addresses from file to HASH160 file  Only 1 = 14     *
     *    Option 15.Brain Wallet list from file with Balance Check      = 15     *
     *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
-    *    Option 17.Bitcoin random scan randomly in Range [Offline]     = 17     *
+    *    Option 17.Bitcoin random scan randomly in Range  [Offline]    = 17     *
     *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
-    *    Option 19.Bitcoin random Inverse K position                   = 19     *
-    *    Option 20.Bitcoin sequence Inverse K position                 = 20     *
-    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L           = 21     *
+    *    Option 19.Bitcoin random Inverse K position      [Offline]    = 19     *
+    *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
+    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
+    *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-      Type You Choice Here Enter 1-21 :
+    Type You Choice Here Enter 1-22 :
 
       11
 
