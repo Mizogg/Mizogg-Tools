@@ -43,7 +43,7 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
 
     Type You Choice Here Enter 1-22 :
 
-     ************************ Главное меню Mizogg's Tools ********************************************
+    ************************ Главное меню Mizogg's Tools ********************************************
     *                       Инструменты одиночной проверки                                          *
     *  Вариант 1. Биткойн-адрес с проверкой баланса                                 =  1            *
     *  Вариант 2. Биткойн-адрес на HASH160                                          =  2            *
@@ -68,11 +68,13 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *  Вариант 19. Биткойн случайная обратная позиция K                             = 19            *
     *  Вариант 20. Последовательность биткойнов, обратная K позиция                 = 20            *
     *  Вариант 21. Биткойн WIF Recovery или WIF Checker 5 K L                       = 21            *
+    *  Вариант 22. Биткойн-адреса из файла в открытый ключ                          = 22            *
+    *                                                                                               *
     *                                                                                               *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                                    *
     ************ Главное меню Mizogg's Tools Using iceland2k14 secp256k1 ****************************
 
-    Введите свой выбор здесь Enter 1-21 :
+    Введите свой выбор здесь Enter 1-22 :
      
 ## Miz_Tools_bit.py Version 4  Check https://mizogg.co.uk for more tools and info
 
