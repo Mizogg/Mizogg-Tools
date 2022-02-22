@@ -478,7 +478,7 @@ while True:
             else:
                 print ('\nScan Number = ',count, ' == Remaining = ', remaining)
                 print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    elif start == 13:
+    elif start == 14:
         prompthash= '''
     *********************** Bitcoin Addresses from file to HASH160 file Tool ************************* 
     *                                                                                                *
@@ -511,7 +511,7 @@ while True:
             f=open('hash160.txt','a')
             f.write('\n' + address_hash160)
             f.close()
-    elif start == 14:
+    elif start == 15:
         promptbrain= '''
     *********************** Brain Wallet list from file with Balance Check Tool **********************
     *                                                                                                *
@@ -554,7 +554,7 @@ while True:
             else:
                 print ('\nScan Number = ',count, ' == Remaining = ', remaining)
                 print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    elif start == 15:
+    elif start == 16:
         promptMnemonic= '''
     *********************** Mnemonic Words Generator Random [Offline] *****************************
     *                                                                                             *
@@ -619,7 +619,7 @@ while True:
                 for bad_wallet in data:
                     print('Derivation Path : ', bad_wallet['path'], ' : Bitcoin Address : ', bad_wallet['address'])
                     print('Privatekey WIF  : ', bad_wallet['privatekey'])
-    elif start == 16:
+    elif start == 17:
         promptrandom= '''
     *********************** Bitcoin random scan randomly in Range Tool ************************
     *                                                                                         *
@@ -674,7 +674,7 @@ while True:
                 if iteration % 10000 == 0:
                     elapsed = time.time() - start_time
                     print(f'It/CPU={iteration} checked={count} Hex={HEX} Keys/Sec={iteration / elapsed:.1f}')
-    elif start == 17:
+    elif start == 18:
         promptsequence= '''
     *********************** Bitcoin sequence Divison in Range Tool ****************************
     *                                                                                         *
