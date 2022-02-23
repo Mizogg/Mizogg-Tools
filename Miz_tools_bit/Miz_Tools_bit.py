@@ -300,31 +300,79 @@ while True:
         HEX = "%064x" % dec
         print('\nDecimal = ', dec, '\nTo Hexadecimal = ', HEX)
     elif start == 7:
-        print('Hexadecimal to Bitcoin Address Tool')
-        HEX=str(input("Hexadecimal HEX ->  "))
-        dec = int(HEX, 16)
-        key = Key.from_int(dec)
-        wifu = bytes_to_wif(key.to_bytes(), compressed=False)
-        wifc = bytes_to_wif(key.to_bytes(), compressed=True)
-        key1 = Key(wifu)
-        caddr = key.address
-        uaddr = key1.address
-        saddr = key.segwit_address
-        query = {caddr}|{uaddr}|{saddr}
-        request = requests.get("https://blockchain.info/multiaddr?active=" + ','.join(query), timeout=10)
-        try:
-            request = request.json()
-            print('PrivateKey (hex) : ', HEX)
-            print('PrivateKey (dec) : ', dec)
-            print('PrivateKey (wif) Compressed   : ', wifc)
-            print('PrivateKey (wif) UnCompressed : ', wifu)
-            print('Bitcoin Address Compressed   = ', caddr, '    Balance = ', get_balance(caddr), ' BTC')
-            print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
-            print('Bitcoin Address Segwit       = ', saddr, '    Balance = ', get_balance(saddr), ' BTC')
-            for row in request["addresses"]:
-                print(row)
-        except:
-            pass
+        prompthex= '''
+    ************************* Hexadecimal to Bitcoin Address Tool ************************* 
+    *                                                                                     *
+    *    1-Single Hexadecimal to Bitcoin Address. Balance check [Internet required]       *
+    *    2-List Multi Hexadecimal to Bitcoin Address. Balance check [Internet required]   *
+    *    Type 1-2 to Start    (Option 2 Requires hex.txt file list of Hexadecimal         *
+    *                                                                                     *
+    ************************* Hexadecimal to Bitcoin Address Tool *************************
+        '''
+        starthex=int(input(prompthex))
+        if starthex == 1:
+            print('Hexadecimal to Bitcoin Address Tool')
+            HEX=str(input("Hexadecimal HEX ->  "))
+            dec = int(HEX, 16)
+            key = Key.from_int(dec)
+            wifu = bytes_to_wif(key.to_bytes(), compressed=False)
+            wifc = bytes_to_wif(key.to_bytes(), compressed=True)
+            key1 = Key(wifu)
+            caddr = key.address
+            uaddr = key1.address
+            saddr = key.segwit_address
+            query = {caddr}|{uaddr}|{saddr}
+            request = requests.get("https://blockchain.info/multiaddr?active=" + ','.join(query), timeout=10)
+            try:
+                request = request.json()
+                print('PrivateKey (hex) : ', HEX)
+                print('PrivateKey (dec) : ', dec)
+                print('PrivateKey (wif) Compressed   : ', wifc)
+                print('PrivateKey (wif) UnCompressed : ', wifu)
+                print('Bitcoin Address Compressed   = ', caddr, '    Balance = ', get_balance(caddr), ' BTC')
+                print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
+                print('Bitcoin Address Segwit       = ', saddr, '    Balance = ', get_balance(saddr), ' BTC')
+                for row in request["addresses"]:
+                    print(row)
+            except:
+                pass
+        elif starthex == 2:
+            with open("hex.txt", "r") as file:
+                line_count = 0
+                for line in file:
+                    line != "\n"
+                    line_count += 1
+            with open('hex.txt', newline='', encoding='utf-8') as f:
+                for line in f:
+                    mylist.append(line.strip())
+            for i in range(0,len(mylist)):
+                myhex = mylist[i]
+                priv = myhex.split()[0]
+                dec = int(priv, 16)
+                key = Key.from_hex(priv)
+                wifu = bytes_to_wif(key.to_bytes(), compressed=False)
+                wifc = bytes_to_wif(key.to_bytes(), compressed=True)
+                key1 = Key(wifu)
+                caddr = key.address
+                uaddr = key1.address
+                count+=1
+                total+=2
+                print('Total HEX addresses Loaded:', line_count)
+                if float (get_balance(caddr)) or float (get_balance(uaddr)) > ammount:
+                    print('PrivateKey (hex) : ', priv)
+                    print('PrivateKey (dec) : ', dec)
+                    print('PrivateKey (wif) Compressed   : ', wifc)
+                    print('PrivateKey (wif) UnCompressed : ', wifu)
+                    print('Bitcoin Address Compressed   = ', caddr, '    Balance = ', get_balance(caddr), ' BTC')
+                    print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
+                    f=open('winner.txt','a')
+                    f.write('\nPrivateKey (hex): ' + priv + '\nBitcoin Address Compressed : ' + caddr + '\nBitcoin Address UnCompressed :' + uaddr + '\nPrivateKey (wif) Compressed : ' + wifc + '\nPrivateKey (wif) UnCompressed : ' + wifu + '\n==================================')
+                    f.close()
+                else: 
+                    print('Scan Number : ', count, ' : Total Wallets Checked : ', total)
+                    print('Bitcoin Address Compressed   = ', caddr, '    Balance = ', get_balance(caddr), ' BTC')
+                    print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
+
     elif start == 8:
         print('Decimal to Bitcoin Address Tool')
         dec=int(input('Decimal Dec (Max 115792089237316195423570985008687907852837564279074904382605163141518161494336 ) ->  '))
