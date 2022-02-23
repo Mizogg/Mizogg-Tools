@@ -327,31 +327,84 @@ while True:
         HEX = "%064x" % dec
         print('\nDecimal = ', dec, '\nTo Hexadecimal = ', HEX)
     elif start == 7:
-        print('Инструмент преобразования шестнадцатеричного адреса в биткойн')
-        HEX=str(input("Шестнадцатеричный HEX ->  "))
-        dec = int(HEX, 16)
-        wifc = ice.btc_pvk_to_wif(HEX)
-        wifu = ice.btc_pvk_to_wif(HEX, False)
-        caddr = ice.privatekey_to_address(0, True, dec) #Compressed
-        uaddr = ice.privatekey_to_address(0, False, dec)  #Uncompressed
-        p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
-        bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
-        query = {caddr}|{uaddr}|{p2sh}|{bech32}
-        request = requests.get("https://blockchain.info/multiaddr?active=" + ','.join(query), timeout=10)
-        try:
-            request = request.json()
-            print('PrivateKey (hex) : ', HEX)
-            print('PrivateKey (dec) : ', dec)
-            print('PrivateKey (wif) Compressed   : ', wifc)
-            print('PrivateKey (wif) UnCompressed : ', wifu)
-            print('Bitcoin Address Compressed   = ', caddr, '    Balance = ', get_balance(caddr), ' BTC')
-            print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
-            print('Bitcoin Address p2sh         = ', p2sh, '    Balance = ', get_balance(p2sh), ' BTC')
-            print('Bitcoin Address Bc1  bech32  = ', bech32, '    Balance = ', get_balance(bech32), ' BTC')
-            for row in request["addresses"]:
-                print(row)
-        except:
-            pass
+        prompthex= '''
+    ************************* Hexadecimal to Bitcoin Address Tool ************************* 
+    *                                                                                     *
+    *    1-Single Hexadecimal to Bitcoin Address. Balance check [Internet required]       *
+    *    2-List Multi Hexadecimal to Bitcoin Address. Balance check [Internet required]   *
+    *    Type 1-2 to Start    (Option 2 Requires hex.txt file list of Hexadecimal         *
+    *                                                                                     *
+    ************************* Hexadecimal to Bitcoin Address Tool *************************
+        '''
+        starthex=int(input(prompthex))
+        if starthex == 1:
+            print('Инструмент преобразования шестнадцатеричного адреса в биткойн')
+            HEX=str(input("Шестнадцатеричный HEX ->  "))
+            dec = int(HEX, 16)
+            wifc = ice.btc_pvk_to_wif(HEX)
+            wifu = ice.btc_pvk_to_wif(HEX, False)
+            caddr = ice.privatekey_to_address(0, True, dec) #Compressed
+            uaddr = ice.privatekey_to_address(0, False, dec)  #Uncompressed
+            p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
+            bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
+            query = {caddr}|{uaddr}|{p2sh}|{bech32}
+            request = requests.get("https://blockchain.info/multiaddr?active=" + ','.join(query), timeout=10)
+            try:
+                request = request.json()
+                print('PrivateKey (hex) : ', HEX)
+                print('PrivateKey (dec) : ', dec)
+                print('PrivateKey (wif) Compressed   : ', wifc)
+                print('PrivateKey (wif) UnCompressed : ', wifu)
+                print('Bitcoin Address Compressed   = ', caddr, '    Balance = ', get_balance(caddr), ' BTC')
+                print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
+                print('Bitcoin Address p2sh         = ', p2sh, '    Balance = ', get_balance(p2sh), ' BTC')
+                print('Bitcoin Address Bc1  bech32  = ', bech32, '    Balance = ', get_balance(bech32), ' BTC')
+                for row in request["addresses"]:
+                    print(row)
+            except:
+                pass
+        elif starthex == 2:
+            with open("hex.txt", "r") as file:
+                line_count = 0
+                for line in file:
+                    line != "\n"
+                    line_count += 1
+            with open('hex.txt', newline='', encoding='utf-8') as f:
+                for line in f:
+                    mylist.append(line.strip())
+            for i in range(0,len(mylist)):
+                myhex = mylist[i]
+                HEX = myhex.split()[0]
+                dec = int(HEX, 16)
+                wifc = ice.btc_pvk_to_wif(HEX)
+                wifu = ice.btc_pvk_to_wif(HEX, False)
+                caddr = ice.privatekey_to_address(0, True, dec) #Compressed
+                uaddr = ice.privatekey_to_address(0, False, dec)  #Uncompressed
+                p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
+                bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
+                count+=1
+                total+=2
+                print('Total HEX addresses Loaded:', line_count)
+                if float (get_balance(caddr)) or float (get_balance(uaddr)) > ammount:
+                    print('PrivateKey (hex) : ', HEX)
+                    print('PrivateKey (dec) : ', dec)
+                    print('PrivateKey (wif) Compressed   : ', wifc)
+                    print('PrivateKey (wif) UnCompressed : ', wifu)
+                    print('Bitcoin Address Compressed   = ', caddr, '    Balance = ', get_balance(caddr), ' BTC')
+                    print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
+                    print('Bitcoin Address p2sh         = ', p2sh, '    Balance = ', get_balance(p2sh), ' BTC')
+                    print('Bitcoin Address Bc1  bech32  = ', bech32, '    Balance = ', get_balance(bech32), ' BTC')
+                    f=open('winner.txt','a')
+                    f.write('\nPrivateKey (hex): ' + HEX + '\nBitcoin Address Compressed : ' + caddr + '\nBitcoin Address UnCompressed :' + uaddr + '\nPrivateKey (wif) Compressed : ' + wifc + '\nPrivateKey (wif) UnCompressed : ' + wifu + '\n==================================')
+                    f.close()
+                else: 
+                    print('Scan Number : ', count, ' : Total Wallets Checked : ', total)
+                    print('Bitcoin Address Compressed   = ', caddr, '    Balance = ', get_balance(caddr), ' BTC')
+                    print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
+                    print('Bitcoin Address p2sh         = ', p2sh, '    Balance = ', get_balance(p2sh), ' BTC')
+                    print('Bitcoin Address Bc1  bech32  = ', bech32, '    Balance = ', get_balance(bech32), ' BTC')
+                    time.sleep(1.5)
+                    
     elif start == 8:
         print('Инструмент преобразования десятичного адреса в биткойн')
         dec=int(input('Десятичный Dec (Максимум 115792089237316195423570985008687907852837564279074904382605163141518161494336 ) ->  '))
@@ -581,6 +634,7 @@ while True:
             else:
                 print ('\nScan Number = ',count, ' == Оставшиеся пароли = ', remaining)
                 print ('\nBitcoin Address = ', addr, '    Остаток средств = ', get_balance(addr), ' BTC')
+                time.sleep(1.0)
     elif start == 16:
         promptMnemonic= '''
     *********************** Генератор мнемонических слов Random [Offline] *************************
@@ -617,6 +671,7 @@ while True:
         else:
             print("НЕПРАВИЛЬНЫЙ НОМЕР!!! Начиная с 24 слов")
             s1 = 256
+        display = int(input('1=Full Display (Slower) 2=Slient Mode (Faster) : '))
         while True:
             data=[]
             count += 1
@@ -640,12 +695,16 @@ while True:
                         Public Address Bitcoin:  {target_wallet['address']}
                         =====Made by mizogg.co.uk Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 =====""")
             else:
-                print(' [' + str(count) + '] ------------------------')
-                print('Total Checked [' + str(total) + '] ')
-                print('\nmnemonic_words  : ', mnemonic_words)
-                for bad_wallet in data:
-                    print('Derivation Path : ', bad_wallet['path'], ' : Bitcoin Address : ', bad_wallet['address'])
-                    print('Privatekey WIF  : ', bad_wallet['privatekey'])
+                if display == 1:
+                    print(' [' + str(count) + '] ------------------------')
+                    print('Total Checked [' + str(total) + '] ')
+                    print('\nmnemonic_words  : ', mnemonic_words)
+                    for bad_wallet in data:
+                        print('Derivation Path : ', bad_wallet['path'], ' : Bitcoin Address : ', bad_wallet['address'])
+                        print('Privatekey WIF  : ', bad_wallet['privatekey'])
+                elif display == 2:
+                    print(' [' + str(count) + '] ------', 'Total Checked [' + str(total) + '] ', end='\r')
+
     elif start == 17:
         promptrandom= '''
     *********************** Случайное сканирование биткойнов в случайном порядке в Range Tool ***********
