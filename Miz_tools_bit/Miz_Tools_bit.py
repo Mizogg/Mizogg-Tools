@@ -372,7 +372,7 @@ while True:
                     print('Scan Number : ', count, ' : Total Wallets Checked : ', total)
                     print('Bitcoin Address Compressed   = ', caddr, '    Balance = ', get_balance(caddr), ' BTC')
                     print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
-
+                    time.sleep(1.5)
     elif start == 8:
         print('Decimal to Bitcoin Address Tool')
         dec=int(input('Decimal Dec (Max 115792089237316195423570985008687907852837564279074904382605163141518161494336 ) ->  '))
@@ -602,6 +602,7 @@ while True:
             else:
                 print ('\nScan Number = ',count, ' == Remaining = ', remaining)
                 print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
+                time.sleep(1.0)
     elif start == 16:
         promptMnemonic= '''
     *********************** Mnemonic Words Generator Random [Offline] *****************************
@@ -638,6 +639,7 @@ while True:
         else:
             print("WRONG NUMBER!!! Starting with 24 Words")
             s1 = 256
+        display = int(input('1=Full Display (Slower) 2=Slient Mode (Faster) : '))
         while True:
             data=[]
             count += 1
@@ -661,12 +663,16 @@ while True:
                         Public Address Bitcoin:  {target_wallet['address']}
                         =====Made by mizogg.co.uk Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 =====""")
             else:
-                print(' [' + str(count) + '] ------------------------')
-                print('Total Checked [' + str(total) + '] ')
-                print('\nmnemonic_words  : ', mnemonic_words)
-                for bad_wallet in data:
-                    print('Derivation Path : ', bad_wallet['path'], ' : Bitcoin Address : ', bad_wallet['address'])
-                    print('Privatekey WIF  : ', bad_wallet['privatekey'])
+                if display == 1:
+                    print(' [' + str(count) + '] ------------------------')
+                    print('Total Checked [' + str(total) + '] ')
+                    print('\nmnemonic_words  : ', mnemonic_words)
+                    for bad_wallet in data:
+                        print('Derivation Path : ', bad_wallet['path'], ' : Bitcoin Address : ', bad_wallet['address'])
+                        print('Privatekey WIF  : ', bad_wallet['privatekey'])
+                elif display == 2:
+                    print(' [' + str(count) + '] ------', 'Total Checked [' + str(total) + '] ', end='\r')
+                    
     elif start == 17:
         promptrandom= '''
     *********************** Bitcoin random scan randomly in Range Tool ************************
