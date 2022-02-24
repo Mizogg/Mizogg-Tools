@@ -108,11 +108,12 @@ Using Bit Library made in Python Only 1 file needed
     *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
     *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
     *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
+    *    Option 23.Public Key from file to Bitcoin Addresses           = 23     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-    Type You Choice Here Enter 1-22 :
+    Type You Choice Here Enter 1-23 :
 
     7
     Hexadecimal to Bitcoin Address Tool
@@ -156,11 +157,12 @@ NEW RSZ ADDED
     *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
     *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
     *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
+    *    Option 23.Public Key from file to Bitcoin Addresses           = 23     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-    Type You Choice Here Enter 1-22 :
+    Type You Choice Here Enter 1-23 :
 
       11
 
