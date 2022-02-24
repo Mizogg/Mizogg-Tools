@@ -1,7 +1,8 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_bit.py Version 5 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
- 22 Bitcoin Tools
+Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_bit.py Version 6 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
+ 23 Bitcoin Tools
 Using Bit Library made in Python
 https://mizogg.co.uk
 '''
@@ -223,6 +224,14 @@ def iter_all(count):
                 for scan in iter_all(count-1):
                     yield scan + a
 
+def hash160pub(hex_str):
+    sha = hashlib.sha256()
+    rip = hashlib.new('ripemd160')
+    sha.update(hex_str)
+    rip.update( sha.digest() )
+    print ( "key_hash = \t" + rip.hexdigest() )
+    return rip.hexdigest()
+
 prompt= '''
     ************************ Main Menu Mizogg's Tools ***************************
     *                       Single Check Tools                                  *
@@ -250,11 +259,12 @@ prompt= '''
     *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
     *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
     *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
+    *    Option 23.Public Key from file to Bitcoin Addresses           = 23     *
     *                                                                           *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
-Type You Choice Here Enter 1-22 : 
+Type You Choice Here Enter 1-23 : 
 '''
 
 
@@ -1040,7 +1050,53 @@ while True:
                 myfile.write("%s\n" % f.text)
                 print(f.text)
 
-        myfile.close()            
+        myfile.close()
+    elif start == 23:
+        promptADD2PUB= '''
+    *********************** Public Key from file to Bitcoin Addresses Tool ********************
+    *                                                                                         *
+    *    ** This Tool needs a file called pubkeys.txt with a list of Public Keys              *
+    *    ** Your list of Public Keys will be Coverted to Bitcion Addresses  [OFF Line]        *
+    *    ** All THE PUBLIC KEY INFORMATION WILL BE SAVE TO (add_info.txt)                     *
+    *                                                                                         *
+    *********************** Public Key from file to Bitcoin Addresses Tool ********************
+        '''
+        print(promptADD2PUB)
+        time.sleep(0.5)
+        print('public keys Loading to Bitcion Addresses please wait ................:')
+        import hashlib, base58
+        with open('pubkeys.txt', newline='', encoding='utf-8') as f:
+            for line in f:
+                mylist.append(line.strip())
+
+        for i in range(0,len(mylist)):
+            pubkey = mylist[i]
+            compress_pubkey = False
+            if (compress_pubkey):
+                if (ord(bytearray.fromhex(pubkey[-2:])) % 2 == 0):
+                    pubkey_compressed = '02'
+                else:
+                    pubkey_compressed = '03'
+                pubkey_compressed += pubkey[2:66]
+                hex_str = bytearray.fromhex(pubkey_compressed)
+            else:
+                hex_str = bytearray.fromhex(pubkey)
+            key_hash = '00' + hash160pub(hex_str)
+            sha = hashlib.sha256()
+            sha.update( bytearray.fromhex(key_hash) )
+            checksum = sha.digest()
+            sha = hashlib.sha256()
+            sha.update(checksum)
+            checksum = sha.hexdigest()[0:8]
+
+            print ( "checksum = \t" + sha.hexdigest() )
+            print ( "key_hash + checksum = \t" + key_hash + ' ' + checksum )
+            print ( "bitcoin address = \t" + (base58.b58encode( bytes(bytearray.fromhex(key_hash + checksum)) )).decode('utf-8') )
+            f=open('add_info.txt','a')
+            f.write( "\nchecksum = \t" + sha.hexdigest() )
+            f.write( "\nkey_hash + checksum = \t" + key_hash + ' ' + checksum )
+            f.write( "\nbitcoin address = \t" + (base58.b58encode( bytes(bytearray.fromhex(key_hash + checksum)) )).decode('utf-8') + '\n')
+            f.close()
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 22 ")
+        print("WRONG NUMBER!!! MUST CHOSE 1 - 23 ")
         break
