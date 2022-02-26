@@ -430,27 +430,90 @@ while True:
     *                                                                                                   *
     *    1-txid  blockchain API R,S,Z calculation starts. [Internet required]                           *
     *    2-rawtx R,S,Z,Pubkey for each of the inputs present in the rawtx data. [No Internet required]  *
-    *    Type 1-2 to Start                                                                              *
+    *    3-txid  blockchain API R,S,Z from transaction List [Internet required]                         *
+    *    4-txid  blockchain API R,S,Z from transaction List MORE INFORMATION [Internet required]        *
+    *    Type 1-4 to Start                                                                              *
     *                                                                                                   *
     ************************* Retrieve ECDSA signature R,S,Z rawtx or txid tool *************************
         '''
         startrsz=int(input(promptrsz))
         if startrsz == 1:
-            txid = str(input('Enter Your -txid = ')) #'82e5e1689ee396c8416b94c86aed9f4fe793a0fa2fa729df4a8312a287bc2d5e'
-            rawtx = get_rawtx_from_blockchain(txid)
+            txid = input(str('Type your txid here = ')) #'82e5e1689ee396c8416b94c86aed9f4fe793a0fa2fa729df4a8312a287bc2d5e'
+            rawtx = ''
+            if rawtx == '':
+                rawtx = get_rawtx_from_blockchain(txid)
+                print('\nStarting Program...')
+
+                m = parseTx(rawtx)
+                e = getSignableTxn(m)
+
+                for i in range(len(e)):
+                    print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
+                    f=open('file.txt','a')
+                    f.write(f'{e[i][0]},{e[i][1]},{e[i][2]}\n')
+                    f.close
         elif startrsz == 2:
-            rawtx =str(input('Enter Your -rawtx = ')) #'01000000028370ef64eb83519fd14f9d74826059b4ce00eae33b5473629486076c5b3bf215000000008c4930460221009bf436ce1f12979ff47b4671f16b06a71e74269005c19178384e9d267e50bbe9022100c7eabd8cf796a78d8a7032f99105cdcb1ae75cd8b518ed4efe14247fb00c9622014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffffb0385cd9a933545628469aa1b7c151b85cc4a087760a300e855af079eacd25c5000000008b48304502210094b12a2dd0f59b3b4b84e6db0eb4ba4460696a4f3abf5cc6e241bbdb08163b45022007eaf632f320b5d9d58f1e8d186ccebabea93bad4a6a282a3c472393fe756bfb014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffff01404b4c00000000001976a91402d8103ac969fe0b92ba04ca8007e729684031b088ac00000000'
+            rawtx = input(str('Type your rawtx here = ')) #'01000000028370ef64eb83519fd14f9d74826059b4ce00eae33b5473629486076c5b3bf215000000008c4930460221009bf436ce1f12979ff47b4671f16b06a71e74269005c19178384e9d267e50bbe9022100c7eabd8cf796a78d8a7032f99105cdcb1ae75cd8b518ed4efe14247fb00c9622014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffffb0385cd9a933545628469aa1b7c151b85cc4a087760a300e855af079eacd25c5000000008b48304502210094b12a2dd0f59b3b4b84e6db0eb4ba4460696a4f3abf5cc6e241bbdb08163b45022007eaf632f320b5d9d58f1e8d186ccebabea93bad4a6a282a3c472393fe756bfb014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffff01404b4c00000000001976a91402d8103ac969fe0b92ba04ca8007e729684031b088ac00000000'
+            print('\nStarting Program...')
+            m = parseTx(rawtx)
+            e = getSignableTxn(m)
+            for i in range(len(e)):
+                print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
+                f=open('file.txt','a')
+                f.write(f'{e[i][0]},{e[i][1]},{e[i][2]}\n')
+                f.close
+        elif startrsz == 3:
+            mylist = []
+            with open('trans.txt', newline='', encoding='utf-8') as f:
+                for line in f:
+                    mylist.append(line.strip())
+                    print('\nStarting Program...')
+                    for x in range(0,len(mylist)):
+                        txid = mylist[x]
+                        rawtx = ''
+                    if rawtx == '':
+                        rawtx = get_rawtx_from_blockchain(txid)
+
+                        m = parseTx(rawtx)
+                        e = getSignableTxn(m)
+                        for i in range(len(e)):
+                            print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
+                            f=open('file.txt','a')
+                            f.write(f'{e[i][0]},{e[i][1]},{e[i][2]}\n')
+                            f.close
+        elif startrsz == 4:
+            mylist = []
+            with open('trans.txt', newline='', encoding='utf-8') as f:
+                for line in f:
+                    mylist.append(line.strip())
+                    print('\nStarting Program...')
+                    for x in range(0,len(mylist)):
+                        txid = mylist[x]
+                        rawtx = ''
+                    if rawtx == '':
+                        rawtx = get_rawtx_from_blockchain(txid)
+
+                        m = parseTx(rawtx)
+                        e = getSignableTxn(m)
+                        for i in range(len(e)):
+                            hex1= e[i][0]
+                            r = int(hex1, 16)
+                            lengthr = len(bin(r))
+                            lengthr -=2
+                            hex2= e[i][1]
+                            s = int(hex2, 16)
+                            lengths = len(bin(s))
+                            lengths -=2
+                            hex3= e[i][2]
+                            z = int(hex3, 16)
+                            lengthz = len(bin(z))
+                            lengthz -=2
+                            print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n K for R = {r} {lengthr}  bits\n     S: {e[i][1]}\n K for S = {s} {lengths}  bits \n     Z: {e[i][2]}\n K for Z = {z} {lengthz}  bits \nPubKey: {e[i][3]}')
+                            f=open('filefull.txt','a')
+                            f.write(f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n K for R = {r} {lengthr}  bits\n     S: {e[i][1]}\n K for S = {s} {lengths}  bits\n     Z: {e[i][2]}\n K for Z = {z} {lengthz}  bits \nPubKey: {e[i][3]}')
+                            f.close
         else:
-            print("WRONG NUMBER!!! MUST CHOSE 1 - 2 ")
-            break
-
-        print('\nStarting Program...')
-
-        m = parseTx(rawtx)
-        e = getSignableTxn(m)
-
-        for i in range(len(e)):
-            print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
+            print("WRONG NUMBER!!! MUST CHOSE 1 - 4 ")
     elif start == 12:
         prompt123= '''
             ************************ Range Division Tools ***************************
