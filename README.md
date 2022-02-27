@@ -1,5 +1,10 @@
-# Mizogg-Bitcoin-Tools
-Tools for Bitcoin Information Balance, HASH160, DEC,
+# Mizogg-Tools
+Tools for Bitcoin and ETH Information Balance, HASH160, DEC, Transactions and much more.
+
+New All Tools in one 28 Options for Bitcoin and ETH.
+
+![image](https://user-images.githubusercontent.com/88630056/155902228-c5cf2d77-2310-4242-92e8-b27fd7d5ceab.png)
+
 
 English and Russian Version
 
@@ -7,7 +12,7 @@ Install_libraries.bat to get started( Only needs to be done once)
 
 then to run use any of the start.bat files
 
-## Miz_Tools_ice.py Version 6
+## Miz_Tools_ice.py Version 9
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
