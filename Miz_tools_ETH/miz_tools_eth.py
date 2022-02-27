@@ -71,7 +71,7 @@ while True:
         print ('Address Transaction Check Tool')
         ethadd = str(input('Enter Your ETH Address Here : '))
         print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
-    elif start == 2:
+    if start == 2:
         print('Hexadecimal to Decimal Tool')
         HEX = str(input('Enter Your Hexadecimal HEX Here : '))
         dec = int(HEX, 16)
@@ -92,7 +92,7 @@ while True:
         print("Finger Print:", hdwallet.finger_print())
         print("Hash:", hdwallet.hash())
         print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
-    elif start == 3:
+    if start == 3:
         print('Decimal to Hexadecimal Tool')
         dec = int(input('Enter Your Decimal DEC Here : '))
         HEX = "%064x" % dec
@@ -112,7 +112,7 @@ while True:
         print("Finger Print:", hdwallet.finger_print())
         print("Hash:", hdwallet.hash())
         print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
-    elif start ==4:
+    if start ==4:
         promptword= '''
     ************************* Mnemonic Words 12/15/18/21/24 tool ************************* 
     *                                                                                    *
@@ -128,19 +128,19 @@ while True:
             Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
             if Lang == 1:
                 Lang1 = "english"
-            elif Lang == 2:
+            if Lang == 2:
                 Lang1 = "french"
-            elif Lang == 3:
+            if Lang == 3:
                 Lang1 = "italian"
-            elif Lang == 4:
+            if Lang == 4:
                 Lang1 = "spanish"
-            elif Lang == 5:
+            if Lang == 5:
                 Lang1 = "chinese_simplified"
-            elif Lang == 6:
+            if Lang == 6:
                 Lang1 = "chinese_traditional"
-            elif Lang == 7:
+            if Lang == 7:
                 Lang1 = "japanese"
-            elif Lang == 8:
+            if Lang == 8:
                 Lang1 = "korean"
             else:
                 print("WRONG NUMBER!!! Starting with english")
@@ -166,13 +166,13 @@ while True:
             R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
             if R == 12:
                 s1 = 128
-            elif R == 15:
+            if R == 15:
                 s1 = 160
-            elif R == 18:
+            if R == 18:
                 s1 = 192
-            elif R == 21:
+            if R == 21:
                 s1 = 224
-            elif R == 24:
+            if R == 24:
                 s1 = 256
             else:
                 print("WRONG NUMBER!!! Starting with 24 Words")
@@ -180,19 +180,19 @@ while True:
             Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
             if Lang == 1:
                 Lang1 = "english"
-            elif Lang == 2:
+            if Lang == 2:
                 Lang1 = "french"
-            elif Lang == 3:
+            if Lang == 3:
                 Lang1 = "italian"
-            elif Lang == 4:
+            if Lang == 4:
                 Lang1 = "spanish"
-            elif Lang == 5:
+            if Lang == 5:
                 Lang1 = "chinese_simplified"
-            elif Lang == 6:
+            if Lang == 6:
                 Lang1 = "chinese_traditional"
-            elif Lang == 7:
+            if Lang == 7:
                 Lang1 = "japanese"
-            elif Lang == 8:
+            if Lang == 8:
                 Lang1 = "korean"
             else:
                 print("WRONG NUMBER!!! Starting with english")
@@ -215,18 +215,18 @@ while True:
             print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
             
         
-    elif start ==5:
+    if start ==5:
         print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
         R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
         if R == 12:
             s1 = 128
-        elif R == 15:
+        if R == 15:
             s1 = 160
-        elif R == 18:
+        if R == 18:
             s1 = 192
-        elif R == 21:
+        if R == 21:
             s1 = 224
-        elif R == 24:
+        if R == 24:
             s1 = 256
         else:
             print("WRONG NUMBER!!! Starting with 24 Words")
@@ -235,19 +235,19 @@ while True:
         Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
         if Lang == 1:
             Lang1 = "english"
-        elif Lang == 2:
+        if Lang == 2:
             Lang1 = "french"
-        elif Lang == 3:
+        if Lang == 3:
             Lang1 = "italian"
-        elif Lang == 4:
+        if Lang == 4:
             Lang1 = "spanish"
-        elif Lang == 5:
+        if Lang == 5:
             Lang1 = "chinese_simplified"
-        elif Lang == 6:
+        if Lang == 6:
             Lang1 = "chinese_traditional"
-        elif Lang == 7:
+        if Lang == 7:
             Lang1 = "japanese"
-        elif Lang == 8:
+        if Lang == 8:
             Lang1 = "korean"
         else:
             print("WRONG NUMBER!!! Starting with english")
@@ -290,7 +290,7 @@ while True:
                         print('Derivation Path : ', bad_wallet['path'], ' : ETH Address : ', bad_wallet['address'])
                         print('Privatekey : ', bad_wallet['privatekey'])
                         print('Privatekey DEC : ', bad_wallet['privatedec'])
-                elif display == 2:
+                if display == 2:
                     print(' [' + str(count) + '] ------', 'Total Checked [' + str(total) + '] ', end='\r')
     else:
         print("WRONG NUMBER!!! MUST CHOSE 1 - 5 ")
