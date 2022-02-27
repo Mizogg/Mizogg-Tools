@@ -102,6 +102,25 @@ gmpy = ["gmpy"]
 gmpy2 = ["gmpy2"]
 
 [[package]]
+name = "hdwallet"
+version = "2.1.1"
+description = "Python-based library for the implementation of a hierarchical deterministic wallet generator for more than 140+ multiple cryptocurrencies."
+category = "main"
+optional = false
+python-versions = ">=3.6,<4"
+
+[package.dependencies]
+base58 = ">=2.0.1,<3"
+ecdsa = ">=0.13,<1"
+mnemonic = ">=0.19,<1"
+pysha3 = ">=1.0.2,<2"
+
+[package.extras]
+cli = ["click (>=8.0.3,<9)", "click-aliases (>=1.0.1,<2)", "tabulate (>=0.8.9,<1)"]
+docs = ["sphinx (>=4.4.0,<5)", "furo (==2022.2.14.1)", "sphinx-click (>=3.1.0,<4)"]
+tests = ["pytest (>=6.2.5,<7)", "pytest-cov (>=3.0.0,<4)"]
+
+[[package]]
 name = "idna"
 version = "3.3"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -124,6 +143,14 @@ description = "C parser in Python"
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
+name = "pysha3"
+version = "1.0.2"
+description = "SHA-3 (Keccak) for Python 2.7 - 3.5"
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "requests"
@@ -167,7 +194,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c16910760c2c151fc008d115f3c834339a16ffc4a44a09cf3d542a11fac79000"
+content-hash = "01737fa8a82991ee526159e7fecd911fe8aa136c3fbc1dfc70a8db2c206a19f6"
 
 [metadata.files]
 asn1crypto = [
@@ -286,6 +313,10 @@ ecdsa = [
     {file = "ecdsa-0.17.0-py2.py3-none-any.whl", hash = "sha256:5cf31d5b33743abe0dfc28999036c849a69d548f994b535e527ee3cb7f3ef676"},
     {file = "ecdsa-0.17.0.tar.gz", hash = "sha256:b9f500bb439e4153d0330610f5d26baaf18d17b8ced1bc54410d189385ea68aa"},
 ]
+hdwallet = [
+    {file = "hdwallet-2.1.1-py3-none-any.whl", hash = "sha256:3e428498b2eea35fbcf9de2582883b1110c894ef827475ce74c74a96e8d34c79"},
+    {file = "hdwallet-2.1.1.tar.gz", hash = "sha256:2d64955f1cdd3453604172a1ded60ce42a919d81b0bf172c192e008877256b8c"},
+]
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
     {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
@@ -297,6 +328,29 @@ mnemonic = [
 pycparser = [
     {file = "pycparser-2.21-py2.py3-none-any.whl", hash = "sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9"},
     {file = "pycparser-2.21.tar.gz", hash = "sha256:e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206"},
+]
+pysha3 = [
+    {file = "pysha3-1.0.2-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:6e6a84efb7856f5d760ee55cd2b446972cb7b835676065f6c4f694913ea8f8d9"},
+    {file = "pysha3-1.0.2-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:f9046d59b3e72aa84f6dae83a040bd1184ebd7fef4e822d38186a8158c89e3cf"},
+    {file = "pysha3-1.0.2-cp27-cp27m-win32.whl", hash = "sha256:9fdd28884c5d0b4edfed269b12badfa07f1c89dbc5c9c66dd279833894a9896b"},
+    {file = "pysha3-1.0.2-cp27-cp27m-win_amd64.whl", hash = "sha256:41be70b06c8775a9e4d4eeb52f2f6a3f356f17539a54eac61f43a29e42fd453d"},
+    {file = "pysha3-1.0.2-cp27-cp27mu-manylinux1_i686.whl", hash = "sha256:68c3a60a39f9179b263d29e221c1bd6e01353178b14323c39cc70593c30f21c5"},
+    {file = "pysha3-1.0.2-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:59111c08b8f34495575d12e5f2ce3bafb98bea470bc81e70c8b6df99aef0dd2f"},
+    {file = "pysha3-1.0.2-cp33-cp33m-win32.whl", hash = "sha256:571a246308a7b63f15f5aa9651f99cf30f2a6acba18eddf28f1510935968b603"},
+    {file = "pysha3-1.0.2-cp33-cp33m-win_amd64.whl", hash = "sha256:93abd775dac570cb9951c4e423bcb2bc6303a9d1dc0dc2b7afa2dd401d195b24"},
+    {file = "pysha3-1.0.2-cp34-cp34m-manylinux1_i686.whl", hash = "sha256:11a2ba7a2e1d9669d0052fc8fb30f5661caed5512586ecbeeaf6bf9478ab5c48"},
+    {file = "pysha3-1.0.2-cp34-cp34m-manylinux1_x86_64.whl", hash = "sha256:5ec8da7c5c70a53b5fa99094af3ba8d343955b212bc346a0d25f6ff75853999f"},
+    {file = "pysha3-1.0.2-cp34-cp34m-win32.whl", hash = "sha256:9c778fa8b161dc9348dc5cc361e94d54aa5ff18413788f4641f6600d4893a608"},
+    {file = "pysha3-1.0.2-cp34-cp34m-win_amd64.whl", hash = "sha256:fd7e66999060d079e9c0e8893e78d8017dad4f59721f6fe0be6307cd32127a07"},
+    {file = "pysha3-1.0.2-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:827b308dc025efe9b6b7bae36c2e09ed0118a81f792d888548188e97b9bf9a3d"},
+    {file = "pysha3-1.0.2-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:4416f16b0f1605c25f627966f76873e432971824778b369bd9ce1bb63d6566d9"},
+    {file = "pysha3-1.0.2-cp35-cp35m-win32.whl", hash = "sha256:c93a2676e6588abcfaecb73eb14485c81c63b94fca2000a811a7b4fb5937b8e8"},
+    {file = "pysha3-1.0.2-cp35-cp35m-win_amd64.whl", hash = "sha256:684cb01d87ed6ff466c135f1c83e7e4042d0fc668fa20619f581e6add1d38d77"},
+    {file = "pysha3-1.0.2-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:386998ee83e313b6911327174e088021f9f2061cbfa1651b97629b761e9ef5c4"},
+    {file = "pysha3-1.0.2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:c7c2adcc43836223680ebdf91f1d3373543dc32747c182c8ca2e02d1b69ce030"},
+    {file = "pysha3-1.0.2-cp36-cp36m-win32.whl", hash = "sha256:cd5c961b603bd2e6c2b5ef9976f3238a561c58569945d4165efb9b9383b050ef"},
+    {file = "pysha3-1.0.2-cp36-cp36m-win_amd64.whl", hash = "sha256:0060a66be16665d90c432f55a0ba1f6480590cfb7d2ad389e688a399183474f0"},
+    {file = "pysha3-1.0.2.tar.gz", hash = "sha256:fe988e73f2ce6d947220624f04d467faf05f1bbdbc64b0a201296bb3af92739e"},
 ]
 requests = [
     {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"},
