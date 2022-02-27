@@ -294,7 +294,7 @@ while True:
         print ('Инструмент проверки баланса адреса')
         addr = str(input('Введите здесь свой биткойн-адрес : '))
         print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    elif start == 2:
+    if start == 2:
         print ('Адрес для инструмента HASH160')
         addr = str(input('Введите здесь свой биткойн-адрес : '))
         if addr.startswith('1'):
@@ -304,11 +304,11 @@ while True:
         if addr.startswith('bc1') and len(addr.split('\t')[0])< 50 :
             address_hash160 = (ice.bech32_address_decode(addr,coin_type=0))
         print ('\nBitcoin Address = ', addr, '\nTo HASH160 = ', address_hash160)
-    elif start == 3:
+    if start == 3:
         print ('Инструмент HASH160 для биткойн-адреса')
         hash160 =(str(input('Введите свой HASH160 здесь : ')))
         print ('Скоро не работает')
-    elif start == 4:
+    if start == 4:
         print ('Мозговой кошелек Биткойн Адрес Инструмент')    
         passphrase = (input("Введите пароль ЗДЕСЬ : "))
         wallet = BrainWallet()
@@ -316,17 +316,17 @@ while True:
         print('\nPassphrase     = ',passphrase)
         print('Private Key      = ',private_key)
         print('Bitcoin Address  = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    elif start == 5:
+    if start == 5:
         print('Шестнадцатеричный в десятичный инструмент')
         HEX = str(input('Введите свой шестнадцатеричный HEX здесь : '))
         dec = int(HEX, 16)
         print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec)
-    elif start == 6:
+    if start == 6:
         print('Десятичный в шестнадцатеричный инструмент')
         dec = int(input('Введите свой десятичный DEC здесь : '))
         HEX = "%064x" % dec
         print('\nDecimal = ', dec, '\nTo Hexadecimal = ', HEX)
-    elif start == 7:
+    if start == 7:
         prompthex= '''
     ************************* Hexadecimal to Bitcoin Address Tool ************************* 
     *                                                                                     *
@@ -363,7 +363,7 @@ while True:
                     print(row)
             except:
                 pass
-        elif starthex == 2:
+        if starthex == 2:
             with open("hex.txt", "r") as file:
                 line_count = 0
                 for line in file:
@@ -405,7 +405,7 @@ while True:
                     print('Bitcoin Address Bc1  bech32  = ', bech32, '    Balance = ', get_balance(bech32), ' BTC')
                     time.sleep(1.5)
                     
-    elif start == 8:
+    if start == 8:
         print('Инструмент преобразования десятичного адреса в биткойн')
         dec=int(input('Десятичный Dec (Максимум 115792089237316195423570985008687907852837564279074904382605163141518161494336 ) ->  '))
         HEX = "%064x" % dec  
@@ -431,7 +431,7 @@ while True:
                 print(row)
         except:
             pass
-    elif start == 9:
+    if start == 9:
         print('Мнемоника 12/15/18/21/24 Words to Bitcoin Address Tool')
         wordlist = str(input('Введите свои мнемонические слова = '))
         mnemo = Mnemonic("english")
@@ -440,13 +440,13 @@ while True:
         data_wallet()
         for target_wallet in data:
             print('\nmnemonic_words  : ', mnemonic_words, '\nDerivation Path : ', target_wallet['path'], '\nBitcoin Address : ', target_wallet['address'], ' Balance = ', get_balance(target_wallet['address']), ' BTC', '\nPrivatekey WIF  : ', target_wallet['privatekey'])
-    elif start == 10:
+    if start == 10:
         print('WIF to Bitcoin Address Tool')
         WIF = str(input('Enter Your Wallet Import Format WIF = '))
         addr = Key(WIF).address
         print('\nWallet Import Format WIF = ', WIF)
         print('Bitcoin Address  = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    elif start == 11:
+    if start == 11:
         promptrsz= '''
     ********************** Получить подпись ECDSA R, S, Z инструмент rawtx или txid ********************************* 
     *                                                                                                               *
@@ -460,7 +460,7 @@ while True:
         if startrsz == 1:
             txid = str(input('Введите ваш -txid = ')) #'82e5e1689ee396c8416b94c86aed9f4fe793a0fa2fa729df4a8312a287bc2d5e'
             rawtx = get_rawtx_from_blockchain(txid)
-        elif startrsz == 2:
+        if startrsz == 2:
             rawtx =str(input('Введите ваш -rawtx = ')) #'01000000028370ef64eb83519fd14f9d74826059b4ce00eae33b5473629486076c5b3bf215000000008c4930460221009bf436ce1f12979ff47b4671f16b06a71e74269005c19178384e9d267e50bbe9022100c7eabd8cf796a78d8a7032f99105cdcb1ae75cd8b518ed4efe14247fb00c9622014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffffb0385cd9a933545628469aa1b7c151b85cc4a087760a300e855af079eacd25c5000000008b48304502210094b12a2dd0f59b3b4b84e6db0eb4ba4460696a4f3abf5cc6e241bbdb08163b45022007eaf632f320b5d9d58f1e8d186ccebabea93bad4a6a282a3c472393fe756bfb014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffff01404b4c00000000001976a91402d8103ac969fe0b92ba04ca8007e729684031b088ac00000000'
         else:
             print("НЕПРАВИЛЬНЫЙ НОМЕР!!! ДОЛЖЕН ВЫБРАТЬ 1 - 2 ")
@@ -473,7 +473,7 @@ while True:
 
         for i in range(len(e)):
             print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
-    elif start == 12:
+    if start == 12:
         prompt123= '''
             **************** Инструменты разделения диапазона *********************
             *          Разделить диапазон в битах или байтах                      *
@@ -489,7 +489,7 @@ while True:
             start=2**x
             stop=2**y
             
-        elif promptstart == 2:    
+        if promptstart == 2:    
             start=int(input("начальный диапазон Мин. байт 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
             stop=int(input("диапазон остановки Макс. байт 115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
 
@@ -510,7 +510,7 @@ while True:
                 with open("hex.txt", "a") as f:
                     f.write(f"""\nПроцентов{data_w['percent']} Privatekey (hex): {data_w['HEX']}""")
                     f.close
-        elif display == 2:
+        if display == 2:
             divsion = []
             divsion_wallet()
             for data_w in divsion:
@@ -522,7 +522,7 @@ while True:
         else:
             print("НЕПРАВИЛЬНЫЙ НОМЕР!!! ДОЛЖЕН ВЫБРАТЬ 1 - 2 ")
                 
-    elif start == 13:
+    if start == 13:
         promptchk= '''
     ************************* Биткойн-адреса из файла с проверкой баланса ************************* 
     *                                                                                             *
@@ -558,7 +558,7 @@ while True:
             else:
                 print ('\nНомер сканирования = ',count, ' == Оставшийся = ', remaining)
                 print ('\nBitcoin Address = ', addr, '    Остаток средств = ', get_balance(addr), ' BTC')
-    elif start == 14:
+    if start == 14:
         prompthash= '''
     *********************** Биткойн-адреса из файла в файл HASH160 Инструмент *********************** 
     *                                                                                                *
@@ -591,7 +591,7 @@ while True:
                 skip += 1
                 print ('Total write address>',count, '-skiped address>',skip)
 
-    elif start == 15:
+    if start == 15:
         promptbrain= '''
     *********************** Список кошельков Brain из файла с помощью инструмента проверки баланса ******
     *                                                                                                   *
@@ -635,7 +635,7 @@ while True:
                 print ('\nScan Number = ',count, ' == Оставшиеся пароли = ', remaining)
                 print ('\nBitcoin Address = ', addr, '    Остаток средств = ', get_balance(addr), ' BTC')
                 time.sleep(1.0)
-    elif start == 16:
+    if start == 16:
         promptMnemonic= '''
     *********************** Генератор мнемонических слов Random [Offline] *************************
     *                                                                                             *
@@ -660,13 +660,13 @@ while True:
         R = int(input('Введите количество мнемонических слов 12/15/18/21/24:'))
         if R == 12:
             s1 = 128
-        elif R == 15:
+        if R == 15:
             s1 = 160
-        elif R == 18:
+        if R == 18:
             s1 = 192
-        elif R == 21:
+        if R == 21:
             s1 = 224
-        elif R == 24:
+        if R == 24:
             s1 = 256
         else:
             print("НЕПРАВИЛЬНЫЙ НОМЕР!!! Начиная с 24 слов")
@@ -702,10 +702,10 @@ while True:
                     for bad_wallet in data:
                         print('Derivation Path : ', bad_wallet['path'], ' : Bitcoin Address : ', bad_wallet['address'])
                         print('Privatekey WIF  : ', bad_wallet['privatekey'])
-                elif display == 2:
+                if display == 2:
                     print(' [' + str(count) + '] ------', 'Total Checked [' + str(total) + '] ', end='\r')
 
-    elif start == 17:
+    if start == 17:
         promptrandom= '''
     *********************** Случайное сканирование биткойнов в случайном порядке в Range Tool ***********
     *                                                                                                   *
@@ -762,7 +762,7 @@ while True:
                 if iteration % 10000 == 0:
                     elapsed = time.time() - start_time
                     print(f'It/CPU={iteration} checked={count} Hex={HEX} Keys/Sec={iteration / elapsed:.1f}')
-    elif start == 18:
+    if start == 18:
         promptsequence= '''
     *********************** Биткойн-последовательность Division in Range Tool ***************************
     *                                                                                                   *
@@ -829,10 +829,10 @@ while True:
                     else:
                         if display == 1:
                             print('Сканировать: ', count , ' :Оставшийся: ', str(finish), ' :Всего: ', str(total), end='\r')
-                        elif display == 2:
+                        if display == 2:
                             for bad_wallet in data:
                                 print(bad_wallet['percent'], '\nPrivatekey (hex): ', bad_wallet['HEX'], end='\r')
-                        elif display == 3:
+                        if display == 3:
                             for bad_wallet in data:
                                 print(bad_wallet['percent'])
                                 print('\nPrivatekey (dec): ', bad_wallet['seed'], '\nPrivatekey (hex): ', bad_wallet['HEX'], '\nPrivatekey Uncompressed: ', bad_wallet['wifu'], '\nPrivatekey compressed: ', bad_wallet['wifc'], '\nPublic Address 1 Uncompressed: ', bad_wallet['uaddr'], '\nPublic Address 1 compressed: ', bad_wallet['caddr'], '\nPublic Address 3 P2SH: ', bad_wallet['p2sh'], '\nPublic Address bc1 BECH32: ', bad_wallet['bech32'])
@@ -843,7 +843,7 @@ while True:
                                 
             except(KeyboardInterrupt, SystemExit):
                 exit('\nОбнаружено сочетание клавиш CTRL-C. Выход изящно. Спасибо и удачной охоты')
-    elif start == 19:
+    if start == 19:
         promptinverse= '''
     *********************** Инструмент случайного обратного диапазона биткойнов K ***********************
     *                                                                                                   *
@@ -921,7 +921,7 @@ while True:
                     elapsed = time.time() - start_time
                     addper= round(iteration / elapsed)*8
                     print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
-    elif start == 20:
+    if start == 20:
         promptinversesq= '''
     *********************** Биткойн-последовательность Inverse K Range Tool *****************************
     *                                                                                                   *
@@ -1002,7 +1002,7 @@ while True:
                     print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
         
         
-    elif start == 21:
+    if start == 21:
         promptWIF= '''
     *********************** Биткойн WIF Recovery или инструмент проверки WIF ************************
     *                                                                                               *
@@ -1022,7 +1022,7 @@ while True:
                 first_encode = base58.b58decode(private_key_WIF)
                 private_key_full = binascii.hexlify(first_encode)
                 private_key = private_key_full[2:-8]
-            elif startsingle[0] in ['L', 'K']:
+            if startsingle[0] in ['L', 'K']:
                 private_key_WIF = startsingle
                 first_encode = base58.b58decode(private_key_WIF)
                 private_key_full = binascii.hexlify(first_encode)
@@ -1048,7 +1048,7 @@ while True:
                     first_encode = base58.b58decode(private_key_WIF)
                     private_key_full = binascii.hexlify(first_encode)
                     private_key = private_key_full[2:-8]
-                elif start[0] in ['L', 'K']:
+                if start[0] in ['L', 'K']:
                     private_key_WIF = a + stop
                     first_encode = base58.b58decode(private_key_WIF)
                     private_key_full = binascii.hexlify(first_encode)
@@ -1066,7 +1066,7 @@ while True:
                     f=open('winner.txt','a')
                     f.write('\n Congraz FOUND!!!' + '\nPrivateKey= ' + private_key.decode('utf-8') + '\nCompressed Address = ' + addr + '\nCompressed WIF = ' + wif1 + '\nUncompressed = ' + addr1 + '\nUncompressed WIF = ' + wif)
                     f.close()     
-    elif start == 22:
+    if start == 22:
         promptPUB= '''
     *********************** Биткойн-адреса из файла в инструмент открытого ключа ***********************
     *                                                                                                  *
