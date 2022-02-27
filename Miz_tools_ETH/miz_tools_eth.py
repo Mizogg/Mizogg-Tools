@@ -8,6 +8,7 @@ from hdwallet import HDWallet
 from typing import Optional
 import random, requests
 from hdwallet.symbols import ETH as SYMBOL
+
 api1="?apiKey=freekey"
 api2="?apiKey=freekey"
 
@@ -46,13 +47,13 @@ eth_list = set(eth_list)
 prompt= '''
     ************************ Main Menu Mizogg's ETH Tools *******************
     *                       Single Check Tools                              *
-    *    Option 1.ETH Address with TXS Check                       =  1     *
-    *    Option 2.Hexadecimal to Decimal (HEX 2 DEC)     [Offline] =  2     *
-    *    Option 3.Decimal to Hexadecimal (DEC 2 HEX)     [Offline] =  3     *
-    *    Option 4.Mnemonic Words to dec and hex          [Offline]  = 4     *
+    *    Option 1.ETH Address with TXS Check         [Internet required]= 1 *
+    *    Option 2.Hexadecimal to Decimal (HEX 2 DEC) [Internet required]= 2 *
+    *    Option 3.Decimal to Hexadecimal (DEC 2 HEX) [Internet required]= 3 *
+    *    Option 4.Mnemonic Words to dec and hex      [Internet required]= 4 *
     *                    Generators & Multi Check Tools                     *
     *                                                                       *
-    *    Option 5.Mnemonic Words Generator Random Choice [Offline]  = 5     *    
+    *    Option 5.Mnemonic Words Generator Random Choice [Offline]  = 5     *
     *                                                                       *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4            *
     ************** Main Menu Mizogg's ETH Tools made in Python **************
@@ -114,20 +115,40 @@ while True:
     elif start ==4:
         promptword= '''
     ************************* Mnemonic Words 12/15/18/21/24 tool ************************* 
-    *                                                                                                   *
-    *    1-OWN WORDS to DEC & HEX with TX Check [Internet required]                                     *
-    *    2-Generated WORDS to DEC & HEX with TX Check [Internet required]                               *
-    *    Type 1-2 to Start                                                                              *
-    *                                                                                                   *
+    *                                                                                    *
+    *    1-OWN WORDS to DEC & HEX with TX Check [Internet required]                      *
+    *    2-Generated WORDS to DEC & HEX with TX Check [Internet required]                *
+    *    Type 1-2 to Start                                                               *
+    *                                                                                    *
     ************************* Mnemonic Words 12/15/18/21/24 tool *************************
         '''
         startwords=int(input(promptword))
         if startwords == 1:
             MNEMONIC: str = input(' Type your Own Words Here = ')
+            Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+            if Lang == 1:
+                Lang1 = "english"
+            elif Lang == 2:
+                Lang1 = "french"
+            elif Lang == 3:
+                Lang1 = "italian"
+            elif Lang == 4:
+                Lang1 = "spanish"
+            elif Lang == 5:
+                Lang1 = "chinese_simplified"
+            elif Lang == 6:
+                Lang1 = "chinese_traditional"
+            elif Lang == 7:
+                Lang1 = "japanese"
+            elif Lang == 8:
+                Lang1 = "korean"
+            else:
+                print("WRONG NUMBER!!! Starting with english")
+                Lang1 = "english"
             PASSPHRASE: Optional[str] = None
             bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
             bip44_hdwallet.from_mnemonic(
-                mnemonic=MNEMONIC, language="english", passphrase=PASSPHRASE
+                mnemonic=MNEMONIC, language=Lang1, passphrase=PASSPHRASE
             )
             bip44_hdwallet.clean_derivation()
             mnemonic_words = bip44_hdwallet.mnemonic()
@@ -156,11 +177,31 @@ while True:
             else:
                 print("WRONG NUMBER!!! Starting with 24 Words")
                 s1 = 256
-            MNEMONIC: str = generate_mnemonic(language="english", strength=s1)
+            Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+            if Lang == 1:
+                Lang1 = "english"
+            elif Lang == 2:
+                Lang1 = "french"
+            elif Lang == 3:
+                Lang1 = "italian"
+            elif Lang == 4:
+                Lang1 = "spanish"
+            elif Lang == 5:
+                Lang1 = "chinese_simplified"
+            elif Lang == 6:
+                Lang1 = "chinese_traditional"
+            elif Lang == 7:
+                Lang1 = "japanese"
+            elif Lang == 8:
+                Lang1 = "korean"
+            else:
+                print("WRONG NUMBER!!! Starting with english")
+                Lang1 = "english"
+            MNEMONIC: str = generate_mnemonic(language=Lang1, strength=s1)
             PASSPHRASE: Optional[str] = None
             bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
             bip44_hdwallet.from_mnemonic(
-                mnemonic=MNEMONIC, language="english", passphrase=PASSPHRASE
+                mnemonic=MNEMONIC, language=Lang1, passphrase=PASSPHRASE
             )
             bip44_hdwallet.clean_derivation()
             mnemonic_words = bip44_hdwallet.mnemonic()
@@ -191,17 +232,37 @@ while True:
             print("WRONG NUMBER!!! Starting with 24 Words")
             s1 = 256
         divs = int(input("How Many Derivation Paths? m/44'/60'/0'/0/0/ to m/44'/60'/0'/0/???? -> "))
+        Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+        if Lang == 1:
+            Lang1 = "english"
+        elif Lang == 2:
+            Lang1 = "french"
+        elif Lang == 3:
+            Lang1 = "italian"
+        elif Lang == 4:
+            Lang1 = "spanish"
+        elif Lang == 5:
+            Lang1 = "chinese_simplified"
+        elif Lang == 6:
+            Lang1 = "chinese_traditional"
+        elif Lang == 7:
+            Lang1 = "japanese"
+        elif Lang == 8:
+            Lang1 = "korean"
+        else:
+            print("WRONG NUMBER!!! Starting with english")
+            Lang1 = "english"
         display = int(input('1=Full Display (Slower) 2=Slient Mode (Faster) : '))
         while True:
             data=[]
             count += 1
             total += divs
             #MNEMONIC: str = 'manual resource salon small metal twist cloth curtain into banner steel bonus'
-            MNEMONIC: str = generate_mnemonic(language="english", strength=s1)
+            MNEMONIC: str = generate_mnemonic(language=Lang1, strength=s1)
             PASSPHRASE: Optional[str] = None
             bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
             bip44_hdwallet.from_mnemonic(
-                mnemonic=MNEMONIC, language="english", passphrase=PASSPHRASE
+                mnemonic=MNEMONIC, language=Lang1, passphrase=PASSPHRASE
             )
             bip44_hdwallet.clean_derivation()
             mnemonic_words = bip44_hdwallet.mnemonic()
@@ -212,12 +273,12 @@ while True:
                     print('\nMatch Found')
                     print('\nmnemonic_words  : ', mnemonic_words)
                     print('Derivation Path : ', target_wallet['path'], ' : ETH Address : ', target_wallet['address'])
-                    print('Privatekey  : 0x', target_wallet['privatekey'])
+                    print('Privatekey  : ', target_wallet['privatekey'])
                     print('Privatekey DEC : ', target_wallet['privatedec'])
                     with open("winner.txt", "a") as f:
                         f.write(f"""\nMnemonic_words:  {mnemonic_words}
                         Derivation Path:  {target_wallet['path']}
-                        Privatekey :  0x{target_wallet['privatekey']}
+                        Privatekey : {target_wallet['privatekey']}
                         Public Address ETH:  {target_wallet['address']}
                         =====Made by mizogg.co.uk Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 =====""")
             else:
@@ -227,7 +288,7 @@ while True:
                     print('\nmnemonic_words  : ', mnemonic_words)
                     for bad_wallet in data:
                         print('Derivation Path : ', bad_wallet['path'], ' : ETH Address : ', bad_wallet['address'])
-                        print('Privatekey : 0x', bad_wallet['privatekey'])
+                        print('Privatekey : ', bad_wallet['privatekey'])
                         print('Privatekey DEC : ', bad_wallet['privatedec'])
                 elif display == 2:
                     print(' [' + str(count) + '] ------', 'Total Checked [' + str(total) + '] ', end='\r')
