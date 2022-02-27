@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 8 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
+Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 9 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
 22 Bitcoin Tools
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
@@ -320,12 +320,16 @@ while True:
         print('Hexadecimal to Decimal Tool')
         HEX = str(input('Enter Your Hexadecimal HEX Here : '))
         dec = int(HEX, 16)
-        print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec)
+        length = len(bin(dec))
+        length -=2
+        print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec, '  bits ', length)
     elif start == 6:
         print('Decimal to Hexadecimal Tool')
         dec = int(input('Enter Your Decimal DEC Here : '))
         HEX = "%064x" % dec
-        print('\nDecimal = ', dec, '\nTo Hexadecimal = ', HEX)
+        length = len(bin(dec))
+        length -=2
+        print('\nDecimal = ', dec, '  bits ', length, '\nTo Hexadecimal = ', HEX)
     elif start == 7:
         prompthex= '''
     ************************* Hexadecimal to Bitcoin Address Tool ************************* 
@@ -434,7 +438,27 @@ while True:
     elif start == 9:
         print('Mnemonic 12/15/18/21/24 Words to Bitcoin Address Tool')
         wordlist = str(input('Enter Your Mnemonic Words = '))
-        mnemo = Mnemonic("english")
+        Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+        if Lang == 1:
+            Lang1 = "english"
+        elif Lang == 2:
+            Lang1 = "french"
+        elif Lang == 3:
+            Lang1 = "italian"
+        elif Lang == 4:
+            Lang1 = "spanish"
+        elif Lang == 5:
+            Lang1 = "chinese_simplified"
+        elif Lang == 6:
+            Lang1 = "chinese_traditional"
+        elif Lang == 7:
+            Lang1 = "japanese"
+        elif Lang == 8:
+            Lang1 = "korean"
+        else:
+            print("WRONG NUMBER!!! Starting with english")
+            Lang1 = "english"
+        mnemo = Mnemonic(Lang1)
         mnemonic_words = wordlist
         seed = mnemo.to_seed(mnemonic_words, passphrase="")
         data_wallet()
@@ -452,27 +476,59 @@ while True:
     *                                                                                                   *
     *    1-txid  blockchain API R,S,Z calculation starts. [Internet required]                           *
     *    2-rawtx R,S,Z,Pubkey for each of the inputs present in the rawtx data. [No Internet required]  *
-    *    Type 1-2 to Start                                                                              *
+    *    3-txid  blockchain API R,S,Z from transaction List [Internet required]                         *
+    *    Type 1-3 to Start                                                                              *
     *                                                                                                   *
     ************************* Retrieve ECDSA signature R,S,Z rawtx or txid tool *************************
         '''
         startrsz=int(input(promptrsz))
         if startrsz == 1:
-            txid = str(input('Enter Your -txid = ')) #'82e5e1689ee396c8416b94c86aed9f4fe793a0fa2fa729df4a8312a287bc2d5e'
-            rawtx = get_rawtx_from_blockchain(txid)
+            txid = input(str('Type your txid here = ')) #'82e5e1689ee396c8416b94c86aed9f4fe793a0fa2fa729df4a8312a287bc2d5e'
+            rawtx = ''
+            if rawtx == '':
+                rawtx = get_rawtx_from_blockchain(txid)
+                print('\nStarting Program...')
+
+                m = parseTx(rawtx)
+                e = getSignableTxn(m)
+
+                for i in range(len(e)):
+                    print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
+                    f=open('file.txt','a')
+                    f.write(f'{e[i][0]},{e[i][1]},{e[i][2]}\n')
+                    f.close
         elif startrsz == 2:
-            rawtx =str(input('Enter Your -rawtx = ')) #'01000000028370ef64eb83519fd14f9d74826059b4ce00eae33b5473629486076c5b3bf215000000008c4930460221009bf436ce1f12979ff47b4671f16b06a71e74269005c19178384e9d267e50bbe9022100c7eabd8cf796a78d8a7032f99105cdcb1ae75cd8b518ed4efe14247fb00c9622014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffffb0385cd9a933545628469aa1b7c151b85cc4a087760a300e855af079eacd25c5000000008b48304502210094b12a2dd0f59b3b4b84e6db0eb4ba4460696a4f3abf5cc6e241bbdb08163b45022007eaf632f320b5d9d58f1e8d186ccebabea93bad4a6a282a3c472393fe756bfb014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffff01404b4c00000000001976a91402d8103ac969fe0b92ba04ca8007e729684031b088ac00000000'
+            rawtx = input(str('Type your rawtx here = ')) #'01000000028370ef64eb83519fd14f9d74826059b4ce00eae33b5473629486076c5b3bf215000000008c4930460221009bf436ce1f12979ff47b4671f16b06a71e74269005c19178384e9d267e50bbe9022100c7eabd8cf796a78d8a7032f99105cdcb1ae75cd8b518ed4efe14247fb00c9622014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffffb0385cd9a933545628469aa1b7c151b85cc4a087760a300e855af079eacd25c5000000008b48304502210094b12a2dd0f59b3b4b84e6db0eb4ba4460696a4f3abf5cc6e241bbdb08163b45022007eaf632f320b5d9d58f1e8d186ccebabea93bad4a6a282a3c472393fe756bfb014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffff01404b4c00000000001976a91402d8103ac969fe0b92ba04ca8007e729684031b088ac00000000'
+            print('\nStarting Program...')
+            m = parseTx(rawtx)
+            e = getSignableTxn(m)
+            for i in range(len(e)):
+                print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
+                f=open('file.txt','a')
+                f.write(f'{e[i][0]},{e[i][1]},{e[i][2]}\n')
+                f.close
+        elif startrsz == 3:
+            mylist = []
+            with open('trans.txt', newline='', encoding='utf-8') as f:
+                for line in f:
+                    mylist.append(line.strip())
+                    print('\nStarting Program...')
+                    for x in range(0,len(mylist)):
+                        txid = mylist[x]
+                        rawtx = ''
+                    if rawtx == '':
+                        rawtx = get_rawtx_from_blockchain(txid)
+
+                        m = parseTx(rawtx)
+                        e = getSignableTxn(m)
+                        for i in range(len(e)):
+                            print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
+                            f=open('file.txt','a')
+                            f.write(f'{e[i][0]},{e[i][1]},{e[i][2]}\n')
+                            f.close
         else:
-            print("WRONG NUMBER!!! MUST CHOSE 1 - 2 ")
-            break
+            print("WRONG NUMBER!!! MUST CHOSE 1 - 3 ")
 
-        print('\nStarting Program...')
-
-        m = parseTx(rawtx)
-        e = getSignableTxn(m)
-
-        for i in range(len(e)):
-            print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
     elif start == 12:
         prompt123= '''
             ************************ Range Division Tools ***************************
@@ -671,12 +727,32 @@ while True:
         else:
             print("WRONG NUMBER!!! Starting with 24 Words")
             s1 = 256
+        Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+        if Lang == 1:
+            Lang1 = "english"
+        elif Lang == 2:
+            Lang1 = "french"
+        elif Lang == 3:
+            Lang1 = "italian"
+        elif Lang == 4:
+            Lang1 = "spanish"
+        elif Lang == 5:
+            Lang1 = "chinese_simplified"
+        elif Lang == 6:
+            Lang1 = "chinese_traditional"
+        elif Lang == 7:
+            Lang1 = "japanese"
+        elif Lang == 8:
+            Lang1 = "korean"
+        else:
+            print("WRONG NUMBER!!! Starting with english")
+            Lang1 = "english"
         display = int(input('1=Full Display (Slower) 2=Slient Mode (Faster) : '))
         while True:
             data=[]
             count += 1
             total += 20
-            mnemo = Mnemonic("english")
+            mnemo = Mnemonic(Lang1)
             mnemonic_words = mnemo.generate(strength=s1)
             seed = mnemo.to_seed(mnemonic_words, passphrase="")
             entropy = mnemo.to_entropy(mnemonic_words)
@@ -1100,4 +1176,3 @@ while True:
         myfile.close()
     else:
         print("WRONG NUMBER!!! MUST CHOSE 1 - 22 ")
-        break
