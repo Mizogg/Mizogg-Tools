@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_bit.py Version 6 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
+Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_bit.py Version 7 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
  23 Bitcoin Tools
 Using Bit Library made in Python
 https://mizogg.co.uk
@@ -303,12 +303,16 @@ while True:
         print('Hexadecimal to Decimal Tool')
         HEX = str(input('Enter Your Hexadecimal HEX Here : '))
         dec = int(HEX, 16)
-        print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec)
+        length = len(bin(dec))
+        length -=2
+        print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec, '  bits ', length)
     elif start == 6:
         print('Decimal to Hexadecimal Tool')
         dec = int(input('Enter Your Decimal DEC Here : '))
         HEX = "%064x" % dec
-        print('\nDecimal = ', dec, '\nTo Hexadecimal = ', HEX)
+        length = len(bin(dec))
+        length -=2
+        print('\nDecimal = ', dec, '  bits ', length, '\nTo Hexadecimal = ', HEX)
     elif start == 7:
         prompthex= '''
     ************************* Hexadecimal to Bitcoin Address Tool ************************* 
@@ -412,7 +416,27 @@ while True:
     elif start == 9:
         print('Mnemonic 12/15/18/21/24 Words to Bitcoin Address Tool')
         wordlist = str(input('Enter Your Mnemonic Words = '))
-        mnemo = Mnemonic("english")
+        Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+        if Lang == 1:
+            Lang1 = "english"
+        elif Lang == 2:
+            Lang1 = "french"
+        elif Lang == 3:
+            Lang1 = "italian"
+        elif Lang == 4:
+            Lang1 = "spanish"
+        elif Lang == 5:
+            Lang1 = "chinese_simplified"
+        elif Lang == 6:
+            Lang1 = "chinese_traditional"
+        elif Lang == 7:
+            Lang1 = "japanese"
+        elif Lang == 8:
+            Lang1 = "korean"
+        else:
+            print("WRONG NUMBER!!! Starting with english")
+            Lang1 = "english"
+        mnemo = Mnemonic(Lang1)
         mnemonic_words = wordlist
         seed = mnemo.to_seed(mnemonic_words, passphrase="")
         data_wallet()
@@ -712,12 +736,32 @@ while True:
         else:
             print("WRONG NUMBER!!! Starting with 24 Words")
             s1 = 256
+        Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+        if Lang == 1:
+            Lang1 = "english"
+        elif Lang == 2:
+            Lang1 = "french"
+        elif Lang == 3:
+            Lang1 = "italian"
+        elif Lang == 4:
+            Lang1 = "spanish"
+        elif Lang == 5:
+            Lang1 = "chinese_simplified"
+        elif Lang == 6:
+            Lang1 = "chinese_traditional"
+        elif Lang == 7:
+            Lang1 = "japanese"
+        elif Lang == 8:
+            Lang1 = "korean"
+        else:
+            print("WRONG NUMBER!!! Starting with english")
+            Lang1 = "english"
         display = int(input('1=Full Display (Slower) 2=Slient Mode (Faster) : '))
         while True:
             data=[]
             count += 1
             total += 20
-            mnemo = Mnemonic("english")
+            mnemo = Mnemonic(Lang1)
             mnemonic_words = mnemo.generate(strength=s1)
             seed = mnemo.to_seed(mnemonic_words, passphrase="")
             entropy = mnemo.to_entropy(mnemonic_words)
