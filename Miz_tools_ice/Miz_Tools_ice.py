@@ -631,7 +631,7 @@ while True:
         promptchk= '''
     ************************* Bitcoin Addresses from file with Balance Check ************************* 
     *                                                                                                *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses                   *
+    *    ** This Tool needs a file called btc.txt with a list of Bitcoin Addresses                   *
     *    ** Your list of addresses will be check for Balance [Internet required]                     *
     *    ** ANY BITCOIN WALLETS FOUND WITH BALANCE WILL BE SAVE TO (balance.txt)                     *
     *                                                                                                *
@@ -667,7 +667,7 @@ while True:
         prompthash= '''
     *********************** Bitcoin Addresses from file to HASH160 file Tool ************************* 
     *                                                                                                *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses                   *
+    *    ** This Tool needs a file called btc.txt with a list of Bitcoin Addresses                   *
     *    ** Your list of addresses will be converted to HASH160 [NO Internet required]               *
     *    ** HASH160 Addressess will be saved to a file called base_h160_1_bc1.txt & base_h160_3.txt  *
     *                                                                                                *
@@ -744,7 +744,7 @@ while True:
         promptMnemonic= '''
     *********************** Mnemonic Words Generator Random [Offline] *****************************
     *                                                                                             *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database       *
+    *    ** This Tool needs a file called btc.txt with a list of Bitcoin Addresses Database       *
     *    ** ANY MNEMONIC WORDS FOUND THAT MATCH BTC DATABASE WILL SAVE TO  (winner.txt)           *
     *                                                                                             *
     *********************** Mnemonic Words Generator Random  [Offline] ****************************
@@ -835,7 +835,7 @@ while True:
     *********************** Bitcoin random scan randomly in Range Tool ************************
     *                                                                                         *
     *    ** Bitcoin random scan randomly in Range [Offline]                                   *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database   *
+    *    ** This Tool needs a file called btc.txt with a list of Bitcoin Addresses Database   *
     *    ** ANY MATCHING WALLETS GENERATED THAT MATCH BTC DATABASE WILL SAVE TO(winner.txt)   *
     *                                                                                         *
     **************[+] Starting.........Please Wait.....Bitcoin Address List Loading.....*******
@@ -892,7 +892,7 @@ while True:
     *********************** Bitcoin sequence Divison in Range Tool ************************
     *                                                                                         *
     *    ** Bitcoin sequence & Range Divison by 1%-1000000%                                   *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database   *
+    *    ** This Tool needs a file called btc.txt with a list of Bitcoin Addresses Database   *
     *    ** ANY MATCHING WALLETS GENERATED THAT MATCH BTC DATABASE WILL SAVE TO(winner.txt)   *
     *                                                                                         *
     **************[+] Starting.........Please Wait.....Bitcoin Address List Loading.....*******
@@ -974,7 +974,7 @@ while True:
     *********************** Bitcoin Random Inverse K Range Tool *******************************
     *                                                                                         *
     *    ** Bitcoin Random Inverse K Range                                                    *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database   *
+    *    ** This Tool needs a file called btc.txt with a list of Bitcoin Addresses Database   *
     *    ** ANY MATCHING WALLETS GENERATED THAT MATCH BTC DATABASE WILL SAVE TO(winner.txt)   *
     *                                                                                         *
     **************[+] Starting.........Please Wait.....Bitcoin Address List Loading.....*******
@@ -1052,7 +1052,7 @@ while True:
     *********************** Bitcoin sequence Inverse K Range Tool *****************************
     *                                                                                         *
     *    ** Bitcoin sequence Inverse K Range                                                  *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses Database   *
+    *    ** This Tool needs a file called btc.txt with a list of Bitcoin Addresses Database   *
     *    ** ANY MATCHING WALLETS GENERATED THAT MATCH BTC DATABASE WILL SAVE TO(winner.txt)   *
     *                                                                                         *
     **************[+] Starting.........Please Wait.....Bitcoin Address List Loading.....*******
@@ -1196,7 +1196,7 @@ while True:
         promptPUB= '''
     *********************** Bitcoin Addresses from file to Public Key Tool ********************
     *                                                                                         *
-    *    ** This Tool needs a file called bct.txt with a list of Bitcoin Addresses            *
+    *    ** This Tool needs a file called btc.txt with a list of Bitcoin Addresses            *
     *    ** Your list of addresses will be check for Known Public keys [Internet required]    *
     *    ** ANY BITCOIN ADDRESS WITH A PUBLIC KEY WILL BE SAVE TO (pubkeys.txt)               *
     *                                                                                         *
