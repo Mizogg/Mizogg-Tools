@@ -1206,4 +1206,3 @@ while True:
             f.close()
     else:
         print("WRONG NUMBER!!! MUST CHOSE 1 - 23 ")
-        break
