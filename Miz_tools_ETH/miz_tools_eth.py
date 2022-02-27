@@ -4,9 +4,10 @@ from hdwallet import BIP44HDWallet
 from hdwallet.cryptocurrencies import EthereumMainnet
 from hdwallet.derivations import BIP44Derivation
 from hdwallet.utils import generate_mnemonic
+from hdwallet import HDWallet
 from typing import Optional
 import random, requests
-
+from hdwallet.symbols import ETH as SYMBOL
 api1="?apiKey=freekey"
 api2="?apiKey=freekey"
 
@@ -28,8 +29,10 @@ def data_wallet():
                 'path': bip44_hdwallet.path(),
                 'address': bip44_hdwallet.address(),
                 'privatekey': bip44_hdwallet.private_key(),
+                'privatedec': int(bip44_hdwallet.private_key(), 16),
             })
         bip44_hdwallet.clean_derivation()
+
 
 filename ='eth.txt'
 with open(filename) as f:
@@ -46,15 +49,15 @@ prompt= '''
     *    Option 1.ETH Address with TXS Check                       =  1     *
     *    Option 2.Hexadecimal to Decimal (HEX 2 DEC)     [Offline] =  2     *
     *    Option 3.Decimal to Hexadecimal (DEC 2 HEX)     [Offline] =  3     *
-    *                                                                       *
+    *    Option 4.Mnemonic Words to dec and hex          [Offline]  = 4     *
     *                    Generators & Multi Check Tools                     *
     *                                                                       *
-    *    Option 4.Mnemonic Words Generator Random Choice [Offline]  = 4     *    
+    *    Option 5.Mnemonic Words Generator Random Choice [Offline]  = 5     *    
     *                                                                       *
     *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4            *
     ************** Main Menu Mizogg's ETH Tools made in Python **************
 
-Type You Choice Here Enter 1-4 : 
+Type You Choice Here Enter 1-5 : 
 '''
 
 while True:
@@ -71,12 +74,107 @@ while True:
         print('Hexadecimal to Decimal Tool')
         HEX = str(input('Enter Your Hexadecimal HEX Here : '))
         dec = int(HEX, 16)
-        print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec)
+        length = len(bin(dec))
+        length -=2
+        PRIVATE_KEY = "%064x" % dec
+        hdwallet: HDWallet = HDWallet(symbol=SYMBOL)
+        hdwallet.from_private_key(private_key=PRIVATE_KEY)
+        ethadd = hdwallet.p2pkh_address()
+        print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec, '  bits ', length)
+        print("Cryptocurrency:", hdwallet.cryptocurrency())
+        print("Symbol:", hdwallet.symbol())
+        print("Network:", hdwallet.network())
+        print("Uncompressed:", hdwallet.uncompressed())
+        print("Compressed:", hdwallet.compressed())
+        print("Private Key:", hdwallet.private_key())
+        print("Public Key:", hdwallet.public_key())
+        print("Finger Print:", hdwallet.finger_print())
+        print("Hash:", hdwallet.hash())
+        print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
     elif start == 3:
         print('Decimal to Hexadecimal Tool')
         dec = int(input('Enter Your Decimal DEC Here : '))
-        HEX = "%064x" % dec       
+        HEX = "%064x" % dec
+        length = len(bin(dec))
+        length -=2
+        hdwallet: HDWallet = HDWallet(symbol=SYMBOL)
+        hdwallet.from_private_key(private_key=HEX)
+        ethadd = hdwallet.p2pkh_address()
+        print('\nDecimal = ', dec, '  bits ', length, '\nTo Hexadecimal = ', HEX)
+        print("Cryptocurrency:", hdwallet.cryptocurrency())
+        print("Symbol:", hdwallet.symbol())
+        print("Network:", hdwallet.network())
+        print("Uncompressed:", hdwallet.uncompressed())
+        print("Compressed:", hdwallet.compressed())
+        print("Private Key:", hdwallet.private_key())
+        print("Public Key:", hdwallet.public_key())
+        print("Finger Print:", hdwallet.finger_print())
+        print("Hash:", hdwallet.hash())
+        print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
     elif start ==4:
+        promptword= '''
+    ************************* Mnemonic Words 12/15/18/21/24 tool ************************* 
+    *                                                                                                   *
+    *    1-OWN WORDS to DEC & HEX with TX Check [Internet required]                                     *
+    *    2-Generated WORDS to DEC & HEX with TX Check [Internet required]                               *
+    *    Type 1-2 to Start                                                                              *
+    *                                                                                                   *
+    ************************* Mnemonic Words 12/15/18/21/24 tool *************************
+        '''
+        startwords=int(input(promptword))
+        if startwords == 1:
+            MNEMONIC: str = input(' Type your Own Words Here = ')
+            PASSPHRASE: Optional[str] = None
+            bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
+            bip44_hdwallet.from_mnemonic(
+                mnemonic=MNEMONIC, language="english", passphrase=PASSPHRASE
+            )
+            bip44_hdwallet.clean_derivation()
+            mnemonic_words = bip44_hdwallet.mnemonic()
+            ethadd = bip44_hdwallet.address()
+            HEX = bip44_hdwallet.private_key()
+            dec = int(bip44_hdwallet.private_key(), 16)
+            length = len(bin(dec))
+            length -=2
+            print('\nmnemonic_words  : ', mnemonic_words)
+            print('\nPrivatekey (dec): ', dec, '  bits ', length, '\nPrivatekey (hex): ', HEX)
+            print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
+
+        if startwords == 2:
+            print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
+            R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
+            if R == 12:
+                s1 = 128
+            elif R == 15:
+                s1 = 160
+            elif R == 18:
+                s1 = 192
+            elif R == 21:
+                s1 = 224
+            elif R == 24:
+                s1 = 256
+            else:
+                print("WRONG NUMBER!!! Starting with 24 Words")
+                s1 = 256
+            MNEMONIC: str = generate_mnemonic(language="english", strength=s1)
+            PASSPHRASE: Optional[str] = None
+            bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
+            bip44_hdwallet.from_mnemonic(
+                mnemonic=MNEMONIC, language="english", passphrase=PASSPHRASE
+            )
+            bip44_hdwallet.clean_derivation()
+            mnemonic_words = bip44_hdwallet.mnemonic()
+            ethadd = bip44_hdwallet.address()
+            HEX = bip44_hdwallet.private_key()
+            dec = int(bip44_hdwallet.private_key(), 16)
+            length = len(bin(dec))
+            length -=2
+            print('\nmnemonic_words  : ', mnemonic_words)
+            print('\nPrivatekey (dec): ', dec, '  bits ', length, '\nPrivatekey (hex): ', HEX)
+            print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
+            
+        
+    elif start ==5:
         print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
         R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
         if R == 12:
@@ -115,6 +213,7 @@ while True:
                     print('\nmnemonic_words  : ', mnemonic_words)
                     print('Derivation Path : ', target_wallet['path'], ' : ETH Address : ', target_wallet['address'])
                     print('Privatekey  : 0x', target_wallet['privatekey'])
+                    print('Privatekey DEC : ', target_wallet['privatedec'])
                     with open("winner.txt", "a") as f:
                         f.write(f"""\nMnemonic_words:  {mnemonic_words}
                         Derivation Path:  {target_wallet['path']}
@@ -129,7 +228,8 @@ while True:
                     for bad_wallet in data:
                         print('Derivation Path : ', bad_wallet['path'], ' : ETH Address : ', bad_wallet['address'])
                         print('Privatekey : 0x', bad_wallet['privatekey'])
+                        print('Privatekey DEC : ', bad_wallet['privatedec'])
                 elif display == 2:
                     print(' [' + str(count) + '] ------', 'Total Checked [' + str(total) + '] ', end='\r')
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 4 ")
+        print("WRONG NUMBER!!! MUST CHOSE 1 - 5 ")
