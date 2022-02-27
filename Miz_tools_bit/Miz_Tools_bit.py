@@ -414,34 +414,83 @@ while True:
         except:
             pass
     elif start == 9:
-        print('Mnemonic 12/15/18/21/24 Words to Bitcoin Address Tool')
-        wordlist = str(input('Enter Your Mnemonic Words = '))
-        Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
-        if Lang == 1:
-            Lang1 = "english"
-        elif Lang == 2:
-            Lang1 = "french"
-        elif Lang == 3:
-            Lang1 = "italian"
-        elif Lang == 4:
-            Lang1 = "spanish"
-        elif Lang == 5:
-            Lang1 = "chinese_simplified"
-        elif Lang == 6:
-            Lang1 = "chinese_traditional"
-        elif Lang == 7:
-            Lang1 = "japanese"
-        elif Lang == 8:
-            Lang1 = "korean"
-        else:
-            print("WRONG NUMBER!!! Starting with english")
-            Lang1 = "english"
-        mnemo = Mnemonic(Lang1)
-        mnemonic_words = wordlist
+        promptword= '''
+    ************************* Mnemonic Words 12/15/18/21/24 tool ************************* 
+    *                                                                                    *
+    *    1-OWN Words to Bitcoin with Balance Check [Internet required]                   *
+    *    2-Generated Words to Bitcoin with Balance Check [Internet required]             *
+    *    Type 1-2 to Start                                                               *
+    *                                                                                    *
+    ************************* Mnemonic Words 12/15/18/21/24 tool *************************
+        '''
+        startwords=int(input(promptword))
+        if startwords == 1:
+            print('Mnemonic 12/15/18/21/24 Words to Bitcoin Address Tool')
+            wordlist = str(input('Enter Your Mnemonic Words = '))
+            Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+            if Lang == 1:
+                Lang1 = "english"
+            elif Lang == 2:
+                Lang1 = "french"
+            elif Lang == 3:
+                Lang1 = "italian"
+            elif Lang == 4:
+                Lang1 = "spanish"
+            elif Lang == 5:
+                Lang1 = "chinese_simplified"
+            elif Lang == 6:
+                Lang1 = "chinese_traditional"
+            elif Lang == 7:
+                Lang1 = "japanese"
+            elif Lang == 8:
+                Lang1 = "korean"
+            else:
+                print("WRONG NUMBER!!! Starting with english")
+                Lang1 = "english"
+            mnemo = Mnemonic(Lang1)
+            mnemonic_words = wordlist
+        if startwords == 2:
+            print('Mnemonic 12/15/18/21/24 Words to Bitcoin Address Tool')
+            R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
+            if R == 12:
+                s1 = 128
+            elif R == 15:
+                s1 = 160
+            elif R == 18:
+                s1 = 192
+            elif R == 21:
+                s1 = 224
+            elif R == 24:
+                s1 = 256
+            else:
+                print("WRONG NUMBER!!! Starting with 24 Words")
+                s1 = 256
+            Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+            if Lang == 1:
+                Lang1 = "english"
+            elif Lang == 2:
+                Lang1 = "french"
+            elif Lang == 3:
+                Lang1 = "italian"
+            elif Lang == 4:
+                Lang1 = "spanish"
+            elif Lang == 5:
+                Lang1 = "chinese_simplified"
+            elif Lang == 6:
+                Lang1 = "chinese_traditional"
+            elif Lang == 7:
+                Lang1 = "japanese"
+            elif Lang == 8:
+                Lang1 = "korean"
+            else:
+                print("WRONG NUMBER!!! Starting with english")
+                Lang1 = "english"
+            mnemo = Mnemonic(Lang1)
+            mnemonic_words = mnemo.generate(strength=s1)
         seed = mnemo.to_seed(mnemonic_words, passphrase="")
         data_wallet()
         for target_wallet in data:
-            print('\nmnemonic_words  : ', mnemonic_words, '\nDerivation Path : ', target_wallet['path'], '\nBitcoin Address : ', target_wallet['address'], ' Balance = ', get_balance(target_wallet['address']), ' BTC', '\nPrivatekey WIF  : ', target_wallet['privatekey'])    
+            print('\nmnemonic_words  : ', mnemonic_words, '\nDerivation Path : ', target_wallet['path'], '\nBitcoin Address : ', target_wallet['address'], ' Balance = ', get_balance(target_wallet['address']), ' BTC', '\nPrivatekey WIF  : ', target_wallet['privatekey'])
     elif start == 10:
         print('WIF to Bitcoin Address Tool')
         WIF = str(input('Enter Your Wallet Import Format WIF = '))
