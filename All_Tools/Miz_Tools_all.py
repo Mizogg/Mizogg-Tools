@@ -321,17 +321,17 @@ while True:
         print ('Address Balance Check Tool')
         addr = str(input('Enter Your Bitcoin Address Here : '))
         print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    if start == 2:
+    elif start == 2:
         print ('Address to HASH160 Tool')
         addr = str(input('Enter Your Bitcoin Address Here : '))
         hash160=b58decode_check(addr)
         address_hash160 = bytes_to_hex(hash160)[2:]
         print ('\nBitcoin Address = ', addr, '\nTo HASH160 = ', address_hash160)
-    if start == 3:
+    elif start == 3:
         print ('HASH160 to Bitcoin Address Tool')
         hash160 =(str(input('Enter Your HASH160 Here : ')))
         print ('Coming Soon not Working')
-    if start == 4:
+    elif start == 4:
         print ('Brain Wallet Bitcoin Address Tool')    
         passphrase = (input("'Type Your Passphrase HERE : "))
         wallet = BrainWallet()
@@ -339,21 +339,21 @@ while True:
         print('\nPassphrase     = ',passphrase)
         print('Private Key      = ',private_key)
         print('Bitcoin Address  = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    if start == 5:
+    elif start == 5:
         print('Hexadecimal to Decimal Tool')
         HEX = str(input('Enter Your Hexadecimal HEX Here : '))
         dec = int(HEX, 16)
         length = len(bin(dec))
         length -=2
         print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec, '  bits ', length)
-    if start == 6:
+    elif start == 6:
         print('Decimal to Hexadecimal Tool')
         dec = int(input('Enter Your Decimal DEC Here : '))
         HEX = "%064x" % dec
         length = len(bin(dec))
         length -=2
         print('\nDecimal = ', dec, '  bits ', length, '\nTo Hexadecimal = ', HEX)
-    if start == 7:
+    elif start == 7:
         prompthex= '''
     ************************* Hexadecimal to Bitcoin Address Tool ************************* 
     *                                                                                     *
@@ -427,7 +427,7 @@ while True:
                     print('Bitcoin Address Compressed   = ', caddr, '    Balance = ', get_balance(caddr), ' BTC')
                     print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
                     time.sleep(1.5)
-    if start == 8:
+    elif start == 8:
         print('Decimal to Bitcoin Address Tool')
         dec=int(input('Decimal Dec (Max 115792089237316195423570985008687907852837564279074904382605163141518161494336 ) ->  '))
         HEX = "%064x" % dec  
@@ -453,7 +453,7 @@ while True:
                 print(row)
         except:
             pass
-    if start == 9:
+    elif start == 9:
         promptword= '''
     ************************* Mnemonic Words 12/15/18/21/24 tool ************************* 
     *                                                                                    *
@@ -470,19 +470,19 @@ while True:
             Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
             if Lang == 1:
                 Lang1 = "english"
-            if Lang == 2:
+            elif Lang == 2:
                 Lang1 = "french"
-            if Lang == 3:
+            elif Lang == 3:
                 Lang1 = "italian"
-            if Lang == 4:
+            elif Lang == 4:
                 Lang1 = "spanish"
-            if Lang == 5:
+            elif Lang == 5:
                 Lang1 = "chinese_simplified"
-            if Lang == 6:
+            elif Lang == 6:
                 Lang1 = "chinese_traditional"
-            if Lang == 7:
+            elif Lang == 7:
                 Lang1 = "japanese"
-            if Lang == 8:
+            elif Lang == 8:
                 Lang1 = "korean"
             else:
                 print("WRONG NUMBER!!! Starting with english")
@@ -494,13 +494,13 @@ while True:
             R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
             if R == 12:
                 s1 = 128
-            if R == 15:
+            elif R == 15:
                 s1 = 160
-            if R == 18:
+            elif R == 18:
                 s1 = 192
-            if R == 21:
+            elif R == 21:
                 s1 = 224
-            if R == 24:
+            elif R == 24:
                 s1 = 256
             else:
                 print("WRONG NUMBER!!! Starting with 24 Words")
@@ -508,19 +508,19 @@ while True:
             Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
             if Lang == 1:
                 Lang1 = "english"
-            if Lang == 2:
+            elif Lang == 2:
                 Lang1 = "french"
-            if Lang == 3:
+            elif Lang == 3:
                 Lang1 = "italian"
-            if Lang == 4:
+            elif Lang == 4:
                 Lang1 = "spanish"
-            if Lang == 5:
+            elif Lang == 5:
                 Lang1 = "chinese_simplified"
-            if Lang == 6:
+            elif Lang == 6:
                 Lang1 = "chinese_traditional"
-            if Lang == 7:
+            elif Lang == 7:
                 Lang1 = "japanese"
-            if Lang == 8:
+            elif Lang == 8:
                 Lang1 = "korean"
             else:
                 print("WRONG NUMBER!!! Starting with english")
@@ -531,13 +531,13 @@ while True:
         data_wallet()
         for target_wallet in data:
             print('\nmnemonic_words  : ', mnemonic_words, '\nDerivation Path : ', target_wallet['path'], '\nBitcoin Address : ', target_wallet['address'], ' Balance = ', get_balance(target_wallet['address']), ' BTC', '\nPrivatekey WIF  : ', target_wallet['privatekey'])
-    if start == 10:
+    elif start == 10:
         print('WIF to Bitcoin Address Tool')
         WIF = str(input('Enter Your Wallet Import Format WIF = '))
         addr = Key(WIF).address
         print('\nWallet Import Format WIF = ', WIF)
         print('Bitcoin Address  = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    if start == 11:
+    elif start == 11:
         promptrsz= '''
     ************************* Retrieve ECDSA signature R,S,Z rawtx or txid tool ************************* 
     *                                                                                                   *
@@ -565,7 +565,7 @@ while True:
                     f=open('file.txt','a')
                     f.write(f'{e[i][0]},{e[i][1]},{e[i][2]}\n')
                     f.close
-        if startrsz == 2:
+        elif startrsz == 2:
             rawtx = input(str('Type your rawtx here = ')) #'01000000028370ef64eb83519fd14f9d74826059b4ce00eae33b5473629486076c5b3bf215000000008c4930460221009bf436ce1f12979ff47b4671f16b06a71e74269005c19178384e9d267e50bbe9022100c7eabd8cf796a78d8a7032f99105cdcb1ae75cd8b518ed4efe14247fb00c9622014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffffb0385cd9a933545628469aa1b7c151b85cc4a087760a300e855af079eacd25c5000000008b48304502210094b12a2dd0f59b3b4b84e6db0eb4ba4460696a4f3abf5cc6e241bbdb08163b45022007eaf632f320b5d9d58f1e8d186ccebabea93bad4a6a282a3c472393fe756bfb014104e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6cffffffff01404b4c00000000001976a91402d8103ac969fe0b92ba04ca8007e729684031b088ac00000000'
             print('\nStarting Program...')
             m = parseTx(rawtx)
@@ -575,7 +575,7 @@ while True:
                 f=open('file.txt','a')
                 f.write(f'{e[i][0]},{e[i][1]},{e[i][2]}\n')
                 f.close
-        if startrsz == 3:
+        elif startrsz == 3:
             mylist = []
             with open('trans.txt', newline='', encoding='utf-8') as f:
                 for line in f:
@@ -594,7 +594,7 @@ while True:
                             f=open('file.txt','a')
                             f.write(f'{e[i][0]},{e[i][1]},{e[i][2]}\n')
                             f.close
-        if startrsz == 4:
+        elif startrsz == 4:
             mylist = []
             with open('trans.txt', newline='', encoding='utf-8') as f:
                 for line in f:
@@ -627,7 +627,7 @@ while True:
                             f.close
         else:
             print("WRONG NUMBER!!! MUST CHOSE 1 - 4 ")
-    if start == 12:
+    elif start == 12:
         prompt123= '''
             ************************ Range Division Tools ***************************
             *                       Divide Range in bits or bytes                  *
@@ -643,7 +643,7 @@ while True:
             start=2**x
             stop=2**y
             
-        if promptstart == 2:    
+        elif promptstart == 2:    
             start=int(input("start range Min bytes 1-115792089237316195423570985008687907852837564279074904382605163141518161494335 ->  "))
             stop=int(input("stop range Max bytes 115792089237316195423570985008687907852837564279074904382605163141518161494336 -> "))
 
@@ -664,7 +664,7 @@ while True:
                 with open("hex.txt", "a") as f:
                     f.write(f"""\nPercent{data_w['percent']} Privatekey (hex): {data_w['HEX']}""")
                     f.close
-        if display == 2:
+        elif display == 2:
             divsion = []
             divsion_wallet()
             for data_w in divsion:
@@ -676,7 +676,7 @@ while True:
         else:
             print("WRONG NUMBER!!! MUST CHOSE 1 - 2 ")
                 
-    if start == 13:
+    elif start == 13:
         promptchk= '''
     ************************* Bitcoin Addresses from file with Balance Check ************************* 
     *                                                                                                *
@@ -712,7 +712,7 @@ while True:
             else:
                 print ('\nScan Number = ',count, ' == Remaining = ', remaining)
                 print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
-    if start == 14:
+    elif start == 14:
         prompthash= '''
     *********************** Bitcoin Addresses from file to HASH160 file Tool ************************* 
     *                                                                                                *
@@ -745,7 +745,7 @@ while True:
             f=open('hash160.txt','a')
             f.write('\n' + address_hash160)
             f.close()
-    if start == 15:
+    elif start == 15:
         promptbrain= '''
     *********************** Brain Wallet list from file with Balance Check Tool **********************
     *                                                                                                *
@@ -789,7 +789,7 @@ while True:
                 print ('\nScan Number = ',count, ' == Remaining = ', remaining)
                 print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
                 time.sleep(1.0)
-    if start == 16:
+    elif start == 16:
         promptMnemonic= '''
     *********************** Mnemonic Words Generator Random [Offline] *****************************
     *                                                                                             *
@@ -814,13 +814,13 @@ while True:
         R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
         if R == 12:
             s1 = 128
-        if R == 15:
+        elif R == 15:
             s1 = 160
-        if R == 18:
+        elif R == 18:
             s1 = 192
-        if R == 21:
+        elif R == 21:
             s1 = 224
-        if R == 24:
+        elif R == 24:
             s1 = 256
         else:
             print("WRONG NUMBER!!! Starting with 24 Words")
@@ -828,19 +828,19 @@ while True:
         Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
         if Lang == 1:
             Lang1 = "english"
-        if Lang == 2:
+        elif Lang == 2:
             Lang1 = "french"
-        if Lang == 3:
+        elif Lang == 3:
             Lang1 = "italian"
-        if Lang == 4:
+        elif Lang == 4:
             Lang1 = "spanish"
-        if Lang == 5:
+        elif Lang == 5:
             Lang1 = "chinese_simplified"
-        if Lang == 6:
+        elif Lang == 6:
             Lang1 = "chinese_traditional"
-        if Lang == 7:
+        elif Lang == 7:
             Lang1 = "japanese"
-        if Lang == 8:
+        elif Lang == 8:
             Lang1 = "korean"
         else:
             print("WRONG NUMBER!!! Starting with english")
@@ -879,7 +879,7 @@ while True:
                 if display == 2:
                     print(' [' + str(count) + '] ------', 'Total Checked [' + str(total) + '] ', end='\r')
                     
-    if start == 17:
+    elif start == 17:
         promptrandom= '''
     *********************** Bitcoin random scan randomly in Range Tool ************************
     *                                                                                         *
@@ -934,7 +934,7 @@ while True:
                 if iteration % 10000 == 0:
                     elapsed = time.time() - start_time
                     print(f'It/CPU={iteration} checked={count} Hex={HEX} Keys/Sec={iteration / elapsed:.1f}')
-    if start == 18:
+    elif start == 18:
         promptsequence= '''
     *********************** Bitcoin sequence Divison in Range Tool ****************************
     *                                                                                         *
@@ -989,7 +989,7 @@ while True:
                 if iteration % 10000 == 0:
                     elapsed = time.time() - start_time
                     print(f'It/CPU={iteration} checked={count} Hex={HEX} Keys/Sec={iteration / elapsed:.1f}')
-    if start == 19:
+    elif start == 19:
         promptinverse= '''
     *********************** Bitcoin Random Inverse K Range Tool *******************************
     *                                                                                         *
@@ -1070,7 +1070,7 @@ while True:
                     elapsed = time.time() - start_time
                     addper= round(iteration / elapsed)*8
                     print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
-    if start == 20:
+    elif start == 20:
         promptinversesq= '''
     *********************** Bitcoin sequence Inverse K Range Tool *****************************
     *                                                                                         *
@@ -1152,7 +1152,7 @@ while True:
                     elapsed = time.time() - start_time
                     addper= round(iteration / elapsed)*8
                     print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')       
-    if start == 21:
+    elif start == 21:
         promptWIF= '''
     *********************** Bitcoin WIF Recovery or WIF Checker Tool **************************
     *                                                                                         *
@@ -1216,7 +1216,7 @@ while True:
                     f=open('winner.txt','a')
                     f.write('\n Congraz FOUND!!!' + '\nPrivateKey= ' + private_key.decode('utf-8') + '\nCompressed Address = ' + addr + '\nCompressed WIF = ' + wif1 + '\nUncompressed = ' + addr1 + '\nUncompressed WIF = ' + wif)
                     f.close()
-    if start == 22:
+    elif start == 22:
         promptPUB= '''
     *********************** Bitcoin Addresses from file to Public Key Tool ********************
     *                                                                                         *
@@ -1247,7 +1247,7 @@ while True:
                 print(f.text)
 
         myfile.close()
-    if start == 23:
+    elif start == 23:
         promptADD2PUB= '''
     *********************** Public Key from file to Bitcoin Addresses Tool ********************
     *                                                                                         *
@@ -1293,11 +1293,11 @@ while True:
             f.write( "\nkey_hash + checksum = \t" + key_hash + ' ' + checksum )
             f.write( "\nbitcoin address = \t" + (base58.b58encode( bytes(bytearray.fromhex(key_hash + checksum)) )).decode('utf-8') + '\n')
             f.close()
-    if start == 24:
+    elif start == 24:
         print ('Address Transaction Check Tool')
         ethadd = str(input('Enter Your ETH Address Here : '))
         print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
-    if start == 25:
+    elif start == 25:
         print('Hexadecimal to Decimal Tool')
         HEX = str(input('Enter Your Hexadecimal HEX Here : '))
         dec = int(HEX, 16)
@@ -1318,7 +1318,7 @@ while True:
         print("Finger Print:", hdwallet.finger_print())
         print("Hash:", hdwallet.hash())
         print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
-    if start == 26:
+    elif start == 26:
         print('Decimal to Hexadecimal Tool')
         dec = int(input('Enter Your Decimal DEC Here : '))
         HEX = "%064x" % dec
@@ -1338,7 +1338,7 @@ while True:
         print("Finger Print:", hdwallet.finger_print())
         print("Hash:", hdwallet.hash())
         print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
-    if start ==27:
+    elif start ==27:
         promptword= '''
     ************************* Mnemonic Words 12/15/18/21/24 tool ************************* 
     *                                                                                    *
@@ -1354,19 +1354,19 @@ while True:
             Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
             if Lang == 1:
                 Lang1 = "english"
-            if Lang == 2:
+            elif Lang == 2:
                 Lang1 = "french"
-            if Lang == 3:
+            elif Lang == 3:
                 Lang1 = "italian"
-            if Lang == 4:
+            elif Lang == 4:
                 Lang1 = "spanish"
-            if Lang == 5:
+            elif Lang == 5:
                 Lang1 = "chinese_simplified"
-            if Lang == 6:
+            elif Lang == 6:
                 Lang1 = "chinese_traditional"
-            if Lang == 7:
+            elif Lang == 7:
                 Lang1 = "japanese"
-            if Lang == 8:
+            elif Lang == 8:
                 Lang1 = "korean"
             else:
                 print("WRONG NUMBER!!! Starting with english")
@@ -1392,13 +1392,13 @@ while True:
             R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
             if R == 12:
                 s1 = 128
-            if R == 15:
+            elif R == 15:
                 s1 = 160
-            if R == 18:
+            elif R == 18:
                 s1 = 192
-            if R == 21:
+            elif R == 21:
                 s1 = 224
-            if R == 24:
+            elif R == 24:
                 s1 = 256
             else:
                 print("WRONG NUMBER!!! Starting with 24 Words")
@@ -1406,19 +1406,19 @@ while True:
             Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
             if Lang == 1:
                 Lang1 = "english"
-            if Lang == 2:
+            elif Lang == 2:
                 Lang1 = "french"
-            if Lang == 3:
+            elif Lang == 3:
                 Lang1 = "italian"
-            if Lang == 4:
+            elif Lang == 4:
                 Lang1 = "spanish"
-            if Lang == 5:
+            elif Lang == 5:
                 Lang1 = "chinese_simplified"
-            if Lang == 6:
+            elif Lang == 6:
                 Lang1 = "chinese_traditional"
-            if Lang == 7:
+            elif Lang == 7:
                 Lang1 = "japanese"
-            if Lang == 8:
+            elif Lang == 8:
                 Lang1 = "korean"
             else:
                 print("WRONG NUMBER!!! Starting with english")
@@ -1441,7 +1441,7 @@ while True:
             print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
             
         
-    if start ==28:
+    elif start ==28:
         filename ='eth.txt'
         with open(filename) as f:
             line_count = 0
@@ -1454,13 +1454,13 @@ while True:
         R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
         if R == 12:
             s1 = 128
-        if R == 15:
+        elif R == 15:
             s1 = 160
-        if R == 18:
+        elif R == 18:
             s1 = 192
-        if R == 21:
+        elif R == 21:
             s1 = 224
-        if R == 24:
+        elif R == 24:
             s1 = 256
         else:
             print("WRONG NUMBER!!! Starting with 24 Words")
@@ -1469,19 +1469,19 @@ while True:
         Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
         if Lang == 1:
             Lang1 = "english"
-        if Lang == 2:
+        elif Lang == 2:
             Lang1 = "french"
-        if Lang == 3:
+        elif Lang == 3:
             Lang1 = "italian"
-        if Lang == 4:
+        elif Lang == 4:
             Lang1 = "spanish"
-        if Lang == 5:
+        elif Lang == 5:
             Lang1 = "chinese_simplified"
-        if Lang == 6:
+        elif Lang == 6:
             Lang1 = "chinese_traditional"
-        if Lang == 7:
+        elif Lang == 7:
             Lang1 = "japanese"
-        if Lang == 8:
+        elif Lang == 8:
             Lang1 = "korean"
         else:
             print("WRONG NUMBER!!! Starting with english")
