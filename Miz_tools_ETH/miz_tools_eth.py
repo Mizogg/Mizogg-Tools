@@ -20,7 +20,7 @@ def get_TXS(ethadd):
     TXS = dict(ress)["countTxs"]
     return TXS
 
-def data_wallet():
+def data_eth():
     for address_index in range(divs):
         bip44_derivation: BIP44Derivation = BIP44Derivation(
             cryptocurrency=EthereumMainnet, account=0, change=False, address=address_index
@@ -71,7 +71,7 @@ while True:
         print ('Address Transaction Check Tool')
         ethadd = str(input('Enter Your ETH Address Here : '))
         print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
-    if start == 2:
+    elif start == 2:
         print('Hexadecimal to Decimal Tool')
         HEX = str(input('Enter Your Hexadecimal HEX Here : '))
         dec = int(HEX, 16)
@@ -92,7 +92,7 @@ while True:
         print("Finger Print:", hdwallet.finger_print())
         print("Hash:", hdwallet.hash())
         print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
-    if start == 3:
+    elif start == 3:
         print('Decimal to Hexadecimal Tool')
         dec = int(input('Enter Your Decimal DEC Here : '))
         HEX = "%064x" % dec
@@ -112,7 +112,7 @@ while True:
         print("Finger Print:", hdwallet.finger_print())
         print("Hash:", hdwallet.hash())
         print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
-    if start ==4:
+    elif start ==4:
         promptword= '''
     ************************* Mnemonic Words 12/15/18/21/24 tool ************************* 
     *                                                                                    *
@@ -128,19 +128,19 @@ while True:
             Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
             if Lang == 1:
                 Lang1 = "english"
-            if Lang == 2:
+            elif Lang == 2:
                 Lang1 = "french"
-            if Lang == 3:
+            elif Lang == 3:
                 Lang1 = "italian"
-            if Lang == 4:
+            elif Lang == 4:
                 Lang1 = "spanish"
-            if Lang == 5:
+            elif Lang == 5:
                 Lang1 = "chinese_simplified"
-            if Lang == 6:
+            elif Lang == 6:
                 Lang1 = "chinese_traditional"
-            if Lang == 7:
+            elif Lang == 7:
                 Lang1 = "japanese"
-            if Lang == 8:
+            elif Lang == 8:
                 Lang1 = "korean"
             else:
                 print("WRONG NUMBER!!! Starting with english")
@@ -166,13 +166,13 @@ while True:
             R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
             if R == 12:
                 s1 = 128
-            if R == 15:
+            elif R == 15:
                 s1 = 160
-            if R == 18:
+            elif R == 18:
                 s1 = 192
-            if R == 21:
+            elif R == 21:
                 s1 = 224
-            if R == 24:
+            elif R == 24:
                 s1 = 256
             else:
                 print("WRONG NUMBER!!! Starting with 24 Words")
@@ -180,19 +180,19 @@ while True:
             Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
             if Lang == 1:
                 Lang1 = "english"
-            if Lang == 2:
+            elif Lang == 2:
                 Lang1 = "french"
-            if Lang == 3:
+            elif Lang == 3:
                 Lang1 = "italian"
-            if Lang == 4:
+            elif Lang == 4:
                 Lang1 = "spanish"
-            if Lang == 5:
+            elif Lang == 5:
                 Lang1 = "chinese_simplified"
-            if Lang == 6:
+            elif Lang == 6:
                 Lang1 = "chinese_traditional"
-            if Lang == 7:
+            elif Lang == 7:
                 Lang1 = "japanese"
-            if Lang == 8:
+            elif Lang == 8:
                 Lang1 = "korean"
             else:
                 print("WRONG NUMBER!!! Starting with english")
@@ -215,18 +215,18 @@ while True:
             print ('\nETH Address = ', ethadd, '    Transations = ', get_TXS(ethadd), ' TXS')
             
         
-    if start ==5:
+    elif start ==5:
         print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
         R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
         if R == 12:
             s1 = 128
-        if R == 15:
+        elif R == 15:
             s1 = 160
-        if R == 18:
+        elif R == 18:
             s1 = 192
-        if R == 21:
+        elif R == 21:
             s1 = 224
-        if R == 24:
+        elif R == 24:
             s1 = 256
         else:
             print("WRONG NUMBER!!! Starting with 24 Words")
@@ -235,19 +235,19 @@ while True:
         Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
         if Lang == 1:
             Lang1 = "english"
-        if Lang == 2:
+        elif Lang == 2:
             Lang1 = "french"
-        if Lang == 3:
+        elif Lang == 3:
             Lang1 = "italian"
-        if Lang == 4:
+        elif Lang == 4:
             Lang1 = "spanish"
-        if Lang == 5:
+        elif Lang == 5:
             Lang1 = "chinese_simplified"
-        if Lang == 6:
+        elif Lang == 6:
             Lang1 = "chinese_traditional"
-        if Lang == 7:
+        elif Lang == 7:
             Lang1 = "japanese"
-        if Lang == 8:
+        elif Lang == 8:
             Lang1 = "korean"
         else:
             print("WRONG NUMBER!!! Starting with english")
@@ -257,7 +257,6 @@ while True:
             data=[]
             count += 1
             total += divs
-            #MNEMONIC: str = 'manual resource salon small metal twist cloth curtain into banner steel bonus'
             MNEMONIC: str = generate_mnemonic(language=Lang1, strength=s1)
             PASSPHRASE: Optional[str] = None
             bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
@@ -266,7 +265,7 @@ while True:
             )
             bip44_hdwallet.clean_derivation()
             mnemonic_words = bip44_hdwallet.mnemonic()
-            data_wallet()
+            data_eth()
             for target_wallet in data:
                 address = target_wallet['address'].lower()
                 if address in eth_list:
