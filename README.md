@@ -1,14 +1,12 @@
 # Mizogg-Tools
 Tools for Bitcoin and ETH Information Balance, HASH160, DEC, Transactions and much more.
 
-New All Tools in one 28 Options for Bitcoin and ETH.
-
-![image](https://user-images.githubusercontent.com/88630056/155902228-c5cf2d77-2310-4242-92e8-b27fd7d5ceab.png)
-
 
 English and Russian Version
 
 Install_libraries.bat to get started( Only needs to be done once)
+
+
 
 then to run use any of the start.bat files
 
@@ -191,6 +189,12 @@ NEW RSZ ADDED
      Z: 94bbf25ba5b93ba78ee017eff80c986ee4e87804bee5770fae5b486f05608d95
       PubKey: 04e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6c
 
-test it here https://replit.com/@Mizogg/Mizogg-Bitcoin-Tools?v=1
+test it here https://replit.com/@Mizogg/Mizogg-Tools?v=1
+
+New All Tools in one 29 Options for Bitcoin and ETH. Only On https://mizogg.co.uk
+
+![image](https://user-images.githubusercontent.com/88630056/156468112-201daba9-dc05-4179-9286-8f5996e5f19b.png)
+
+https://user-images.githubusercontent.com/88630056/156468157-0ab9a2ac-91f5-48f5-9214-d42c56d37a3e.mp4
 
 ## Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
