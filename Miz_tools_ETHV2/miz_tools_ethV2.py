@@ -43,7 +43,7 @@ eth_list = set(eth_list)
 prompt= '''
     ************************ Main Menu Mizogg's ETH Tools *******************
     *                       Single Check Tools                              *
-    *    Option 1.ETH Address with Blance Check      [Internet required]= 1 *
+    *    Option 1.ETH Address with Balance Check     [Internet required]= 1 *
     *    Option 2.Hexadecimal to Decimal (HEX 2 DEC) [Internet required]= 2 *
     *    Option 3.Decimal to Hexadecimal (DEC 2 HEX) [Internet required]= 3 *
     *    Option 4.Mnemonic Words to dec and hex      [Internet required]= 4 *
