@@ -131,8 +131,8 @@ while True:
         promptword= '''
     ************************* Mnemonic Words 12/15/18/21/24 tool ************************* 
     *                                                                                    *
-    *    1-OWN WORDS to DEC & HEX with TX Check [Internet required]                      *
-    *    2-Generated WORDS to DEC & HEX with TX Check [Internet required]                *
+    *    1-OWN WORDS to DEC & HEX with Balance Check [Internet required]                 *
+    *    2-Generated WORDS to DEC & HEX with Balance Check [Internet required]           *
     *    Type 1-2 to Start                                                               *
     *                                                                                    *
     ************************* Mnemonic Words 12/15/18/21/24 tool *************************
@@ -306,7 +306,7 @@ while True:
                         Derivation Path:  {target_wallet['path']}
                         Privatekey : {target_wallet['privatekey']}
                         Public Address ETH:  {target_wallet['address']}
-                        =====Made by mizogg.co.uk Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 =====""")
+                        """)
             else:
                 if display == 1:
                     print(' [' + str(count) + '] ------------------------')
