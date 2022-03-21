@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 10 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
-29 Bitcoin Tools
+Made by Mizogg Tools to Help Look for Bitcoin\Dogecoin\ETH. Good Luck and Happy Hunting Miz_Tools_ice.py Version 10 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
+29 Bitcoin\Dogecoin\ETH Tools
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
 https://mizogg.co.uk
@@ -52,6 +52,12 @@ def data_info():
         'final_balance': final_balance,
         'txs': txs,
     })
+
+def get_doge(daddr):
+    Dogecoin = requests.get("https://dogechain.info/api/v1/address/balance/"+ daddr)
+    resedoge = Dogecoin.json()
+    BalanceDoge = dict(resedoge)['balance']
+    return BalanceDoge
 
 class BrainWallet:
 
@@ -308,8 +314,8 @@ prompt= '''
     *    Option 4.Brain Wallet Bitcoin with Balance Check              =  4     *
     *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)     [Offline]     =  5     *
     *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)     [Offline]     =  6     *
-    *    Option 7.Hexadecimal to Bitcoin Address with Balance Check    =  7     *
-    *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
+    *    Option 7.Hexadecimal to Bitcoin\Dogecoin Address with Balance Check=7  *
+    *    Option 8.Decimal to Bitcoin\Dogecoin Address with Balance Check= 8     *
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
@@ -438,17 +444,17 @@ while True:
         time.sleep(3.0)
     elif start == 7:
         prompthex= '''
-    ************************* Hexadecimal to Bitcoin Address Tool ************************* 
-    *                                                                                     *
-    *    1-Single Hexadecimal to Bitcoin Address. Balance check [Internet required]       *
-    *    2-List Multi Hexadecimal to Bitcoin Address. Balance check [Internet required]   *
-    *    Type 1-2 to Start    (Option 2 Requires hex.txt file list of Hexadecimal         *
-    *                                                                                     *
-    ************************* Hexadecimal to Bitcoin Address Tool *************************
+    **************************** Hexadecimal to Bitcoin\Dogecoin Address Tool ********************** 
+    *                                                                                              *
+    *    1-Single Hexadecimal to Bitcoin\Dogecoin Address. Balance check [Internet required]       *
+    *    2-List Multi Hexadecimal to Bitcoin\Dogecoin Address. Balance check [Internet required]   *
+    *    Type 1-2 to Start    (Option 2 Requires hex.txt file list of Hexadecimal                  *
+    *                                                                                              *
+    **************************** Hexadecimal to Bitcoin\Dogecoin Address Tool **********************
         '''
         starthex=int(input(prompthex))
         if starthex == 1:
-            print('Hexadecimal to Bitcoin Address Tool')
+            print('Hexadecimal to Bitcoin\Dogecoin Address Tool')
             HEX=str(input("Hexadecimal HEX ->  "))
             dec = int(HEX, 16)
             wifc = ice.btc_pvk_to_wif(HEX)
@@ -457,6 +463,8 @@ while True:
             uaddr = ice.privatekey_to_address(0, False, dec)  #Uncompressed
             p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
             bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
+            dogeaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, True, dec) #DOGE
+            dogeuaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, False, dec) #DOGE
             query = {caddr}|{uaddr}|{p2sh}|{bech32}
             request = requests.get("https://blockchain.info/multiaddr?active=" + ','.join(query), timeout=10)
             try:
@@ -471,7 +479,9 @@ while True:
                 print('Bitcoin Address Bc1  bech32  = ', bech32, '    Balance = ', get_balance(bech32), ' BTC')
                 for row in request["addresses"]:
                     print(row)
-                    time.sleep(3.0)
+                print('Dogecoin Address Compressed   = ', dogeaddr, '    Balance = ', get_doge(dogeaddr))
+                print('Dogecoin Address UnCompressed = ', dogeuaddr, '    Balance = ', get_doge(dogeuaddr))
+                time.sleep(3.0)
             except:
                 pass
         if starthex == 2:
@@ -493,10 +503,12 @@ while True:
                 uaddr = ice.privatekey_to_address(0, False, dec)  #Uncompressed
                 p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
                 bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
+                dogeaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, True, dec) #DOGE
+                dogeuaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, False, dec) #DOGE
                 count+=1
-                total+=2
+                total+=6
                 print('Total HEX addresses Loaded:', line_count)
-                if float (get_balance(caddr)) or float (get_balance(uaddr)) > ammount:
+                if float (get_balance(caddr)) or float (get_balance(uaddr)) or float (get_balance(p2sh)) or float (get_balance(bech32)) or float (get_doge(dogeaddr)) or float (get_doge(dogeuaddr)) > ammount:
                     print('PrivateKey (hex) : ', HEX)
                     print('PrivateKey (dec) : ', dec)
                     print('PrivateKey (wif) Compressed   : ', wifc)
@@ -505,8 +517,10 @@ while True:
                     print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
                     print('Bitcoin Address p2sh         = ', p2sh, '    Balance = ', get_balance(p2sh), ' BTC')
                     print('Bitcoin Address Bc1  bech32  = ', bech32, '    Balance = ', get_balance(bech32), ' BTC')
+                    print('Dogecoin Address Compressed   = ', dogeaddr, '    Balance = ', get_doge(dogeaddr))
+                    print('Dogecoin Address UnCompressed = ', dogeuaddr, '    Balance = ', get_doge(dogeuaddr))
                     f=open('winner.txt','a')
-                    f.write('\nPrivateKey (hex): ' + HEX + '\nBitcoin Address Compressed : ' + caddr + '\nBitcoin Address UnCompressed :' + uaddr + '\nPrivateKey (wif) Compressed : ' + wifc + '\nPrivateKey (wif) UnCompressed : ' + wifu + '\n==================================')
+                    f.write('\nPrivateKey (hex): ' + HEX + '\nBitcoin Address Compressed : ' + caddr + '\nBitcoin Address UnCompressed :' + uaddr + '\nBitcoin Address p2sh : ' + p2sh + '\nBitcoin Address bc1 :' + bech32 + '\nDogecoin Address Compressed : ' + dogeaddr + '\nDogecoin Address UnCompressed :' + dogeuaddr + '\nPrivateKey (wif) Compressed : ' + wifc + '\nPrivateKey (wif) UnCompressed : ' + wifu + '\n==================================')
                     f.close()
                 else: 
                     print('Scan Number : ', count, ' : Total Wallets Checked : ', total)
@@ -514,10 +528,12 @@ while True:
                     print('Bitcoin Address UnCompressed = ', uaddr, '    Balance = ', get_balance(uaddr), ' BTC')
                     print('Bitcoin Address p2sh         = ', p2sh, '    Balance = ', get_balance(p2sh), ' BTC')
                     print('Bitcoin Address Bc1  bech32  = ', bech32, '    Balance = ', get_balance(bech32), ' BTC')
+                    print('Dogecoin Address Compressed   = ', dogeaddr, '    Balance = ', get_doge(dogeaddr))
+                    print('Dogecoin Address UnCompressed = ', dogeuaddr, '    Balance = ', get_doge(dogeuaddr))
                     time.sleep(1.5)
                 
     elif start == 8:
-        print('Decimal to Bitcoin Address Tool')
+        print('Decimal to Bitcoin\Dogecoin Address Tool')
         dec=int(input('Decimal Dec (Max 115792089237316195423570985008687907852837564279074904382605163141518161494336 ) ->  '))
         HEX = "%064x" % dec  
         wifc = ice.btc_pvk_to_wif(HEX)
@@ -526,6 +542,8 @@ while True:
         uaddr = ice.privatekey_to_address(0, False, dec)  #Uncompressed
         p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
         bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
+        dogeaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, True, dec) #DOGE
+        dogeuaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, False, dec) #DOGE
         query = {caddr}|{uaddr}|{p2sh}|{bech32}
         request = requests.get("https://blockchain.info/multiaddr?active=" + ','.join(query), timeout=10)
         try:
@@ -540,7 +558,9 @@ while True:
             print('Bitcoin Address Bc1  bech32  = ', bech32, '    Balance = ', get_balance(bech32), ' BTC')
             for row in request["addresses"]:
                 print(row)
-                time.sleep(3.0)
+            print('Dogecoin Address Compressed   = ', dogeaddr, '    Balance = ', get_doge(dogeaddr))
+            print('Dogecoin Address UnCompressed = ', dogeuaddr, '    Balance = ', get_doge(dogeuaddr))
+            time.sleep(3.0)
         except:
             pass
     elif start == 9:
