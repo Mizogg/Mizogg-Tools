@@ -1,28 +1,57 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
-Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 9 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
-22 Bitcoin Tools
+Made by Mizogg Tools to Help Look for Bitcoin. Good Luck and Happy Hunting Miz_Tools_ice.py Version 10 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
+29 Bitcoin Tools
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
 https://mizogg.co.uk
 '''
-import requests, codecs, hashlib, ecdsa, bip32utils, binascii, sys, time, random, itertools, multiprocessing
+import requests, codecs, hashlib, ecdsa, bip32utils, binascii, sys, time, random, itertools, csv
 import secp256k1 as ice
 from mnemonic import Mnemonic
 from bit import *
 from bit.format import bytes_to_wif
 from urllib.request import urlopen
 from time import sleep
-from multiprocessing import pool, Event, Process, Queue, Value, cpu_count
+from hdwallet import BIP44HDWallet
+from hdwallet.cryptocurrencies import EthereumMainnet
+from hdwallet.derivations import BIP44Derivation
+from hdwallet.utils import generate_mnemonic
+from hdwallet import HDWallet
+from typing import Optional
+from hdwallet.symbols import ETH as SYMBOL
+
 
 n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
 alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+
 def get_balance(addr):
     contents = requests.get('https://sochain.com/api/v2/get_address_balance/BTC/' + addr, timeout=10)
     res = contents.json()
     response = (contents.content)
     balance = dict(res['data'])['confirmed_balance']
     return balance
+
+def data_info():
+    blocs=requests.get("https://blockchain.info/rawaddr/"+addr)
+    ress = blocs.json()
+    hash160 = dict(ress)["hash160"]
+    address = dict(ress)["address"]
+    n_tx = dict(ress)["n_tx"]
+    total_received = dict(ress)["total_received"]
+    total_sent = dict(ress)["total_sent"]
+    final_balance = dict(ress)["final_balance"]
+    txs = dict(ress)["txs"]
+    data.append({
+        'hash160': hash160,
+        'address': address,
+        'n_tx': n_tx,
+        'total_received': total_received,
+        'total_sent': total_sent,
+        'final_balance': final_balance,
+        'txs': txs,
+    })
 
 class BrainWallet:
 
@@ -118,6 +147,21 @@ def data_wallet():
                 'publickey': binascii.hexlify(bip32_child_key_obj.PublicKey()).decode(),
                 'privatekey': bip32_child_key_obj.WalletImportFormat(),
             })
+            
+def data_eth():
+    for address_index in range(divs):
+        bip44_derivation: BIP44Derivation = BIP44Derivation(
+            cryptocurrency=EthereumMainnet, account=0, change=False, address=address_index
+        )
+        bip44_hdwallet.from_path(path=bip44_derivation)
+        data.append({
+                'path': bip44_hdwallet.path(),
+                'address': bip44_hdwallet.address(),
+                'privatekey': bip44_hdwallet.private_key(),
+                'privatedec': int(bip44_hdwallet.private_key(), 16),
+            })
+        bip44_hdwallet.clean_derivation()
+
 """
 @author: iceland
 """
@@ -181,6 +225,7 @@ def getSignableTxn(parsed):
     res = []
     first, inp_list, rest = parsed
     tot = len(inp_list)
+    time.sleep(10)
     for one in range(tot):
         e = first
         for i in range(tot):
@@ -234,6 +279,7 @@ def divsion_wallet():
             'HEX': HEX,
             'percent': f"{i}%",
         })
+
 def iter_all(count):
     if count == 0:
         yield start
@@ -244,6 +290,14 @@ def iter_all(count):
             else:
                 for scan in iter_all(count-1):
                     yield scan + a
+
+def hash160pub(hex_str):
+    sha = hashlib.sha256()
+    rip = hashlib.new('ripemd160')
+    sha.update(hex_str)
+    rip.update( sha.digest() )
+    print ( "key_hash = \t" + rip.hexdigest() )
+    return rip.hexdigest()
 
 prompt= '''
     ************************ Main Menu Mizogg's Tools ***************************
@@ -271,15 +325,23 @@ prompt= '''
     *    Option 19.Bitcoin random Inverse K position      [Offline]    = 19     *
     *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
     *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
-    *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
+    *    Option 22.Bitcoin Addresses from file to Public Key [OnLine]  = 22     *
+    *    Option 23.Public Key from file to Bitcoin Addresses           = 23     *
     *                                                                           *
-    *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
-    **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
+    *                 ETH Generators & Multi Check Tools                        *
+    *    Option 24.ETH Address with TXS Check         [Internet required]= 24   *
+    *    Option 25.Hexadecimal to Decimal (HEX 2 DEC) [Internet required]= 25   *
+    *    Option 26.Decimal to Hexadecimal (DEC 2 HEX) [Internet required]= 26   *
+    *    Option 27.Mnemonic Words to dec and hex      [Internet required]= 27   *
+    *    Option 28.Mnemonic Words Generator Random Choice [Offline]      = 28   *
+    *    Option 29.Mnemonic Words Generator Random Choice [ONLINE]       = 29   *
+    *                                                                           *
+    *************** Main Menu Mizogg's All Tools made in Python *****************
 
-Type You Choice Here Enter 1-22 : 
+Type You Choice Here Enter 1-29 : 
 '''
 
-
+mylistapi = []
 while True:
     data = []
     mylist = []
@@ -289,11 +351,35 @@ while True:
     total= 0
     iteration = 0
     start_time = time.time()
+    api1="?apiKey=freekey"
+    api2="?apiKey=freekey"
+    api3="?apiKey=freekey"
+    #api4="?apiKey=freekey"
+    mylistapi=[str(api1), str(api2), str(api3)]
+    #mylistapi=[str(api1), str(api2), str(api3), str(api4)]
+    apikeys=random.choice(mylistapi)
     start=int(input(prompt))
     if start == 1:
-        print ('Address Balance Check Tool')
+        print ('Address Balance Info Check Tool')
         addr = str(input('Enter Your Bitcoin Address Here : '))
-        print ('\nBitcoin Address = ', addr, '    Balance = ', get_balance(addr), ' BTC')
+        print ('\nBitcoin Address = ', addr, '    Balance So Chain = ', get_balance(addr), ' BTC')
+        data_info()
+        for data_w in data:
+            hash160 = data_w['hash160']
+            address = data_w['address']
+            n_tx = data_w['n_tx']
+            total_received = data_w['total_received']
+            total_sent = data_w['total_sent']
+            final_balance = data_w['final_balance']
+            print('================== Block Chain ==================')
+            print('Bitcoin address   = ', address)
+            print('hash160   = ', hash160)
+            print('Number of tx    = ', n_tx)
+            print('Total Received  = ', total_received)
+            print('Total Sent      = ', total_sent)
+            print('Final Balance   = ', final_balance)
+            print('================== Block Chain ==================')
+            time.sleep(3.0)
     elif start == 2:
         print ('Address to HASH160 Tool')
         addr = str(input('Enter Your Bitcoin Address Here : '))
@@ -304,6 +390,7 @@ while True:
         if addr.startswith('bc1') and len(addr.split('\t')[0])< 50 :
             address_hash160 = (ice.bech32_address_decode(addr,coin_type=0))            
         print ('\nBitcoin Address = ', addr, '\nTo HASH160 = ', address_hash160)
+        time.sleep(3.0)
     elif start == 3:
         print ('HASH160 to Bitcoin Address Tool')
         hash160 =(str(input('Enter Your HASH160 Here : ')))
@@ -316,6 +403,23 @@ while True:
         print('\nPassphrase     = ',passphrase)
         print('Private Key      = ',private_key)
         print('Bitcoin Address  = ', addr, '    Balance = ', get_balance(addr), ' BTC')
+        data_info()
+        for data_w in data:
+            hash160 = data_w['hash160']
+            address = data_w['address']
+            n_tx = data_w['n_tx']
+            total_received = data_w['total_received']
+            total_sent = data_w['total_sent']
+            final_balance = data_w['final_balance']
+            print('================== Block Chain ==================')
+            print('Bitcoin address   = ', address)
+            print('hash160   = ', hash160)
+            print('Number of tx    = ', n_tx)
+            print('Total Received  = ', total_received)
+            print('Total Sent      = ', total_sent)
+            print('Final Balance   = ', final_balance)
+            print('================== Block Chain ==================')
+            time.sleep(3.0)
     elif start == 5:
         print('Hexadecimal to Decimal Tool')
         HEX = str(input('Enter Your Hexadecimal HEX Here : '))
@@ -323,6 +427,7 @@ while True:
         length = len(bin(dec))
         length -=2
         print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec, '  bits ', length)
+        time.sleep(3.0)
     elif start == 6:
         print('Decimal to Hexadecimal Tool')
         dec = int(input('Enter Your Decimal DEC Here : '))
@@ -330,6 +435,7 @@ while True:
         length = len(bin(dec))
         length -=2
         print('\nDecimal = ', dec, '  bits ', length, '\nTo Hexadecimal = ', HEX)
+        time.sleep(3.0)
     elif start == 7:
         prompthex= '''
     ************************* Hexadecimal to Bitcoin Address Tool ************************* 
@@ -365,6 +471,7 @@ while True:
                 print('Bitcoin Address Bc1  bech32  = ', bech32, '    Balance = ', get_balance(bech32), ' BTC')
                 for row in request["addresses"]:
                     print(row)
+                    time.sleep(3.0)
             except:
                 pass
         if starthex == 2:
@@ -433,6 +540,7 @@ while True:
             print('Bitcoin Address Bc1  bech32  = ', bech32, '    Balance = ', get_balance(bech32), ' BTC')
             for row in request["addresses"]:
                 print(row)
+                time.sleep(3.0)
         except:
             pass
     elif start == 9:
@@ -513,20 +621,39 @@ while True:
         data_wallet()
         for target_wallet in data:
             print('\nmnemonic_words  : ', mnemonic_words, '\nDerivation Path : ', target_wallet['path'], '\nBitcoin Address : ', target_wallet['address'], ' Balance = ', get_balance(target_wallet['address']), ' BTC', '\nPrivatekey WIF  : ', target_wallet['privatekey'])
+            time.sleep(3.0)
     elif start == 10:
         print('WIF to Bitcoin Address Tool')
         WIF = str(input('Enter Your Wallet Import Format WIF = '))
         addr = Key(WIF).address
         print('\nWallet Import Format WIF = ', WIF)
         print('Bitcoin Address  = ', addr, '    Balance = ', get_balance(addr), ' BTC')
+        data_info()
+        for data_w in data:
+            hash160 = data_w['hash160']
+            address = data_w['address']
+            n_tx = data_w['n_tx']
+            total_received = data_w['total_received']
+            total_sent = data_w['total_sent']
+            final_balance = data_w['final_balance']
+            print('================== Block Chain ==================')
+            print('Bitcoin address   = ', address)
+            print('hash160   = ', hash160)
+            print('Number of tx    = ', n_tx)
+            print('Total Received  = ', total_received)
+            print('Total Sent      = ', total_sent)
+            print('Final Balance   = ', final_balance)
+            print('================== Block Chain ==================')
+            time.sleep(3.0)
     elif start == 11:
         promptrsz= '''
     ************************* Retrieve ECDSA signature R,S,Z rawtx or txid tool ************************* 
     *                                                                                                   *
     *    1-txid  blockchain API R,S,Z calculation starts. [Internet required]                           *
     *    2-rawtx R,S,Z,Pubkey for each of the inputs present in the rawtx data. [No Internet required]  *
-    *    3-txid  blockchain API R,S,Z from transaction List [Internet required]                         *
-    *    Type 1-3 to Start                                                                              *
+    *    3-Adresses SoChain Transations checked blockchain API R,S,Z [Internet required]                *
+    *    4-txid  blockchain API R,S,Z from transaction List MORE INFORMATION [Internet required]        *
+    *    Type 1-4 to Start                                                                              *
     *                                                                                                   *
     ************************* Retrieve ECDSA signature R,S,Z rawtx or txid tool *************************
         '''
@@ -557,11 +684,26 @@ while True:
                 f.write(f'{e[i][0]},{e[i][1]},{e[i][2]}\n')
                 f.close
         elif startrsz == 3:
-            mylist = []
-            with open('trans.txt', newline='', encoding='utf-8') as f:
+            addr = str(input('Enter Your Bitcoin Address Here : '))
+            contents = requests.get('https://chain.so/api/v2/address/BTC/' + addr, timeout=10)
+            res = contents.json()
+            response = (contents.content)
+            TXS = dict(res['data'])['txs']
+            for row in TXS:
+                hexs = row["txid"]
+                print(hexs)
+                f=open('hexs.txt','a')
+                f.write(hexs + '\n')
+                f.close
+            mylist=[]
+            header = ['Transation ID ', 'Input Index', 'R', 'K for R', 'R bits', 'S', 'K for S', 'S bits', 'Z', 'K for Z', 'Z bits','PubKey']
+            fr=open('full.csv', 'a', encoding='UTF8')
+            writer = csv.writer(fr)
+            writer.writerow(header)
+            with open('hexs.txt', newline='', encoding='utf-8') as f:
                 for line in f:
                     mylist.append(line.strip())
-                    print('\nStarting Program...')
+                    print('\nStarting Program... Sleeping 10 Seconds Between Scans')
                     for x in range(0,len(mylist)):
                         txid = mylist[x]
                         rawtx = ''
@@ -571,12 +713,76 @@ while True:
                         m = parseTx(rawtx)
                         e = getSignableTxn(m)
                         for i in range(len(e)):
-                            print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n     S: {e[i][1]}\n     Z: {e[i][2]}\nPubKey: {e[i][3]}')
-                            f=open('file.txt','a')
-                            f.write(f'{e[i][0]},{e[i][1]},{e[i][2]}\n')
+                            data = []
+                            hex1= e[i][0]
+                            r = int(hex1, 16)
+                            lengthr = len(bin(r))
+                            lengthr -=2
+                            hex2= e[i][1]
+                            s = int(hex2, 16)
+                            lengths = len(bin(s))
+                            lengths -=2
+                            hex3= e[i][2]
+                            z = int(hex3, 16)
+                            lengthz = len(bin(z))
+                            lengthz -=2
+                            pubkey = e[i][3]
+                            print ('Current Transation = ',txid)
+                            print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n K for R = {r} {lengthr}  bits\n     S: {e[i][1]}\n K for S = {s} {lengths}  bits \n     Z: {e[i][2]}\n K for Z = {z} {lengthz}  bits \nPubKey: {e[i][3]}')
+                            if i == 10:
+                                print ('Sleep 10 Seconds Please wait Loading Next Transactions')
+                                time.sleep(10)
+                            f=open('filefull.txt','a')
+                            f.write(f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n K for R = {r} {lengthr}  bits\n     S: {e[i][1]}\n K for S = {s} {lengths}  bits\n     Z: {e[i][2]}\n K for Z = {z} {lengthz}  bits \nPubKey: {e[i][3]}')
                             f.close
+                            data = [txid, f'{i}', f'{e[i][0]}', f'{r}', f'{lengthr}', f'{e[i][1]}', f'{s}', f'{lengths}', f'{e[i][2]}', f'{z}', f'{lengthz}', f'{e[i][3]}']
+                            writer.writerow(data)
+        elif startrsz == 4:
+            mylist = []
+            data = []
+            header = ['Transation ID ', 'Input Index', 'R', 'K for R', 'R bits', 'S', 'K for S', 'S bits', 'Z', 'K for Z', 'Z bits','PubKey']
+            fr=open('full.csv', 'a', encoding='UTF8')
+            writer = csv.writer(fr)
+            writer.writerow(header)
+            with open('trans.txt', newline='', encoding='utf-8') as f:
+                for line in f:
+                    mylist.append(line.strip())
+                    print('\nStarting Program... Sleeping 10 Seconds Between Scans')
+                    for x in range(0,len(mylist)):
+                        txid = mylist[x]
+                        rawtx = ''
+                    if rawtx == '':
+                        rawtx = get_rawtx_from_blockchain(txid)
+
+                        m = parseTx(rawtx)
+                        e = getSignableTxn(m)
+                        for i in range(len(e)):
+                            data = []
+                            hex1= e[i][0]
+                            r = int(hex1, 16)
+                            lengthr = len(bin(r))
+                            lengthr -=2
+                            hex2= e[i][1]
+                            s = int(hex2, 16)
+                            lengths = len(bin(s))
+                            lengths -=2
+                            hex3= e[i][2]
+                            z = int(hex3, 16)
+                            lengthz = len(bin(z))
+                            lengthz -=2
+                            pubkey = e[i][3]
+                            print ('Current Transation = ',txid)
+                            print('='*70,f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n K for R = {r} {lengthr}  bits\n     S: {e[i][1]}\n K for S = {s} {lengths}  bits \n     Z: {e[i][2]}\n K for Z = {z} {lengthz}  bits \nPubKey: {e[i][3]}')
+                            if i == 50:
+                                print ('Sleep 10 Seconds Please wait Loading Next Transactions')
+                                time.sleep(10)
+                            f=open('filefull.txt','a')
+                            f.write(f'\n[Input Index #: {i}]\n     R: {e[i][0]}\n K for R = {r} {lengthr}  bits\n     S: {e[i][1]}\n K for S = {s} {lengths}  bits\n     Z: {e[i][2]}\n K for Z = {z} {lengthz}  bits \nPubKey: {e[i][3]}')
+                            f.close
+                            data = [txid, f'{i}', f'{e[i][0]}', f'{r}', f'{lengthr}', f'{e[i][1]}', f'{s}', f'{lengths}', f'{e[i][2]}', f'{z}', f'{lengthz}', f'{e[i][3]}']
+                            writer.writerow(data)
         else:
-            print("WRONG NUMBER!!! MUST CHOSE 1 - 3 ")
+            print("WRONG NUMBER!!! MUST CHOSE 1 - 4 ")
 
     elif start == 12:
         prompt123= '''
@@ -612,6 +818,7 @@ while True:
             for data_w in divsion:
                 HEX = data_w['HEX']
                 print('Percent', data_w['percent'], ' : Privatekey (hex): ', data_w['HEX'])
+                time.sleep(3.0)
                 with open("hex.txt", "a") as f:
                     f.write(f"""\nPercent{data_w['percent']} Privatekey (hex): {data_w['HEX']}""")
                     f.close
@@ -621,6 +828,7 @@ while True:
             for data_w in divsion:
                 seed = data_w['seed']
                 print('Percent', data_w['percent'], ' : Privatekey (dec): ', data_w['seed'])
+                time.sleep(3.0)
                 with open("dec.txt", "a") as f:
                     f.write(f"""\nPercent{data_w['percent']} Privatekey (dec): {data_w['seed']}""")
                     f.close
@@ -817,8 +1025,7 @@ while True:
                         f.write(f"""\nMnemonic_words:  {mnemonic_words}
                         Derivation Path:  {target_wallet['path']}
                         Privatekey WIF:  {target_wallet['privatekey']}
-                        Public Address Bitcoin:  {target_wallet['address']}
-                        =====Made by mizogg.co.uk Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 =====""")
+                        Public Address Bitcoin:  {target_wallet['address']}""")
             else:
                 if display == 1:
                     print(' [' + str(count) + '] ------------------------')
@@ -886,7 +1093,7 @@ while True:
             else:
                 if iteration % 10000 == 0:
                     elapsed = time.time() - start_time
-                    print(f'It/CPU={iteration} checked={count} Hex={HEX} Keys/Sec={iteration / elapsed:.1f}')
+                    print(f'It/CPU={iteration} checked={count} Hex={HEX} ')
     elif start == 18:
         promptsequence= '''
     *********************** Bitcoin sequence Divison in Range Tool ************************
@@ -948,8 +1155,7 @@ while True:
                             Public Address 1 Uncompressed:  {data_w['uaddr']}
                             Public Address 1 Compressed:  {data_w['caddr']}
                             Public Address 3 P2SH:  {data_w['p2sh']}
-                            Public Address bc1 BECH32:  {data_w['bech32']}
-                            =====Made by mizogg.co.uk Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 =====""")
+                            Public Address bc1 BECH32:  {data_w['bech32']}""")
                             
                     else:
                         if display == 1:
@@ -1045,8 +1251,7 @@ while True:
             else:
                 if iteration % 10000 == 0:
                     elapsed = time.time() - start_time
-                    addper= round(iteration / elapsed)*8
-                    print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
+                    print(f'It/CPU={iteration} checked={count} Hex={HEXk1} ')
     elif start == 20:
         promptinversesq= '''
     *********************** Bitcoin sequence Inverse K Range Tool *****************************
@@ -1124,8 +1329,7 @@ while True:
                 f.write('\nPublic Address bc1 BECH32: ' + BECH32k2)
             else:
                 if iteration % 10000 == 0:
-                    addper= round(iteration / elapsed)*8
-                    print(f'It/CPU={iteration} checked={count} Address/Sec={addper} Keys/Sec={iteration / elapsed:.1f}')
+                    print(f'It/CPU={iteration} checked={count} Hex={HEXk1} ')
         
     elif start == 21:
         promptWIF= '''
@@ -1223,5 +1427,415 @@ while True:
                 print(f.text)
 
         myfile.close()
+    
+    elif start == 23:
+        promptADD2PUB= '''
+    *********************** Public Key from file to Bitcoin Addresses Tool ********************
+    *                                                                                         *
+    *    ** This Tool needs a file called pubkeys.txt with a list of Public Keys              *
+    *    ** Your list of Public Keys will be Coverted to Bitcion Addresses  [OFF Line]        *
+    *    ** All THE PUBLIC KEY INFORMATION WILL BE SAVE TO (add_info.txt)                     *
+    *                                                                                         *
+    *********************** Public Key from file to Bitcoin Addresses Tool ********************
+        '''
+        print(promptADD2PUB)
+        time.sleep(0.5)
+        print('public keys Loading to Bitcion Addresses please wait ................:')
+        import hashlib, base58
+        with open('pubkeys.txt', newline='', encoding='utf-8') as f:
+            for line in f:
+                mylist.append(line.strip())
+
+        for i in range(0,len(mylist)):
+            pubkey = mylist[i]
+            compress_pubkey = False
+            if (compress_pubkey):
+                if (ord(bytearray.fromhex(pubkey[-2:])) % 2 == 0):
+                    pubkey_compressed = '02'
+                else:
+                    pubkey_compressed = '03'
+                pubkey_compressed += pubkey[2:66]
+                hex_str = bytearray.fromhex(pubkey_compressed)
+            else:
+                hex_str = bytearray.fromhex(pubkey)
+            key_hash = '00' + hash160pub(hex_str)
+            sha = hashlib.sha256()
+            sha.update( bytearray.fromhex(key_hash) )
+            checksum = sha.digest()
+            sha = hashlib.sha256()
+            sha.update(checksum)
+            checksum = sha.hexdigest()[0:8]
+
+            print ( "checksum = \t" + sha.hexdigest() )
+            print ( "key_hash + checksum = \t" + key_hash + ' ' + checksum )
+            print ( "bitcoin address = \t" + (base58.b58encode( bytes(bytearray.fromhex(key_hash + checksum)) )).decode('utf-8') )
+            f=open('add_info.txt','a')
+            f.write( "\nchecksum = \t" + sha.hexdigest() )
+            f.write( "\nkey_hash + checksum = \t" + key_hash + ' ' + checksum )
+            f.write( "\nbitcoin address = \t" + (base58.b58encode( bytes(bytearray.fromhex(key_hash + checksum)) )).decode('utf-8') + '\n')
+            f.close()
+
+    elif start == 24:
+        print ('Ethereum Address Balance and Info Check Tool')
+        ethadd = str(input('Enter Your ETH Address Here : '))
+        blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
+        ress = blocs.json()
+        address = dict(ress)['address']
+        countTxs = dict(ress)['countTxs']
+        ETHbalance = dict(ress)['ETH']['balance']
+        tokens = dict(ress)['tokens']
+        print(f''' 
+         |==============================================|=======|=====================|
+         | Ethereum (ETH) Address                       |No. TXS|Balance              |
+         |==============================================|=======|=====================|
+         | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''   |
+         |==============================================|============|=======|=================================|
+         | Ethereum Token Address                       |HoldersCount|Symbol |Name of Token                    |
+         |==============================================|============|=======|=================================|''')
+
+        for row in tokens:
+            tokenInfo= row['tokenInfo']
+            taddress = tokenInfo['address']
+            symbol = tokenInfo['symbol']
+            holdersCount= tokenInfo['holdersCount']
+            name =tokenInfo['name']
+            print (' | ', taddress, ' | ', holdersCount, ' | ', symbol, '|', name, '|')
+            time.sleep(3.0)
+    elif start == 25:
+        print('Hexadecimal to Decimal Tool')
+        HEX = str(input('Enter Your Hexadecimal HEX Here : '))
+        dec = int(HEX, 16)
+        length = len(bin(dec))
+        length -=2
+        PRIVATE_KEY = "%064x" % dec
+        hdwallet: HDWallet = HDWallet(symbol=SYMBOL)
+        hdwallet.from_private_key(private_key=PRIVATE_KEY)
+        ethadd = hdwallet.p2pkh_address()
+        print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec, '  bits ', length)
+        print("Cryptocurrency:", hdwallet.cryptocurrency())
+        print("Symbol:", hdwallet.symbol())
+        print("Network:", hdwallet.network())
+        print("Uncompressed:", hdwallet.uncompressed())
+        print("Compressed:", hdwallet.compressed())
+        print("Private Key:", hdwallet.private_key())
+        print("Public Key:", hdwallet.public_key())
+        print("Finger Print:", hdwallet.finger_print())
+        print("Hash:", hdwallet.hash())
+        blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
+        ress = blocs.json()
+        address = dict(ress)['address']
+        countTxs = dict(ress)['countTxs']
+        ETHbalance = dict(ress)['ETH']['balance']
+        print(f''' 
+         |==============================================|=======|=========|
+         | Ethereum (ETH) Address                       |No. TXS|Balance  |
+         |==============================================|=======|=========|
+         | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''    | ''')
+        time.sleep(3.0)
+    elif start == 26:
+        print('Decimal to Hexadecimal Tool')
+        dec = int(input('Enter Your Decimal DEC Here : '))
+        HEX = "%064x" % dec
+        length = len(bin(dec))
+        length -=2
+        hdwallet: HDWallet = HDWallet(symbol=SYMBOL)
+        hdwallet.from_private_key(private_key=HEX)
+        ethadd = hdwallet.p2pkh_address()
+        print('\nDecimal = ', dec, '  bits ', length, '\nTo Hexadecimal = ', HEX)
+        print("Cryptocurrency:", hdwallet.cryptocurrency())
+        print("Symbol:", hdwallet.symbol())
+        print("Network:", hdwallet.network())
+        print("Uncompressed:", hdwallet.uncompressed())
+        print("Compressed:", hdwallet.compressed())
+        print("Private Key:", hdwallet.private_key())
+        print("Public Key:", hdwallet.public_key())
+        print("Finger Print:", hdwallet.finger_print())
+        print("Hash:", hdwallet.hash())
+        blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
+        ress = blocs.json()
+        address = dict(ress)['address']
+        countTxs = dict(ress)['countTxs']
+        ETHbalance = dict(ress)['ETH']['balance']
+        print(f''' 
+         |==============================================|=======|=========|
+         | Ethereum (ETH) Address                       |No. TXS|Balance  |
+         |==============================================|=======|=========|
+         | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''    | ''')
+        time.sleep(3.0)
+    elif start ==27:
+        promptword= '''
+    ************************* Mnemonic Words 12/15/18/21/24 tool ************************* 
+    *                                                                                    *
+    *    1-OWN WORDS to DEC & HEX with TX Check [Internet required]                      *
+    *    2-Generated WORDS to DEC & HEX with TX Check [Internet required]                *
+    *    Type 1-2 to Start                                                               *
+    *                                                                                    *
+    ************************* Mnemonic Words 12/15/18/21/24 tool *************************
+        '''
+        startwords=int(input(promptword))
+        if startwords == 1:
+            MNEMONIC: str = input(' Type your Own Words Here = ')
+            Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+            if Lang == 1:
+                Lang1 = "english"
+            elif Lang == 2:
+                Lang1 = "french"
+            elif Lang == 3:
+                Lang1 = "italian"
+            elif Lang == 4:
+                Lang1 = "spanish"
+            elif Lang == 5:
+                Lang1 = "chinese_simplified"
+            elif Lang == 6:
+                Lang1 = "chinese_traditional"
+            elif Lang == 7:
+                Lang1 = "japanese"
+            elif Lang == 8:
+                Lang1 = "korean"
+            else:
+                print("WRONG NUMBER!!! Starting with english")
+                Lang1 = "english"
+            PASSPHRASE: Optional[str] = None
+            bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
+            bip44_hdwallet.from_mnemonic(
+                mnemonic=MNEMONIC, language=Lang1, passphrase=PASSPHRASE
+            )
+            bip44_hdwallet.clean_derivation()
+            mnemonic_words = bip44_hdwallet.mnemonic()
+            ethadd = bip44_hdwallet.address()
+            HEX = bip44_hdwallet.private_key()
+            dec = int(bip44_hdwallet.private_key(), 16)
+            length = len(bin(dec))
+            length -=2
+            print('\nmnemonic_words  : ', mnemonic_words)
+            print('\nPrivatekey (dec): ', dec, '  bits ', length, '\nPrivatekey (hex): ', HEX)
+            blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
+            ress = blocs.json()
+            address = dict(ress)['address']
+            countTxs = dict(ress)['countTxs']
+            ETHbalance = dict(ress)['ETH']['balance']
+            print(f''' 
+             |==============================================|=======|=========|
+             | Ethereum (ETH) Address                       |No. TXS|Balance  |
+             |==============================================|=======|=========|
+             | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''    | ''')
+            time.sleep(3.0)
+
+        if startwords == 2:
+            print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
+            R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
+            if R == 12:
+                s1 = 128
+            elif R == 15:
+                s1 = 160
+            elif R == 18:
+                s1 = 192
+            elif R == 21:
+                s1 = 224
+            elif R == 24:
+                s1 = 256
+            else:
+                print("WRONG NUMBER!!! Starting with 24 Words")
+                s1 = 256
+            Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+            if Lang == 1:
+                Lang1 = "english"
+            elif Lang == 2:
+                Lang1 = "french"
+            elif Lang == 3:
+                Lang1 = "italian"
+            elif Lang == 4:
+                Lang1 = "spanish"
+            elif Lang == 5:
+                Lang1 = "chinese_simplified"
+            elif Lang == 6:
+                Lang1 = "chinese_traditional"
+            elif Lang == 7:
+                Lang1 = "japanese"
+            elif Lang == 8:
+                Lang1 = "korean"
+            else:
+                print("WRONG NUMBER!!! Starting with english")
+                Lang1 = "english"
+            MNEMONIC: str = generate_mnemonic(language=Lang1, strength=s1)
+            PASSPHRASE: Optional[str] = None
+            bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
+            bip44_hdwallet.from_mnemonic(
+                mnemonic=MNEMONIC, language=Lang1, passphrase=PASSPHRASE
+            )
+            bip44_hdwallet.clean_derivation()
+            mnemonic_words = bip44_hdwallet.mnemonic()
+            ethadd = bip44_hdwallet.address()
+            HEX = bip44_hdwallet.private_key()
+            dec = int(bip44_hdwallet.private_key(), 16)
+            length = len(bin(dec))
+            length -=2
+            print('\nmnemonic_words  : ', mnemonic_words)
+            print('\nPrivatekey (dec): ', dec, '  bits ', length, '\nPrivatekey (hex): ', HEX)
+            blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
+            ress = blocs.json()
+            address = dict(ress)['address']
+            countTxs = dict(ress)['countTxs']
+            ETHbalance = dict(ress)['ETH']['balance']
+            print(f''' 
+             |==============================================|=======|=========|
+             | Ethereum (ETH) Address                       |No. TXS|Balance  |
+             |==============================================|=======|=========|
+             | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''    | ''')
+            time.sleep(3.0)
+        
+    elif start ==28:
+        filename ='eth.txt'
+        with open(filename) as f:
+            line_count = 0
+            for line in f:
+                line != "\n"
+                line_count += 1
+        eth_list = [line.split()[0].lower() for line in open(filename,'r')]
+        eth_list = set(eth_list)
+        print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
+        R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
+        if R == 12:
+            s1 = 128
+        elif R == 15:
+            s1 = 160
+        elif R == 18:
+            s1 = 192
+        elif R == 21:
+            s1 = 224
+        elif R == 24:
+            s1 = 256
+        else:
+            print("WRONG NUMBER!!! Starting with 24 Words")
+            s1 = 256
+        divs = int(input("How Many Derivation Paths? m/44'/60'/0'/0/0/ to m/44'/60'/0'/0/???? -> "))
+        Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+        if Lang == 1:
+            Lang1 = "english"
+        elif Lang == 2:
+            Lang1 = "french"
+        elif Lang == 3:
+            Lang1 = "italian"
+        elif Lang == 4:
+            Lang1 = "spanish"
+        elif Lang == 5:
+            Lang1 = "chinese_simplified"
+        elif Lang == 6:
+            Lang1 = "chinese_traditional"
+        elif Lang == 7:
+            Lang1 = "japanese"
+        elif Lang == 8:
+            Lang1 = "korean"
+        else:
+            print("WRONG NUMBER!!! Starting with english")
+            Lang1 = "english"
+        display = int(input('1=Full Display (Slower) 2=Slient Mode (Faster) : '))
+        while True:
+            data=[]
+            count += 1
+            total += divs
+            MNEMONIC: str = generate_mnemonic(language=Lang1, strength=s1)
+            PASSPHRASE: Optional[str] = None
+            bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
+            bip44_hdwallet.from_mnemonic(
+                mnemonic=MNEMONIC, language=Lang1, passphrase=PASSPHRASE
+            )
+            bip44_hdwallet.clean_derivation()
+            mnemonic_words = bip44_hdwallet.mnemonic()
+            data_eth()
+            for target_wallet in data:
+                address = target_wallet['address'].lower()
+                if address in eth_list:
+                    print('\nMatch Found')
+                    print('\nmnemonic_words  : ', mnemonic_words)
+                    print('Derivation Path : ', target_wallet['path'], ' : ETH Address : ', target_wallet['address'])
+                    print('Privatekey  : ', target_wallet['privatekey'])
+                    print('Privatekey DEC : ', target_wallet['privatedec'])
+                    with open("winner.txt", "a") as f:
+                        f.write(f"""\nMnemonic_words:  {mnemonic_words}
+                        Derivation Path:  {target_wallet['path']}
+                        Privatekey : {target_wallet['privatekey']}
+                        Public Address ETH:  {target_wallet['address']}""")
+            else:
+                if display == 1:
+                    print(' [' + str(count) + '] ------------------------')
+                    print('Total Checked [' + str(total) + '] ')
+                    print('\nmnemonic_words  : ', mnemonic_words)
+                    for bad_wallet in data:
+                        print('Derivation Path : ', bad_wallet['path'], ' : ETH Address : ', bad_wallet['address'])
+                        print('Privatekey : ', bad_wallet['privatekey'])
+                        print('Privatekey DEC : ', bad_wallet['privatedec'])
+                if display == 2:
+                    print(' [' + str(count) + '] ------', 'Total Checked [' + str(total) + '] ', end='\r')
+    elif start ==29:
+        print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
+        R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
+        if R == 12:
+            s1 = 128
+        elif R == 15:
+            s1 = 160
+        elif R == 18:
+            s1 = 192
+        elif R == 21:
+            s1 = 224
+        elif R == 24:
+            s1 = 256
+        else:
+            print("WRONG NUMBER!!! Starting with 24 Words")
+            s1 = 256
+        divs = int(input("How Many Derivation Paths? m/44'/60'/0'/0/0/ to m/44'/60'/0'/0/???? -> "))
+        Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
+        if Lang == 1:
+            Lang1 = "english"
+        elif Lang == 2:
+            Lang1 = "french"
+        elif Lang == 3:
+            Lang1 = "italian"
+        elif Lang == 4:
+            Lang1 = "spanish"
+        elif Lang == 5:
+            Lang1 = "chinese_simplified"
+        elif Lang == 6:
+            Lang1 = "chinese_traditional"
+        elif Lang == 7:
+            Lang1 = "japanese"
+        elif Lang == 8:
+            Lang1 = "korean"
+        else:
+            print("WRONG NUMBER!!! Starting with english")
+            Lang1 = "english"
+        display = int(input('1=Full Display (Slower) 2=Slient Mode (Faster) : '))
+        while True:
+            data=[]
+            count += 1
+            total += divs
+            MNEMONIC: str = generate_mnemonic(language=Lang1, strength=s1)
+            PASSPHRASE: Optional[str] = None
+            bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
+            bip44_hdwallet.from_mnemonic(
+                mnemonic=MNEMONIC, language=Lang1, passphrase=PASSPHRASE
+            )
+            bip44_hdwallet.clean_derivation()
+            mnemonic_words = bip44_hdwallet.mnemonic()
+            data_eth()
+            for target_wallet in data:
+                ethadd = target_wallet['address']
+                blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
+                ress = blocs.json()
+                address = dict(ress)['address']
+                countTxs = dict(ress)['countTxs']
+                ETHbalance = dict(ress)['ETH']['balance']
+                print(f''' 
+                 |==============================================|=======|=========|
+                 | Ethereum (ETH) Address                       |No. TXS|Balance  |
+                 |==============================================|=======|=========|
+                 | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''     | ''')
+                time.sleep(0.20)
+                if countTxs > 0:
+                    with open("winner.txt", "a") as f:
+                        f.write(f"""\nMnemonic_words:  {mnemonic_words}
+                        Derivation Path:  {target_wallet['path']}
+                        Privatekey : {target_wallet['privatekey']}
+                        Public Address ETH:  {target_wallet['address']}""")
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 22 ")
+        print("WRONG NUMBER!!! MUST CHOSE 1 - 29 ")
