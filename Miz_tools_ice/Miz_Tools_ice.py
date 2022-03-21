@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 '''
 Made by Mizogg Tools to Help Look for Bitcoin\Dogecoin\ETH. Good Luck and Happy Hunting Miz_Tools_ice.py Version 10 Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4 
-29 Bitcoin\Dogecoin\ETH Tools
+31 Bitcoin\Dogecoin\ETH Tools
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
 https://mizogg.co.uk
@@ -344,10 +344,11 @@ prompt= '''
     *                                                                           *
     *                   Extras Miscellaneous Tools                              *
     *    Option 30.Doge Coin sequential Scan Balance Check [ONLINE]      = 30   *
+    *    Option 31.Doge Coin Random Scan Balance Check [ONLINE]          = 31   *
     *                                                                           *
     *************** Main Menu Mizogg's All Tools made in Python *****************
 
-Type You Choice Here Enter 1-30 : 
+Type You Choice Here Enter 1-31 : 
 '''
 
 mylistapi = []
@@ -1881,28 +1882,68 @@ while True:
         print("Starting search... Please Wait min range: " + str(a))
         print("️Max range: " + str(b))
         P = a
-    while P<b:
-        P+=m
-        ran= P
-        seed = int(ran)
-        HEX = "%064x" % ran
-        dogeaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, True, seed) #DOGE
-        dogeuaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, False, seed) #DOGE
-        balanceDoge = get_doge(dogeaddr)
-        balanceDoge1 = get_doge(dogeuaddr)
-        time.sleep(1.0) #Can be removed
-        if float(balanceDoge) > float(ammount) or float(balanceDoge1) < ammount:
-            print('\n Match Found')
-            print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPublic Address DOGE Uncompressed : ', dogeuaddr, '  Balance = ',  str(balanceDoge1), '\nPublic Address DOGE Compressed   : ', dogeaddr, '  Balance = ',  str(balanceDoge))
-            f=open("winner.txt","a")
-            f.write('\nPrivatekey (dec): ' + str(seed))
-            f.write('\nPrivatekey (hex): ' + HEX)
-            f.write('\nPublic Address DOGE Compressed: ' + dogeaddr  + ' : ' +  str(balanceDoge))
-            f.write('\nPublic Address DOGE Uncompressed: ' + dogeuaddr  + ' : ' +  str(balanceDoge1))
-            f.write('\n============================================================')
-            f.close()
-        else:
-            print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPublic Address DOGE Uncompressed : ', dogeuaddr, '  Balance = ',  str(balanceDoge1), '\nPublic Address DOGE Compressed   : ', dogeaddr, '  Balance = ',  str(balanceDoge))
+        while P<b:
+            P+=m
+            ran= P
+            seed = int(ran)
+            HEX = "%064x" % ran
+            dogeaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, True, seed) #DOGE
+            dogeuaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, False, seed) #DOGE
+            balanceDoge = get_doge(dogeaddr)
+            balanceDoge1 = get_doge(dogeuaddr)
+            time.sleep(1.0) #Can be removed
+            if float(balanceDoge) > float(ammount) or float(balanceDoge1) < ammount:
+                print('\n Match Found')
+                print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPublic Address DOGE Uncompressed : ', dogeuaddr, '  Balance = ',  str(balanceDoge1), '\nPublic Address DOGE Compressed   : ', dogeaddr, '  Balance = ',  str(balanceDoge))
+                f=open("winner.txt","a")
+                f.write('\nPrivatekey (dec): ' + str(seed))
+                f.write('\nPrivatekey (hex): ' + HEX)
+                f.write('\nPublic Address DOGE Compressed: ' + dogeaddr  + ' : ' +  str(balanceDoge))
+                f.write('\nPublic Address DOGE Uncompressed: ' + dogeuaddr  + ' : ' +  str(balanceDoge1))
+                f.write('\n============================================================')
+                f.close()
+            else:
+                print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPublic Address DOGE Uncompressed : ', dogeuaddr, '  Balance = ',  str(balanceDoge1), '\nPublic Address DOGE Compressed   : ', dogeaddr, '  Balance = ',  str(balanceDoge))
     
+    elif start ==31:
+        promptdoger= '''
+    *********************** Doge Random Balance Check Tool *****************************
+    *                                                                                    *
+    *    ** Dogecoin Random Balance Check Tool Requires internet                       *
+    *    ** ANY MATCHING BALANCES GENERATED FOUND WILL SAVE TO(winner.txt)               *
+    *                                                                                    *
+    *********************** Doge Random Balance Check Tool *****************************
+        '''
+        print(promptdoger)
+        time.sleep(1)
+        print("Start search... Pick Range to start (Min=0 Max=256)")
+        x=int(input("Start range in BITs 0 or 255 (Max255) -> "))
+        start = 2**x
+        y=int(input("Stop range Max in BITs 256 Max (StopNumber)-> "))
+        stop = 2**y
+        print("Starting search... Please Wait min range: " + str(start))
+        print("️Max range: " + str(stop))
+        while True:
+            ran=random.randrange(start,stop)
+            seed = int(ran)
+            HEX = "%064x" % ran
+            dogeaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, True, seed) #DOGE
+            dogeuaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, False, seed) #DOGE
+            balanceDoge = get_doge(dogeaddr)
+            balanceDoge1 = get_doge(dogeuaddr)
+            time.sleep(1.0) #Can be removed
+            if float(balanceDoge) > float(ammount) or float(balanceDoge1) < ammount:
+                print('\n Match Found')
+                print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPublic Address DOGE Uncompressed : ', dogeuaddr, '  Balance = ',  str(balanceDoge1), '\nPublic Address DOGE Compressed   : ', dogeaddr, '  Balance = ',  str(balanceDoge))
+                f=open("winner.txt","a")
+                f.write('\nPrivatekey (dec): ' + str(seed))
+                f.write('\nPrivatekey (hex): ' + HEX)
+                f.write('\nPublic Address DOGE Compressed: ' + dogeaddr  + ' : ' +  str(balanceDoge))
+                f.write('\nPublic Address DOGE Uncompressed: ' + dogeuaddr  + ' : ' +  str(balanceDoge1))
+                f.write('\n============================================================')
+                f.close()
+            else:
+                print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPublic Address DOGE Uncompressed : ', dogeuaddr, '  Balance = ',  str(balanceDoge1), '\nPublic Address DOGE Compressed   : ', dogeaddr, '  Balance = ',  str(balanceDoge))
+            
     else:
-        print("WRONG NUMBER!!! MUST CHOSE 1 - 30 ")
+        print("WRONG NUMBER!!! MUST CHOSE 1 - 31 ")
