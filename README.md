@@ -1,5 +1,5 @@
 # Mizogg-Tools
-Tools for Bitcoin and ETH Information Balance, HASH160, DEC, Transactions and much more.
+Tools for Bitcoin Dogecoin and ETH Information Balance, HASH160, DEC, Transactions and much more.
 
 Install_libraries.bat to get started( Only needs to be done once)
 
@@ -17,8 +17,8 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *    Option 4.Brain Wallet Bitcoin with Balance Check              =  4     *
     *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)     [Offline]     =  5     *
     *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)     [Offline]     =  6     *
-    *    Option 7.Hexadecimal to Bitcoin Address with Balance Check    =  7     *
-    *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
+    *    Option 7.Hexadecimal to Bitcoin\Dogecoin Address with Balance Check=7  *
+    *    Option 8.Decimal to Bitcoin\Dogecoin Address with Balance Check= 8     *
     *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
     *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
     *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
@@ -34,49 +34,24 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *    Option 19.Bitcoin random Inverse K position      [Offline]    = 19     *
     *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
     *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
-    *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
+    *    Option 22.Bitcoin Addresses from file to Public Key [OnLine]  = 22     *
+    *    Option 23.Public Key from file to Bitcoin Addresses           = 23     *
     *                                                                           *
-    **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
+    *                 ETH Generators & Multi Check Tools                        *
+    *    Option 24.ETH Address with TXS Check         [Internet required]= 24   *
+    *    Option 25.Hexadecimal to Decimal (HEX 2 DEC) [Internet required]= 25   *
+    *    Option 26.Decimal to Hexadecimal (DEC 2 HEX) [Internet required]= 26   *
+    *    Option 27.Mnemonic Words to dec and hex      [Internet required]= 27   *
+    *    Option 28.Mnemonic Words Generator Random Choice [Offline]      = 28   *
+    *    Option 29.Mnemonic Words Generator Random Choice [ONLINE]       = 29   *
+    *                                                                           *
+    *************** Main Menu Mizogg's All Tools made in Python *****************
 
-    Type You Choice Here Enter 1-22 :
+      Type You Choice Here Enter 1-29 : 
      
 ## Miz_Tools_bit.py Version 4  Check https://mizogg.co.uk for more tools and info
 
 test it here https://replit.com/@Mizogg/Mizogg-Bitcoin-Tools?v=1
-
-Using Bit Library made in Python Only 1 file needed
-
-    ************************ Main Menu Mizogg's Tools ***************************
-    *                       Single Check Tools                                  *
-    *    Option 1.Bitcoin Address with Balance Check                   =  1     *
-    *    Option 2.Bitcoin Address to HASH160 Only Addresses starting 1 =  2     *
-    *    Option 3.HASH160 to Bitcoin Address(Not Working)              =  3     *
-    *    Option 4.Brain Wallet Bitcoin with Balance Check              =  4     *
-    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)     [Offline]     =  5     *
-    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)     [Offline]     =  6     *
-    *    Option 7.Hexadecimal to Bitcoin Address with Balance Check    =  7     *
-    *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
-    *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
-    *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
-    *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
-    *    Option 12.Range Divsion IN HEX or DEC tool      [Offline]     =  12    *
-    *                                                                           *
-    *                    Generators & Multi Check Tools                         *
-    *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
-    *    Option 14.Bitcoin Addresses from file to HASH160 file  Only 1 = 14     *
-    *    Option 15.Brain Wallet list from file with Balance Check      = 15     *
-    *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
-    *    Option 17.Bitcoin random scan randomly in Range  [Offline]    = 17     *
-    *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
-    *    Option 19.Bitcoin random Inverse K position      [Offline]    = 19     *
-    *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
-    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
-    *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
-    *    Option 23.Public Key from file to Bitcoin Addresses           = 23     *
-    *                                                                           *
-    ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
-
-    Type You Choice Here Enter 1-23 :
 
     7
     Hexadecimal to Bitcoin Address Tool
@@ -93,41 +68,6 @@ Using Bit Library made in Python Only 1 file needed
     {'address': '1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH', 'final_balance': 0, 'n_tx': 62, 'total_received': 15211855, 'total_sent': 15211855}
     
 NEW RSZ ADDED
-
-    ************************ Main Menu Mizogg's Tools ***************************
-    *                       Single Check Tools                                  *
-    *    Option 1.Bitcoin Address with Balance Check                   =  1     *
-    *    Option 2.Bitcoin Address to HASH160 Only Addresses starting 1 =  2     *
-    *    Option 3.HASH160 to Bitcoin Address(Not Working)              =  3     *
-    *    Option 4.Brain Wallet Bitcoin with Balance Check              =  4     *
-    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)     [Offline]     =  5     *
-    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)     [Offline]     =  6     *
-    *    Option 7.Hexadecimal to Bitcoin Address with Balance Check    =  7     *
-    *    Option 8.Decimal to Bitcoin Address with Balance Check        =  8     *
-    *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
-    *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
-    *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
-    *    Option 12.Range Divsion IN HEX or DEC tool      [Offline]     =  12    *
-    *                                                                           *
-    *                    Generators & Multi Check Tools                         *
-    *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
-    *    Option 14.Bitcoin Addresses from file to HASH160 file  Only 1 = 14     *
-    *    Option 15.Brain Wallet list from file with Balance Check      = 15     *
-    *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
-    *    Option 17.Bitcoin random scan randomly in Range  [Offline]    = 17     *
-    *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
-    *    Option 19.Bitcoin random Inverse K position      [Offline]    = 19     *
-    *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
-    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
-    *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
-    *    Option 23.Public Key from file to Bitcoin Addresses           = 23     *
-    *                                                                           *
-    *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
-    ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
-
-    Type You Choice Here Enter 1-23 :
-
-      11
 
         1-txid  blockchain API R,S,Z calculation starts. [Internet required]
         2-rawtx R,S,Z,Pubkey for each of the inputs present in the rawtx data. [No Internet required]
@@ -151,10 +91,10 @@ NEW RSZ ADDED
 
 test it here https://replit.com/@Mizogg/Mizogg-Tools?v=1
 
-New All Tools in one 29 Options for Bitcoin and ETH. Only On https://mizogg.co.uk
+New All Tools in one 29 Options for Bitcoin DogeCoinand ETH. Only On https://mizogg.co.uk
 
 ![image](https://user-images.githubusercontent.com/88630056/156468112-201daba9-dc05-4179-9286-8f5996e5f19b.png)
 
 https://user-images.githubusercontent.com/88630056/156468157-0ab9a2ac-91f5-48f5-9214-d42c56d37a3e.mp4
 
-## Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
+### Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
