@@ -340,7 +340,7 @@ prompt=colour_purple + '''
     *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
     *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
     *    Option 22.Bitcoin Addresses from file to Public Key [OnLine]  = 22     *
-    *    Option 23.Public Key from file to Bitcoin Addresses           = 23     *
+    *    Option 23.Public Key from file to Bitcoin Addresses(NOTWORKING)= 23    *
     *                                                                           *'''+colour_purple +'''
     *                 ETH Generators & Multi Check Tools                        *
     *    Option 24.ETH Address with Balance Check&Tokens[Internet required]= 24 *
@@ -350,9 +350,12 @@ prompt=colour_purple + '''
     *    Option 28.Mnemonic Words Generator Random Choice  [Offline]      = 28  *
     *    Option 29.Mnemonic Words Generator Random Choice  [ONLINE]       = 29  *'''+  colour_reset +'''
     *                                                                           *
+    ''' + colour_red + '''*                   Extras Miscellaneous Tools                              *
+    *    Option 30.Doge Coin sequential Scan Balance Check [ONLINE]      = 30   *'''+  colour_reset +'''
+    *                                                                           *
     ******** Main Menu Mizogg's All Tools Colour Version made in Python *********
 
-Type You Choice Here Enter 1-29 :  '''
+Type You Choice Here Enter 1-30 :  '''
 
 mylistapi = []
 while True:
@@ -1865,5 +1868,47 @@ while True:
                         Derivation Path:  {target_wallet['path']}
                         Privatekey : {target_wallet['privatekey']}
                         Public Address ETH:  {target_wallet['address']}""")
+    elif start ==30:
+        promptdoge= colour_purple + '''
+    *********************** Doge sequence Balance Check Tool *****************************''' + colour_reset + '''
+    *                                                                                    *
+    *    ** Dogecoin sequence Balance Check Tool Requires internet                       *
+    *    ** ANY MATCHING BALANCES GENERATED FOUND WILL SAVE TO(winner.txt)               *
+    *                                                                                    *
+    ''' + colour_purple + '''*********************** Doge sequence Balance Check Tool *****************************''' + colour_reset + '''
+        '''
+        print(promptdoge)
+        time.sleep(1)
+        print(colour_yellow + "Start search... Pick Range to start (Min=0 Max=256)" + colour_reset)
+        x=int(input("Start range in BITs 0 or 255 (Max255) -> "))
+        a = 2**x
+        y=int(input("Stop range Max in BITs 256 Max (StopNumber)-> "))
+        b = 2**y
+        m=int(input("Magnitude Jump Stride -> "))
+        print(colour_yellow + "Starting search... Please Wait min range: " + str(a) + colour_reset)
+        print(colour_yellow + "️Max range: " + str(b) + colour_reset)
+        P = a
+    while P<b:
+        P+=m
+        ran= P
+        seed = int(ran)
+        HEX = "%064x" % ran
+        dogeaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, True, seed) #DOGE
+        dogeuaddr = ice.privatekey_to_coinaddress(ice.COIN_DOGE, 0, False, seed) #DOGE
+        balanceDoge = get_doge(dogeaddr)
+        balanceDoge1 = get_doge(dogeuaddr)
+        time.sleep(1.0) #Can be removed
+        if float(balanceDoge) > float(ammount) or float(balanceDoge1) < ammount:
+            print(colour_green + '\n Match Found' + colour_reset)
+            print(colour_green + '\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPublic Address DOGE Uncompressed : ', dogeuaddr, '  Balance = ',  str(balanceDoge1), '\nPublic Address DOGE Compressed   : ', dogeaddr, '  Balance = ',  str(balanceDoge) + colour_reset)
+            f=open("winner.txt","a")
+            f.write('\nPrivatekey (dec): ' + str(seed))
+            f.write('\nPrivatekey (hex): ' + HEX)
+            f.write('\nPublic Address DOGE Compressed: ' + dogeaddr  + ' : ' +  str(balanceDoge))
+            f.write('\nPublic Address DOGE Uncompressed: ' + dogeuaddr  + ' : ' +  str(balanceDoge1))
+            f.write('\n============================================================')
+            f.close()
+        else:
+            print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPublic Address DOGE Uncompressed : ', dogeuaddr, '  Balance = ',  str(balanceDoge1), '\nPublic Address DOGE Compressed   : ', dogeaddr, '  Balance = ',  str(balanceDoge))
     else:
-        print(colour_red + "WRONG NUMBER!!! MUST CHOSE 1 - 29 " + colour_reset)
+        print(colour_red + "WRONG NUMBER!!! MUST CHOSE 1 - 30 " + colour_reset)
