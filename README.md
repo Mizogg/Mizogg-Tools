@@ -5,7 +5,7 @@ Install_libraries.bat to get started( Only needs to be done once)
 
 then to run use any of the start.bat files
 
-## Miz_Tools_ice.py Version 10 Total 29 Tools
+## Miz_Tools_ice.py Version 10 Total 30 Tools
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
@@ -45,9 +45,12 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *    Option 28.Mnemonic Words Generator Random Choice [Offline]      = 28   *
     *    Option 29.Mnemonic Words Generator Random Choice [ONLINE]       = 29   *
     *                                                                           *
+    *                   Extras Miscellaneous Tools                              *
+    *    Option 30.Doge Coin sequential Scan Balance Check [ONLINE]      = 30   *
+    *                                                                           *
     *************** Main Menu Mizogg's All Tools made in Python *****************
 
-      Type You Choice Here Enter 1-29 : 
+      Type You Choice Here Enter 1-30 : 
      
 ## Miz_Tools_bit.py Version 4  Check https://mizogg.co.uk for more tools and info
 
