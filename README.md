@@ -5,7 +5,7 @@ Install_libraries.bat to get started( Only needs to be done once)
 
 then to run use any of the start.bat files
 
-## Miz_Tools_ice.py Version 10 Total 30 Tools
+## Miz_Tools_ice.py Version 10 Total 31 Tools
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
@@ -47,10 +47,11 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *                                                                           *
     *                   Extras Miscellaneous Tools                              *
     *    Option 30.Doge Coin sequential Scan Balance Check [ONLINE]      = 30   *
+    *    Option 31.Doge Coin Random Scan Balance Check [ONLINE]          = 31   *
     *                                                                           *
     *************** Main Menu Mizogg's All Tools made in Python *****************
 
-      Type You Choice Here Enter 1-30 : 
+      Type You Choice Here Enter 1-31 : 
      
 ## Miz_Tools_bit.py Version 4  Check https://mizogg.co.uk for more tools and info
 
@@ -94,7 +95,7 @@ NEW RSZ ADDED
 
 test it here https://replit.com/@Mizogg/Mizogg-Tools?v=1
 
-New All Tools in one 29 Options for Bitcoin DogeCoinand ETH. Only On https://mizogg.co.uk
+New All Tools in one 31 Options for Bitcoin DogeCoinand ETH. Only On https://mizogg.co.uk
 
 ![image](https://user-images.githubusercontent.com/88630056/156468112-201daba9-dc05-4179-9286-8f5996e5f19b.png)
 
