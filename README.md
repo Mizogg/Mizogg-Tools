@@ -1,16 +1,11 @@
 # Mizogg-Tools
 Tools for Bitcoin and ETH Information Balance, HASH160, DEC, Transactions and much more.
 
-
-English and Russian Version
-
 Install_libraries.bat to get started( Only needs to be done once)
-
-
 
 then to run use any of the start.bat files
 
-## Miz_Tools_ice.py Version 9
+## Miz_Tools_ice.py Version 10 Total 29 Tools
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
@@ -41,43 +36,9 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
     *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
     *                                                                           *
-    *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     **** Main Menu Mizogg's Tools Using iceland2k14 secp256k1 made in Python ****
 
     Type You Choice Here Enter 1-22 :
-
-    ************************ Главное меню Mizogg's Tools ********************************************
-    *                       Инструменты одиночной проверки                                          *
-    *  Вариант 1. Биткойн-адрес с проверкой баланса                                 =  1            *
-    *  Вариант 2. Биткойн-адрес на HASH160                                          =  2            *
-    *  Вариант 3. HASH160 на биткойн-адрес (не работает)                            =  3            *
-    *  Вариант 4. Мозговой кошелек Биткойн с проверкой баланса                      =  4            *
-    *  Вариант 5. Шестнадцатеричный код в десятичный (HEX 2 DEC)                    =  5            *
-    *  Вариант 6. Десятичный в шестнадцатеричный (DEC 2 HEX)                        =  6            *
-    *  Вариант 7. Шестнадцатеричный адрес в биткойн с проверкой баланса             =  7            *
-    *  Вариант 8. Десятичный адрес в биткойн с проверкой баланса                    =  8            *
-    *  Вариант 9. Мнемонические слова для биткойн-адреса с проверкой баланса        =  9            *
-    *  Вариант 10.WIF на биткойн-адрес с проверкой баланса                          =  10           *
-    *  Вариант 11.Получить подпись ECDSA R, S, Z с помощью инструмента rawtx или txid = 11          *
-    *  Вариант 12.Разделение диапазона IN HEX или DEC инструмент                   =  12            *
-    *                                                                                               *
-    *                    Генераторы и мультипроверочные инструменты                                 *
-    *  Вариант 13. Биткойн-адреса из файла с проверкой баланса                      = 13            *
-    *  Вариант 14. Биткойн-адреса из файла в файл HASH160                           = 14            *
-    *  Вариант 15. Список Brain Wallet из файла с проверкой баланса                 = 15            *
-    *  Вариант 16. Генератор мнемонических слов, случайный выбор [офлайн]           = 16            *
-    *  Вариант 17. Случайное сканирование биткойнов в случайном порядке в диапазоне = 17            *
-    *  Вариант 18. Последовательность биткойнов сканируется последовательно в диапазоне деления= 18 *
-    *  Вариант 19. Биткойн случайная обратная позиция K                             = 19            *
-    *  Вариант 20. Последовательность биткойнов, обратная K позиция                 = 20            *
-    *  Вариант 21. Биткойн WIF Recovery или WIF Checker 5 K L                       = 21            *
-    *  Вариант 22. Биткойн-адреса из файла в открытый ключ                          = 22            *
-    *                                                                                               *
-    *                                                                                               *
-    *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                                    *
-    ************ Главное меню Mizogg's Tools Using iceland2k14 secp256k1 ****************************
-
-    Введите свой выбор здесь Enter 1-22 :
      
 ## Miz_Tools_bit.py Version 4  Check https://mizogg.co.uk for more tools and info
 
@@ -113,7 +74,6 @@ Using Bit Library made in Python Only 1 file needed
     *    Option 22.Bitcoin Addresses from file to Public Key           = 22     *
     *    Option 23.Public Key from file to Bitcoin Addresses           = 23     *
     *                                                                           *
-    *               Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4                *
     ******** Main Menu Mizogg's Tools Using Bit Library made in Python **********
 
     Type You Choice Here Enter 1-23 :
