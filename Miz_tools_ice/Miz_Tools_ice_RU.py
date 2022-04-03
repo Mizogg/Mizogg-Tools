@@ -1429,17 +1429,17 @@ while True:
         myfile.close()
     elif start == 23:
         promptADD2PUB= '''
-    *********************** Public Key from file to Bitcoin Addresses Tool ********************
+    *********************** Публичный ключ из файла в инструмент биткойн-адресов **************
     *                                                                                         *
-    *    ** This Tool needs a file called pubkeys.txt with a list of Public Keys              *
-    *    ** Your list of Public Keys will be Coverted to Bitcion Addresses  [OFF Line]        *
-    *    ** All THE PUBLIC KEY INFORMATION WILL BE SAVE TO (add_info.txt)                     *
+    *    ** Этому инструменту нужен файл с именем pubkeys.txt со списком открытых ключей.     *
+    *    ** Ваш список открытых ключей будет перенесен на адреса Bitcion [OFF Line]           *
+    *    ** Вся информация о публичном ключе будет сохранена в (add_info.txt)                 *
     *                                                                                         *
-    *********************** Public Key from file to Bitcoin Addresses Tool ********************
+    *********************** Публичный ключ из файла в инструмент биткойн-адресов **************
         '''
         print(promptADD2PUB)
         time.sleep(0.5)
-        print('public keys Loading to Bitcion Addresses please wait ................:')
+        print('открытые ключи загружаются в адреса Bitcion, пожалуйста, подождите ................:')
         import hashlib, base58
         with open('pubkeys.txt', newline='', encoding='utf-8') as f:
             for line in f:
@@ -1475,34 +1475,68 @@ while True:
             f.close()
 
     elif start == 24:
-        print ('Ethereum Address Balance and Info Check Tool')
-        ethadd = str(input('Enter Your ETH Address Here : '))
-        blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
-        ress = blocs.json()
-        address = dict(ress)['address']
-        countTxs = dict(ress)['countTxs']
-        ETHbalance = dict(ress)['ETH']['balance']
-        tokens = dict(ress)['tokens']
-        print(f''' 
-         |==============================================|=======|=====================|
-         | Ethereum (ETH) Address                       |No. TXS|Balance              |
-         |==============================================|=======|=====================|
-         | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''   |
-         |==============================================|============|=======|=================================|
-         | Ethereum Token Address                       |HoldersCount|Symbol |Name of Token                    |
-         |==============================================|============|=======|=================================|''')
+        promptETH= '''
+    ******************** Инструмент проверки баланса адреса и информации Ethereum ******************
+    *                                                                                              *
+    *    1-Ethereum Address Balance and Info Check Tool Single [требуется Интернет]                *
+    *    2-Баланс адреса Ethereum и инструмент проверки информации из файла [требуется Интернет]   *
+    *     Введите 1-2, чтобы начать                                                                *
+    *                                                                                              *
+    ******************** Инструмент проверки баланса адреса и информации Ethereum ******************
+        '''
+        startETH=int(input(promptETH))
+        if startETH == 1:
+            print ('Ethereum Address Balance and Info Check Tool')
+            ethadd = str(input('Enter Your ETH Address Here : '))
+            blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
+            ress = blocs.json()
+            address = dict(ress)['address']
+            countTxs = dict(ress)['countTxs']
+            ETHbalance = dict(ress)['ETH']['balance']
+            print(f''' 
+             |==============================================|=======|=====================|
+             | Эфириум (ETH) Адрес                       |No. TXS|Остаток средств              |
+             |==============================================|=======|=====================|
+             | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''   |
+             |==============================================|============|=======|=================================|
+             | Эфириум (ETH) Адрес                       |HoldersCount|Symbol |Name of Token                    |
+             |==============================================|============|=======|=================================|''')
 
-        for row in tokens:
-            tokenInfo= row['tokenInfo']
-            taddress = tokenInfo['address']
-            symbol = tokenInfo['symbol']
-            holdersCount= tokenInfo['holdersCount']
-            name =tokenInfo['name']
-            print (' | ', taddress, ' | ', holdersCount, ' | ', symbol, '|', name, '|')
+            time.sleep(3)
+            tokens = dict(ress)['tokens']
+            for row in tokens:
+                tokenInfo= row['tokenInfo']
+                taddress = tokenInfo['address']
+                symbol = tokenInfo['symbol']
+                holdersCount= tokenInfo['holdersCount']
+                name =tokenInfo['name']
+                print (' | ', taddress, ' | ', holdersCount, ' | ', symbol, '|', name, '|')
             time.sleep(3.0)
+        if startETH == 2:
+            with open('eth.txt', newline='', encoding='utf-8') as f:
+                for line in f:
+                    mylist.append(line.strip())
+            for i in range(0,len(mylist)):
+                count+=1
+                ethadd = mylist[i]
+                time.sleep(0.5)
+                blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
+                ress = blocs.json()
+                address = dict(ress)['address']
+                countTxs = dict(ress)['countTxs']
+                ETHbalance = dict(ress)['ETH']['balance']
+                print(f''' 
+                 |==============================================|=======|=========|
+                 | Эфириум (ETH) Адрес                       |No. TXS|Остаток средств  |
+                 |==============================================|=======|=========|
+                 | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''    | ''')
+                if countTxs > 0:
+                    with open("winner.txt", "a") as f:
+                        f.write('\nEthereum (ETH) Address : ' + address + ' : No. TXS = ' + str(countTxs) + ' : Balance = ' + str(ETHbalance))
+                        f.close
     elif start == 25:
-        print('Hexadecimal to Decimal Tool')
-        HEX = str(input('Enter Your Hexadecimal HEX Here : '))
+        print('Инструмент преобразования шестнадцатеричного в десятичный')
+        HEX = str(input('Введите свой шестнадцатеричный HEX здесь : '))
         dec = int(HEX, 16)
         length = len(bin(dec))
         length -=2
@@ -1527,7 +1561,7 @@ while True:
         ETHbalance = dict(ress)['ETH']['balance']
         print(f''' 
          |==============================================|=======|=========|
-         | Ethereum (ETH) Address                       |No. TXS|Balance  |
+         | Эфириум (ETH) Адрес                       |No. TXS|Остаток средств  |
          |==============================================|=======|=========|
          | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''    | ''')
         time.sleep(3.0)
@@ -1557,23 +1591,23 @@ while True:
         ETHbalance = dict(ress)['ETH']['balance']
         print(f''' 
          |==============================================|=======|=========|
-         | Ethereum (ETH) Address                       |No. TXS|Balance  |
+         | Эфириум (ETH) Адрес                       |No. TXS|Остаток средств  |
          |==============================================|=======|=========|
          | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''    | ''')
         time.sleep(3.0)
     elif start ==27:
         promptword= '''
-    ************************* Mnemonic Words 12/15/18/21/24 tool ************************* 
+    ************************* Инструмент Мнемонические слова 12/15/18/21/24 ************************* 
     *                                                                                    *
-    *    1-OWN WORDS to DEC & HEX with TX Check [Internet required]                      *
-    *    2-Generated WORDS to DEC & HEX with TX Check [Internet required]                *
+    *    1-СОБСТВЕННЫЕ СЛОВА в DEC и HEX с проверкой TX [требуется Интернет]                      *
+    *    2-Сгенерированные СЛОВА в DEC и HEX с проверкой TX [требуется Интернет]                *
     *    Type 1-2 to Start                                                               *
     *                                                                                    *
-    ************************* Mnemonic Words 12/15/18/21/24 tool *************************
+    ************************* Инструмент Мнемонические слова 12/15/18/21/24 *************************
         '''
         startwords=int(input(promptword))
         if startwords == 1:
-            MNEMONIC: str = input(' Type your Own Words Here = ')
+            MNEMONIC: str = input(' Введите свои собственные слова здесь = ')
             Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
             if Lang == 1:
                 Lang1 = "english"
@@ -1615,14 +1649,14 @@ while True:
             ETHbalance = dict(ress)['ETH']['balance']
             print(f''' 
              |==============================================|=======|=========|
-             | Ethereum (ETH) Address                       |No. TXS|Balance  |
+             | Эфириум (ETH) Адрес                       |No. TXS|Остаток средств  |
              |==============================================|=======|=========|
              | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''    | ''')
             time.sleep(3.0)
 
         if startwords == 2:
-            print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
-            R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
+            print('Мнемоника 12/15/18/21/24 слов для адресного инструмента ETH')
+            R = int(input('Введите количество мнемонических слов 12/15/18/21/24 : '))
             if R == 12:
                 s1 = 128
             elif R == 15:
@@ -1634,7 +1668,7 @@ while True:
             elif R == 24:
                 s1 = 256
             else:
-                print("WRONG NUMBER!!! Starting with 24 Words")
+                print("НЕПРАВИЛЬНЫЙ НОМЕР!!! Начиная с 24 слов")
                 s1 = 256
             Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
             if Lang == 1:
@@ -1678,7 +1712,7 @@ while True:
             ETHbalance = dict(ress)['ETH']['balance']
             print(f''' 
              |==============================================|=======|=========|
-             | Ethereum (ETH) Address                       |No. TXS|Balance  |
+             | Эфириум (ETH) Адрес                       |No. TXS|Остаток средств  |
              |==============================================|=======|=========|
              | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''    | ''')
             time.sleep(3.0)
@@ -1692,8 +1726,8 @@ while True:
                 line_count += 1
         eth_list = [line.split()[0].lower() for line in open(filename,'r')]
         eth_list = set(eth_list)
-        print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
-        R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
+        print('Мнемоника 12/15/18/21/24 слов для адресного инструмента ETH')
+        R = int(input('Введите количество мнемонических слов 12/15/18/21/24 : '))
         if R == 12:
             s1 = 128
         elif R == 15:
@@ -1705,9 +1739,9 @@ while True:
         elif R == 24:
             s1 = 256
         else:
-            print("WRONG NUMBER!!! Starting with 24 Words")
+            print("НЕПРАВИЛЬНЫЙ НОМЕР!!! Начиная с 24 слов")
             s1 = 256
-        divs = int(input("How Many Derivation Paths? m/44'/60'/0'/0/0/ to m/44'/60'/0'/0/???? -> "))
+        divs = int(input("Сколько путей вывода? m/44'/60'/0'/0/0/ to m/44'/60'/0'/0/???? -> "))
         Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
         if Lang == 1:
             Lang1 = "english"
@@ -1767,8 +1801,8 @@ while True:
                 if display == 2:
                     print(' [' + str(count) + '] ------', 'Total Checked [' + str(total) + '] ', end='\r')
     elif start ==29:
-        print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
-        R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
+        print('Мнемоника 12/15/18/21/24 слов для адресного инструмента ETH')
+        R = int(input('Введите количество мнемонических слов 12/15/18/21/24 : '))
         if R == 12:
             s1 = 128
         elif R == 15:
@@ -1782,7 +1816,7 @@ while True:
         else:
             print("WRONG NUMBER!!! Starting with 24 Words")
             s1 = 256
-        divs = int(input("How Many Derivation Paths? m/44'/60'/0'/0/0/ to m/44'/60'/0'/0/???? -> "))
+        divs = int(input("Сколько путей вывода? m/44'/60'/0'/0/0/ to m/44'/60'/0'/0/???? -> "))
         Lang = int(input(' Choose language 1.english, 2.french, 3.italian, 4.spanish, 5.chinese_simplified, 6.chinese_traditional, 7.japanese or 8.korean '))
         if Lang == 1:
             Lang1 = "english"
@@ -1826,7 +1860,7 @@ while True:
                 ETHbalance = dict(ress)['ETH']['balance']
                 print(f''' 
                  |==============================================|=======|=========|
-                 | Ethereum (ETH) Address                       |No. TXS|Balance  |
+                 | Эфириум (ETH) Адрес                       |No. TXS|Остаток средств  |
                  |==============================================|=======|=========|
                  | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''     | ''')
                 time.sleep(0.20)
@@ -1839,19 +1873,19 @@ while True:
     
     elif start ==30:
         promptdoge= '''
-    *********************** Doge sequence Balance Check Tool *****************************
-    *                                                                                    *
-    *    ** Dogecoin sequence Balance Check Tool Requires internet                       *
-    *    ** ANY MATCHING BALANCES GENERATED FOUND WILL SAVE TO(winner.txt)               *
-    *                                                                                    *
-    *********************** Doge sequence Balance Check Tool *****************************
+    *********************** Инструмент проверки баланса последовательности Doge *****************************
+    *                                                                                                       *
+    *    ** Последовательность Dogecoin Инструмент проверки баланса Требуется интернет                      *
+    *    ** ЛЮБЫЕ СОЗДАННЫЕ СООТВЕТСТВУЮЩИЕ БАЛАНТЫ БУДУТ СОХРАНЯТЬСЯ В (winner.txt)                        *
+    *                                                                                                       *
+    *********************** Инструмент проверки баланса последовательности Doge *****************************
         '''
         print(promptdoge)
         time.sleep(1)
-        print("Start search... Pick Range to start (Min=0 Max=256)")
-        x=int(input("Start range in BITs 0 or 255 (Max255) -> "))
+        print("Начать поиск... Выберите диапазон для начала (Мин=0 Макс=256)")
+        x=int(input("Начальный диапазон в битах 0 или 255 (макс. 255) -> "))
         a = 2**x
-        y=int(input("Stop range Max in BITs 256 Max (StopNumber)-> "))
+        y=int(input("Диапазон останова Макс. в битах 256 Макс. (StopNumber)-> "))
         b = 2**y
         m=int(input("Magnitude Jump Stride -> "))
         print("Starting search... Please Wait min range: " + str(a))
@@ -1882,22 +1916,22 @@ while True:
     
     elif start ==31:
         promptdoger= '''
-    *********************** Doge Random Balance Check Tool *****************************
-    *                                                                                    *
-    *    ** Dogecoin Random Balance Check Tool Requires internet                       *
-    *    ** ANY MATCHING BALANCES GENERATED FOUND WILL SAVE TO(winner.txt)               *
-    *                                                                                    *
-    *********************** Doge Random Balance Check Tool *****************************
+    *********************** Инструмент случайной проверки баланса Doge *****************************
+    *                                                                                              *
+    *    ** Инструмент случайной проверки баланса Dogecoin требует интернета                       *
+    *    ** ЮБЫЕ СОЗДАННЫЕ СООТВЕТСТВУЮЩИЕ БАЛАНТЫ БУДУТ СОХРАНЯТЬСЯ В (winner.txt)                *
+    *                                                                                              *
+    *********************** Инструмент случайной проверки баланса Doge *****************************
         '''
         print(promptdoger)
         time.sleep(1)
-        print("Start search... Pick Range to start (Min=0 Max=256)")
-        x=int(input("Start range in BITs 0 or 255 (Max255) -> "))
+        print("Начать поиск... Выберите диапазон для начала (Мин=0 Макс=256)")
+        x=int(input("Начальный диапазон в битах 0 или 255 (макс. 255) -> "))
         start = 2**x
-        y=int(input("Stop range Max in BITs 256 Max (StopNumber)-> "))
+        y=int(input("Диапазон останова Макс. в битах 256 Макс. (StopNumber)-> "))
         stop = 2**y
-        print("Starting search... Please Wait min range: " + str(start))
-        print("️Max range: " + str(stop))
+        print("Начинается поиск... Пожалуйста, подождите мин. диапазон: " + str(start))
+        print("️Максимальный диапазон: " + str(stop))
         while True:
             ran=random.randrange(start,stop)
             seed = int(ran)
