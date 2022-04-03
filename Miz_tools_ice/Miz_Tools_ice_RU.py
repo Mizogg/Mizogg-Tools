@@ -329,19 +329,19 @@ prompt= '''
     *  Вариант 20. Последовательность биткойнов, обратная K позиция                 = 20            *
     *  Вариант 21. Биткойн WIF Recovery или WIF Checker 5 K L                       = 21            *
     *  Вариант 22. Биткойн-адреса из файла в открытый ключ                          = 22            *
-    *    Option 23.Public Key from file to Bitcoin Addresses(NOTWORKING)= 23                        *
+    *  Вариант 23. Открытый ключ из файла на биткойн-адреса [офлайн]                = 23            *
     *                                                                                               *
-    *                 ETH Generators & Multi Check Tools                                            *
-    *    Option 24.ETH Address with TXS Check         [Internet required]= 24                       *
-    *    Option 25.Hexadecimal to Decimal (HEX 2 DEC) [Internet required]= 25                       *
-    *    Option 26.Decimal to Hexadecimal (DEC 2 HEX) [Internet required]= 26                       *
-    *    Option 27.Mnemonic Words to dec and hex      [Internet required]= 27                       *
-    *    Option 28.Mnemonic Words Generator Random Choice [Offline]      = 28                       *
-    *    Option 29.Mnemonic Words Generator Random Choice [ONLINE]       = 29                       *
+    *                 Генераторы ETH и инструменты множественной проверки                           *
+    *  Вариант 24. Адрес ETH с проверкой TXS [требуется Интернет]                           = 24    *
+    *  Вариант 25. Шестнадцатеричный код в десятичный (HEX 2 DEC) [требуется Интернет]      = 25    *
+    *  Вариант 26. Десятичное число в шестнадцатеричное (DEC 2 HEX) [требуется Интернет]    = 26    *
+    *  Вариант 27. Мнемонические слова для dec и hex [требуется Интернет]                   = 27    *
+    *  Вариант 28. Случайный выбор генератора мнемонических слов [офлайн]                   = 28    *
+    *  Вариант 29. Случайный выбор генератора мнемонических слов [ОНЛАЙН]                   = 29    *
     *                                                                                               *
-    *                   Extras Miscellaneous Tools                                                  *
-    *    Option 30.Doge Coin sequential Scan Balance Check [ONLINE]      = 30                       *
-    *    Option 31.Doge Coin Random Scan Balance Check [ONLINE]          = 31                       *
+    *                   Дополнительные инструменты                                                  *
+    *  Вариант 30. Проверка баланса последовательного сканирования Doge Coin [ОНЛАЙН]       = 30    *
+    *  Вариант 31. Проверка баланса случайным сканированием монет Doge [ОНЛАЙН]             = 31    *
     *                                                                                               *
     ************ Главное меню Mizogg's Tools Using iceland2k14 secp256k1 ****************************
 
