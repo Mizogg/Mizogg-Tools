@@ -1500,31 +1500,67 @@ while True:
             f.close()
 
     elif start == 24:
-        print ('Ethereum Address Balance and Info Check Tool')
-        ethadd = str(input('Enter Your ETH Address Here : '))
-        blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
-        ress = blocs.json()
-        address = dict(ress)['address']
-        countTxs = dict(ress)['countTxs']
-        ETHbalance = dict(ress)['ETH']['balance']
-        tokens = dict(ress)['tokens']
-        print(f''' 
-         |==============================================|=======|=====================|
-         | Ethereum (ETH) Address                       |No. TXS|Balance              |
-         |==============================================|=======|=====================|
-         | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''   |
-         |==============================================|============|=======|=================================|
-         | Ethereum Token Address                       |HoldersCount|Symbol |Name of Token                    |
-         |==============================================|============|=======|=================================|''')
+        promptETH= '''
+    ******************** Ethereum Address Balance and Info Check Tool ******************* 
+    *                                                                                   *
+    *    1-Ethereum Address Balance and Info Check Tool Single [Internet required]      *
+    *    2-Ethereum Address Balance and Info Check Tool From File [Internet required]   *
+    *    Type 1-2 to Start                                                              *
+    *                                                                                   *
+    ******************** Ethereum Address Balance and Info Check Tool *******************
+        '''
+        startETH=int(input(promptETH))
+        if startETH == 1:
+            print ('Ethereum Address Balance and Info Check Tool')
+            ethadd = str(input('Enter Your ETH Address Here : '))
+            blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
+            ress = blocs.json()
+            address = dict(ress)['address']
+            countTxs = dict(ress)['countTxs']
+            ETHbalance = dict(ress)['ETH']['balance']
+            print(f''' 
+             |==============================================|=======|=====================|
+             | Ethereum (ETH) Address                       |No. TXS|Balance              |
+             |==============================================|=======|=====================|
+             | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''   |
+             |==============================================|============|=======|=================================|
+             | Ethereum Token Address                       |HoldersCount|Symbol |Name of Token                    |
+             |==============================================|============|=======|=================================|''')
 
-        for row in tokens:
-            tokenInfo= row['tokenInfo']
-            taddress = tokenInfo['address']
-            symbol = tokenInfo['symbol']
-            holdersCount= tokenInfo['holdersCount']
-            name =tokenInfo['name']
-            print (' | ', taddress, ' | ', holdersCount, ' | ', symbol, '|', name, '|')
+            time.sleep(3)
+            tokens = dict(ress)['tokens']
+            for row in tokens:
+                tokenInfo= row['tokenInfo']
+                taddress = tokenInfo['address']
+                symbol = tokenInfo['symbol']
+                holdersCount= tokenInfo['holdersCount']
+                name =tokenInfo['name']
+                print (' | ', taddress, ' | ', holdersCount, ' | ', symbol, '|', name, '|')
             time.sleep(3.0)
+        if startETH == 2:
+            with open('eth.txt', newline='', encoding='utf-8') as f:
+                for line in f:
+                    mylist.append(line.strip())
+            for i in range(0,len(mylist)):
+                count+=1
+                ethadd = mylist[i]
+                time.sleep(0.5)
+                blocs=requests.get("https://api.ethplorer.io/getAddressInfo/" + ethadd +apikeys)
+                ress = blocs.json()
+                address = dict(ress)['address']
+                countTxs = dict(ress)['countTxs']
+                ETHbalance = dict(ress)['ETH']['balance']
+                print(f''' 
+                 |==============================================|=======|=========|
+                 | Ethereum (ETH) Address                       |No. TXS|Balance  |
+                 |==============================================|=======|=========|
+                 | ''', address, ''' | ''', countTxs, '''   | ''', ETHbalance, '''    | ''')
+                if countTxs > 0:
+                    with open("winner.txt", "a") as f:
+                        f.write('\nEthereum (ETH) Address : ' + address + ' : No. TXS = ' + str(countTxs) + ' : Balance = ' + str(ETHbalance))
+                        f.close
+                
+            
     elif start == 25:
         print('Hexadecimal to Decimal Tool')
         HEX = str(input('Enter Your Hexadecimal HEX Here : '))
