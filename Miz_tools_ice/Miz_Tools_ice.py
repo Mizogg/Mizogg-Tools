@@ -332,7 +332,7 @@ prompt= '''
     *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
     *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
     *    Option 22.Bitcoin Addresses from file to Public Key [OnLine]  = 22     *
-    *    Option 23.Public Key from file to Bitcoin Addresses(NOTWORKING)= 23    *
+    *    Option 23.Public Key from file to Bitcoin Addresses [Offline] = 23     *
     *                                                                           *
     *                 ETH Generators & Multi Check Tools                        *
     *    Option 24.ETH Address with TXS Check         [Internet required]= 24   *
