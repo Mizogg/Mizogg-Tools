@@ -1,4 +1,11 @@
 # Mizogg-Tools
+
+Next UPDATE coming soon Mizogg Tool's in Telegream
+
+![image](https://user-images.githubusercontent.com/88630056/169119186-1f287adb-a688-4c99-a941-03e6f0eae634.png)
+![image](https://user-images.githubusercontent.com/88630056/169120062-582ea1d9-c479-4234-87de-4550344bfce9.png)
+
+
 Tools for Bitcoin Dogecoin and ETH Information Balance, HASH160, DEC, Transactions and much more.
 
 Install_libraries.bat to get started( Only needs to be done once)
