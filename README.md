@@ -1,69 +1,56 @@
 # Mizogg-Tools
 
-Next UPDATE coming soon Mizogg Tool's in Telegream
-
-![image](https://user-images.githubusercontent.com/88630056/169119186-1f287adb-a688-4c99-a941-03e6f0eae634.png)
-![image](https://user-images.githubusercontent.com/88630056/169120062-582ea1d9-c479-4234-87de-4550344bfce9.png)
-
-
 Tools for Bitcoin Dogecoin and ETH Information Balance, HASH160, DEC, Transactions and much more.
 
 Install_libraries.bat to get started( Only needs to be done once)
 
 then to run use any of the start.bat files
 
-## Miz_Tools_ice.py Version 10 Total 31 Tools
+## Miz_Tools.py Version 10 Total 30 Tools
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
-    ************************ Main Menu Mizogg's Tools ***************************
-    *                       Single Check Tools                                  *
-    *    Option 1.Bitcoin Address with Balance Check                   =  1     *
-    *    Option 2.Bitcoin Address to HASH160 Addresses starting 1,3,bc1=  2     *
-    *    Option 3.HASH160 to Bitcoin Address(Not Working)              =  3     *
-    *    Option 4.Brain Wallet Bitcoin with Balance Check              =  4     *
-    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)     [Offline]     =  5     *
-    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)     [Offline]     =  6     *
-    *    Option 7.Hexadecimal to Bitcoin\Dogecoin Address with Balance Check=7  *
-    *    Option 8.Decimal to Bitcoin\Dogecoin Address with Balance Check= 8     *
-    *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check =  9     *
-    *    Option 10.WIF to Bitcoin Address with Balance Check           =  10    *
-    *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool   =  11    *
-    *    Option 12.Range Divsion IN HEX or DEC tool      [Offline]     =  12    *
-    *                                                                           *
-    *                    Generators & Multi Check Tools                         *
-    *    Option 13.Bitcoin Addresses from file with Balance Check      = 13     *
-    *    Option 14.Bitcoin Addresses from file to HASH160 file 1,3,bc1 = 14     *
-    *    Option 15.Brain Wallet list from file with Balance Check      = 15     *
-    *    Option 16.Mnemonic Words Generator Random Choice [Offline]    = 16     *
-    *    Option 17.Bitcoin random scan randomly in Range  [Offline]    = 17     *
-    *    Option 18.Bitcoin Sequence scan sequentially in Range division= 18     *
-    *    Option 19.Bitcoin random Inverse K position      [Offline]    = 19     *
-    *    Option 20.Bitcoin sequence Inverse K position    [Offline]    = 20     *
-    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L [Offline] = 21     *
-    *    Option 22.Bitcoin Addresses from file to Public Key [OnLine]  = 22     *
-    *    Option 23.Public Key from file to Bitcoin Addresses           = 23     *
-    *                                                                           *
-    *                 ETH Generators & Multi Check Tools                        *
-    *    Option 24.ETH Address with TXS Check         [Internet required]= 24   *
-    *    Option 25.Hexadecimal to Decimal (HEX 2 DEC) [Internet required]= 25   *
-    *    Option 26.Decimal to Hexadecimal (DEC 2 HEX) [Internet required]= 26   *
-    *    Option 27.Mnemonic Words to dec and hex      [Internet required]= 27   *
-    *    Option 28.Mnemonic Words Generator Random Choice [Offline]      = 28   *
-    *    Option 29.Mnemonic Words Generator Random Choice [ONLINE]       = 29   *
-    *                                                                           *
-    *                   Extras Miscellaneous Tools                              *
-    *    Option 30.Doge Coin sequential Scan Balance Check [ONLINE]      = 30   *
-    *    Option 31.Doge Coin Random Scan Balance Check [ONLINE]          = 31   *
-    *                                                                           *
-    *************** Main Menu Mizogg's All Tools made in Python *****************
+ Total Bitcoin and ETH Addresses Loaded  >> [  208 ]
 
-      Type You Choice Here Enter 1-31 : 
-     
-## Miz_Tools_bit.py Version 4  Check https://mizogg.co.uk for more tools and info
-
-test it here https://replit.com/@Mizogg
-
+    ****************************** Main Menu Mizogg's Tools ***********************************
+    *                      Single Check Tools Bitcoin DOGE ETH                                *
+    *    Option 1.Bitcoin Address with Balance Check                    [OnLine]     = 1      *
+    *    Option 2.Bitcoin Address to HASH160 Addresses starting 1,3,bc1 [OnLine]     = 2      *
+    *    Option 3.HASH160 to Bitcoin Address (Not Working)                           = 3      *
+    *    Option 4.Brain Wallet Bitcoin with Balance Check               [OnLine]     = 4      *
+    *    Option 5.Hexadecimal to Decimal (HEX 2 DEC)                   [OffLine]     = 5      *
+    *    Option 6.Decimal to Hexadecimal (DEC 2 HEX)                   [OffLine]     = 6      *
+    *    Option 7.Hexadecimal to Address with Balance Check             [OnLine]     = 7      *
+    *    Option 8.Decimal to Address with Balance Check                 [OnLine]     = 8      *
+    *    Option 9.Mnemonic Words to Bitcoin Address with Balance Check  [OnLine]     = 9      *
+    *    Option 10.WIF to Bitcoin Address with Balance Check            [OnLine]     = 10     *
+    *    Option 11.Retrieve ECDSA signature R,S,Z rawtx or txid tool    [OnLine]     = 11     *
+    *    Option 12.Range Divsion IN HEX or DEC tool                    [OffLine]     = 12     *
+    *                    Generators & Multi Check Tools                                       *
+    *    Option 13.Bitcoin Addresses from file with Balance Check       [OnLine]     = 13     *
+    *    Option 14.Bitcoin Addresses from file to HASH160 file 1,3,bc1 [OffLine]     = 14     *
+    *    Option 15.Brain Wallet list from file with Balance Check       [OnLine]     = 15     *
+    *    Option 16.Mnemonic Words Generator Random Choice              [OffLine]     = 16     *
+    *    Option 17.Bitcoin random scan randomly in Range               [OffLine]     = 17     *
+    *    Option 18.Bitcoin Sequence scan sequentially in Range division[OffLine]     = 18     *
+    *    Option 19.Bitcoin random Inverse K position                   [OffLine]     = 19     *
+    *    Option 20.Bitcoin sequence Inverse K position                 [OffLine]     = 20     *
+    *    Option 21.Bitcoin WIF Recovery or WIF Checker 5 K L           [OffLine]     = 21     *
+    *    Option 22.MAGIC HEX Recovery or HEX Checker BTC ETH           [OffLine]     = 22     *
+    *    Option 23.Bitcoin Addresses from file to Public Key            [OnLine]     = 23     *
+    *    Option 24.Public Key from file to Bitcoin Addresses           [OffLine]     = 24     *
+    *                 ETH Generators & Multi Check Tools                                      *
+    *    Option 25.ETH Address with Balance Check&Tokens                [OnLine]     = 25     *
+    *    Option 26.Mnemonic Words to dec and hex                        [OnLine]     = 26     *
+    *    Option 27.Mnemonic Words Generator Random Choice              [OffLine]     = 27     *
+    *    Option 28.Mnemonic Words Generator Random Choice               [OnLine]     = 28     *
+    *                   Extras Miscellaneous Tools                                            *
+    *    Option 29.Doge Coin sequential Scan Balance Check              [OnLine]     = 29     *
+    *    Option 30.Doge Coin Random Scan Balance Check                  [OnLine]     = 30     *
+    *                                                                                         *
+    **************** Main Menu Mizogg's All Tools Colour Version made in Python ***************
+      Enter 1-30 : TYPE HERE =
+ 
     7
     Hexadecimal to Bitcoin Address Tool
     Hexadecimal HEX ->  1
@@ -100,12 +87,15 @@ NEW RSZ ADDED
      Z: 94bbf25ba5b93ba78ee017eff80c986ee4e87804bee5770fae5b486f05608d95
       PubKey: 04e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6c
 
-test it here https://replit.com/@Mizogg/Mizogg-Tools?v=1
 
-New All Tools in one 31 Options for Bitcoin DogeCoinand ETH. Only On https://mizogg.co.uk
+New All Tools in one 30 Options for Bitcoin DogeCoinand ETH. Only On https://mizogg.co.uk and https://github.com/Mizogg
 
-![image](https://user-images.githubusercontent.com/88630056/156468112-201daba9-dc05-4179-9286-8f5996e5f19b.png)
+![image](https://user-images.githubusercontent.com/88630056/171266974-327a386e-da7d-40c6-ae10-1e6ebfea7652.png)
 
-https://user-images.githubusercontent.com/88630056/156468157-0ab9a2ac-91f5-48f5-9214-d42c56d37a3e.mp4
+
+Next UPDATE coming soon Mizogg Tool's in Telegream
+
+![image](https://user-images.githubusercontent.com/88630056/169119186-1f287adb-a688-4c99-a941-03e6f0eae634.png)
+![image](https://user-images.githubusercontent.com/88630056/169120062-582ea1d9-c479-4234-87de-4550344bfce9.png)
 
 ### Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
