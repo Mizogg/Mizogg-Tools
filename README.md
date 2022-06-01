@@ -1,4 +1,4 @@
-# Mizogg-Tools
+#  ✨✨✨✨Mizogg-Tools ✨✨✨✨
 
 Tools for Bitcoin Dogecoin and ETH Information Balance, HASH160, DEC, Transactions and much more.
 
@@ -10,7 +10,7 @@ then to run use any of the start.bat files
 
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
- Total Bitcoin and ETH Addresses Loaded  >> [  208 ]
+ Total Bitcoin and ETH Addresses Loaded  >> [ 44878766 ]
 
     ****************************** Main Menu Mizogg's Tools ***********************************
     *                      Single Check Tools Bitcoin DOGE ETH                                *
@@ -93,7 +93,34 @@ New All Tools in one 30 Options for Bitcoin DogeCoinand ETH. Only On https://miz
 ![image](https://user-images.githubusercontent.com/88630056/171266974-327a386e-da7d-40c6-ae10-1e6ebfea7652.png)
 
 
-Next UPDATE coming soon Mizogg Tool's in Telegream
+###  ✨✨✨✨Mizogg Tool's in Telegream ✨✨✨✨
+
+ℹ️ Requirements ℹ️
+```
+pip install bit
+pip install requests
+pip install mnemonic
+pip install bip32utils
+pip install base58
+pip install hdwallet
+pip install simplebloomfliter
+pip install bitarray==1.9.2
+pip install pyTelegramBotAPI
+```
+
+@botfather. BotFather is the one bot to rule them all. Use it to create new bot accounts and manage your existing bots. https://t.me/botfather
+
+If you're new to the Bot API, please see the manual (https://core.telegram.org/bots).
+
+
+Create a Bot room and Get API KEY
+
+ℹ️ This has to be added to the Script bot = telebot.TeleBot("YOUR TELEGRAM BOT API KEY")
+
+ℹ️ GMail email To send and receive data is required in 8 Locations and the password just once.
+
+![image](https://user-images.githubusercontent.com/88630056/171461270-b20f2640-5ceb-4a64-909e-2b5d8e3e2bda.png)
+
 
 ![image](https://user-images.githubusercontent.com/88630056/169119186-1f287adb-a688-4c99-a941-03e6f0eae634.png)
 ![image](https://user-images.githubusercontent.com/88630056/169120062-582ea1d9-c479-4234-87de-4550344bfce9.png)
