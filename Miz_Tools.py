@@ -433,7 +433,51 @@ def delay_print(s):
         sys.stdout.flush()
         time.sleep(0.001)
 # =============================================================================
+INPUTNEEDED = '''[yellow]
 
+  ,---,---,---,---,---,---,---,---,---,---,---,---,---,-------,
+  |esc| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 | + | ' | <-    |
+  |---'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-----|
+  | ->| | Q | W | E | R | T | Y | U | I | O | P | ] | ^ |     |
+  |-----',--',--',--',--',--',--',--',--',--',--',--',--'|    |
+  | Caps | A | S | D | F | G | H | J | K | L | \ | [ | * |    |
+  |----,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'---'----|
+  |    | < | Z | X | C | V | B | N | M | , | . | - |          |
+  |----'-,-',--'--,'---'---'---'---'---'---'-,-'---',--,------|
+  | ctrl |🪟| alt |                          |altgr |  | ctrl |
+  '------'  '-----'--------------------------'------'  '------'    
+
+[/yellow]'''
+INPUTNEEDEDDEC = '''[yellow]
+
+  ,---,---,---,---,---,---,---,---,---,---,---,---,---,-------,
+  |esc| [red]1[/red] | [red]2[/red] | [red]3[/red] | [red]4[/red] | [red]5[/red] | [red]6[/red] | [red]7[/red] | [red]8[/red] | [red]9[/red] | [red]0[/red] | + | ' | <-    |
+  |---'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-----|
+  | ->| | Q | W | E | R | T | Y | U | I | O | P | ] | ^ |     |
+  |-----',--',--',--',--',--',--',--',--',--',--',--',--'|    |
+  | Caps | A | S | D | F | G | H | J | K | L | \ | [ | * |    |
+  |----,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'---'----|
+  |    | < | Z | X | C | V | B | N | M | , | . | - |          |
+  |----'-,-',--'--,'---'---'---'---'---'---'-,-'---',--,------|
+  | ctrl |🪟| alt |                          |altgr |  | ctrl |
+  '------'  '-----'--------------------------'------'  '------'    
+
+[/yellow]'''
+INPUTNEEDEDHEX = '''[yellow]
+
+  ,---,---,---,---,---,---,---,---,---,---,---,---,---,-------,
+  |esc| [red]1[/red] | [red]2[/red] | [red]3[/red] | [red]4[/red] | [red]5[/red] | [red]6[/red] | [red]7[/red] | [red]8[/red] | [red]9[/red] | [red]0[/red] | + | ' | <-    |
+  |---'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-----|
+  | ->| | Q | W | [red]E[/red] | R | T | Y | U | I | O | P | ] | ^ |     |
+  |-----',--',--',--',--',--',--',--',--',--',--',--',--'|    |
+  | Caps | [red]A[/red] | S | [red]D[/red] | [red]F[/red] | G | H | J | K | L | \ | [ | * |    |
+  |----,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'-,-'---'----|
+  |    | < | Z | X | [red]C[/red] | V | [red]B[/red] | N | M | , | . | - |          |
+  |----'-,-',--'--,'---'---'---'---'---'---'-,-'---',--,------|
+  | ctrl |🪟| alt |                          |altgr |  | ctrl |
+  '------'  '-----'--------------------------'------'  '------'    
+
+[/yellow]'''
 # =============================================================================
 prompt='''[yellow]
     ****************************** Main Menu Mizogg's Tools ***********************************
@@ -487,6 +531,7 @@ while True:
     delay_print('Enter 1-30 : ') 
     start=int(input('TYPE HERE = '))
     if start == 1:
+        print(INPUTNEEDED)
         print ('[green]Address Balance Check Tool[/green]')
         caddr = str(input('Enter Your Bitcoin Address Here : '))
         get_balance(caddr)
@@ -508,6 +553,7 @@ while True:
             print('================== Block Chain ==================')
             time.sleep(3.0)
     elif start == 2:
+        print(INPUTNEEDED)
         print ('[green]Address to HASH160 Tool[/green]')
         addr = str(input('Enter Your Bitcoin Address Here : '))
         if addr.startswith('1'):
@@ -523,6 +569,7 @@ while True:
         hash160 =(str(input('Enter Your HASH160 Here : ')))
         print ('[red]Coming Soon not Working[/red]')
     elif start == 4:
+        print(INPUTNEEDED)
         print ('[green]Brain Wallet Bitcoin Address Tool[/green]')    
         passphrase = (input('Type Your Passphrase HERE : '))
         wallet = BrainWallet()
@@ -548,6 +595,7 @@ while True:
             print('================== Block Chain ==================')
             time.sleep(3.0)
     elif start == 5:
+        print(INPUTNEEDEDHEX)
         print('[green]Hexadecimal to Decimal Tool[/green]')
         HEX = str(input('Enter Your Hexadecimal HEX Here : '))
         dec = int(HEX, 16)
@@ -556,6 +604,7 @@ while True:
         print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec, '  bits ', length)
         time.sleep(3.0)
     elif start == 6:
+        print(INPUTNEEDEDDEC)
         print('[green]Decimal to Hexadecimal Tool[/green]')
         dec = int(input('Enter Your Decimal DEC Here : '))
         HEX = "%064x" % dec
@@ -576,6 +625,7 @@ while True:
         delay_print('Enter 1-2 : ') 
         starthex=int(input('TYPE HERE = '))
         if starthex == 1:
+            print(INPUTNEEDEDHEX)
             print('[green]Hexadecimal to Address Tool[/green]')
             HEX=str(input("Hexadecimal HEX ->  "))
             dec = int(HEX, 16)
@@ -667,6 +717,7 @@ while True:
                     time.sleep(1.5)
                 
     elif start == 8:
+        print(INPUTNEEDEDDEC)
         print('[green]Decimal to Address Tool[/green]')
         delay_print('Decimal Dec (Max 115792089237316195423570985008687907852837564279074904382605163141518161494336 ) ->  ')
         dec=int(input('TYPE HERE = '))
@@ -782,6 +833,7 @@ while True:
             print('\nmnemonic_words  : ', mnemonic_words, '\nDerivation Path : ', target_wallet['path'], '\nBitcoin Address : ', target_wallet['address'], ' Balance = ', get_balance(target_wallet['address']), ' BTC', '\nPrivatekey WIF  : ', target_wallet['privatekey'])
             time.sleep(3.0)
     elif start == 10:
+        print(INPUTNEEDED)
         print('[green]WIF to Bitcoin Address Tool[/green]')
         WIF = str(input('Enter Your Wallet Import Format WIF = '))
         if WIF.startswith('5H') or WIF.startswith('5J') or WIF.startswith('5K') or WIF.startswith('K') or WIF.startswith('L'):
@@ -1011,7 +1063,7 @@ while True:
             for data_w in divsion:
                 HEX = data_w['HEX']
                 print('Percent', data_w['percent'], ' : Privatekey (hex): ', data_w['HEX'])
-                time.sleep(3.0)
+                time.sleep(0.025)
                 with open("hex.txt", "a") as f:
                     f.write(f"""\nPercent{data_w['percent']} Privatekey (hex): {data_w['HEX']}""")
                     f.close
@@ -1021,7 +1073,7 @@ while True:
             for data_w in divsion:
                 seed = data_w['seed']
                 print('Percent', data_w['percent'], ' : Privatekey (dec): ', data_w['seed'])
-                time.sleep(3.0)
+                time.sleep(0.025)
                 with open("dec.txt", "a") as f:
                     f.write(f"""\nPercent{data_w['percent']} Privatekey (dec): {data_w['seed']}""")
                     f.close
@@ -1575,9 +1627,9 @@ while True:
             print(promptdiplay)
             startprint=int(input('TYPE HERE =   ')) 
             while True:
-                c1 = '0' #random.choice('0123456789abcdef')
-                c2 = '0' #random.choice('0123456789abcdef')
-                c3 = '0' #random.choice('0123456789abcdef')
+                c1 = random.choice('0123456789abcdef')
+                c2 = random.choice('0123456789abcdef')
+                c3 = random.choice('0123456789abcdef')
                 c4 = random.choice('0123456789abcdef')
                 c5 = random.choice('0123456789abcdef')
                 c6 = random.choice('0123456789abcdef')
