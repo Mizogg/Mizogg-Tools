@@ -6,3 +6,5 @@ pip install base58
 pip install hdwallet
 pip install simplebloomfliter
 pip install bitarray==1.9.2
+pip install lxml
+pip install rich
