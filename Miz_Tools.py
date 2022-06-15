@@ -18,7 +18,10 @@ from hdwallet import HDWallet
 from typing import Optional
 from hdwallet.symbols import ETH as SYMBOL
 from rich import print
-
+from rich.panel import Panel
+from rich.console import Console
+from lxml import html
+console = Console()
 # =============================================================================
 n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
 alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
@@ -833,62 +836,288 @@ while True:
             print('\nmnemonic_words  : ', mnemonic_words, '\nDerivation Path : ', target_wallet['path'], '\nBitcoin Address : ', target_wallet['address'], ' Balance = ', get_balance(target_wallet['address']), ' BTC', '\nPrivatekey WIF  : ', target_wallet['privatekey'])
             time.sleep(3.0)
     elif start == 10:
-        print(INPUTNEEDED)
-        print('[green]WIF to Bitcoin Address Tool[/green]')
-        WIF = str(input('Enter Your Wallet Import Format WIF = '))
-        if WIF.startswith('5H') or WIF.startswith('5J') or WIF.startswith('5K') or WIF.startswith('K') or WIF.startswith('L'):
-            if WIF.startswith('5H') or WIF.startswith('5J') or WIF.startswith('5K'):
-                first_encode = base58.b58decode(WIF)
-                private_key_full = binascii.hexlify(first_encode)
-                private_key = private_key_full[2:-8]
-                private_key_hex = private_key.decode("utf-8")
-                dec = int(private_key_hex,16)
+        promptWif= '''
+    ************* WIF Tool *****************
+    *                                      *
+    *    1- LIST OF WIF file needed        *
+    *    2- Single WIF input               *
+    *                                      *
+    **************[+] WIF Tool .....********
+        '''
+        print(promptWif)
+        time.sleep(0.5)
+        delay_print('Enter 1-2 : ') 
+        wiftool=int(input('TYPE HERE = '))
+        s = 0
+        w = 0
+        count = 0
+        total = 0
+        def print_main():
+            console.print(f'''[green]Dec => [/green] {dec}
+    [green]HEX => [/green] {HEX}
+    [yellow] Add:[/yellow][green1] {uaddr}[/green1][red1]  WIFU:[/red1][white]{wifu}[/white]
+    [yellow] Add:[/yellow][green1] {caddr}[/green1][red1]  WIFC:[/red1][white]{wifc}[/white]
+    [yellow] Add:[/yellow][green1] {p2sh}[/green1][red1]
+    [yellow] Add:[/yellow][green1] {bech32}[/green1][red1]''')
+        def TXS_print():
+            running_print = str('[gold1 on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(baluaddr)+'[gold1]  BAL:[aquamarine1]'+str(valuaddr)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(uaddr)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]\nWIF: [grey54]'+str(wifu)+'[/]')
+            running_print1 = str('[gold1 on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balcaddr)+'[gold1]  BAL:[aquamarine1]'+str(valcaddr)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(caddr)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]\nWIF: [grey54]'+str(wifc)+'[/]')
+            running_print2 = str('[gold1 on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balp2sh)+'[gold1]  BAL:[aquamarine1]'+str(valp2sh)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(p2sh)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]')
+            running_print3 = str('[gold1 on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balbech32)+'[gold1]  BAL:[aquamarine1]'+str(valbech32)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(bech32)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]')
+
+            style = "gold1 on grey11"
+            console.print(Panel(str(running_print) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "red") , style = "gold1 on grey11" , justify = "full")
+            console.print(Panel(str(running_print1) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "red") , style = "gold1 on grey11" , justify = "full")
+            console.print(Panel(str(running_print2) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "red") , style = "gold1 on grey11" , justify = "full")
+            console.print(Panel(str(running_print3) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "red") , style = "gold1 on grey11" , justify = "full")
+
+        def win_print():
+            running_print_Balance = str(
+                '[green on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(baluaddr)+'[gold1]  BAL:[aquamarine1]'+str(valuaddr)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(uaddr)+'[gold1 on grey15] \nWIF: '+'[orange_red1]'+str(WIF)+'[/]\nWIF: [grey54]'+str(wifu)+'[/][green] \nDec => [/green] ' +str(dec) + '[green]\n HEX => [/green]'+ str(HEX))
+            running_print_Balance1 = str(
+                '[green on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balcaddr)+'[gold1]  BAL:[aquamarine1]'+str(valcaddr)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(caddr)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]\nWIF: [grey54]'+str(wifc)+'[/][green] \nDec => [/green] ' +str(dec) + '[green]\n HEX => [/green]'+ str(HEX))
+            running_print_Balance2 = str(
+                '[green on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balp2sh)+'[gold1]  BAL:[aquamarine1]'+str(valp2sh)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(p2sh)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]')
+            running_print_Balance3 = str(
+                '[green on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balbech32)+'[gold1]  BAL:[aquamarine1]'+str(valbech32)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(bech32)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]')
+            style = "gold1 on grey11"
+            console.print(Panel(str(running_print_Balance) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "green") , style = style , justify = "full")
+            console.print(Panel(str(running_print_Balance1) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "green") , style = style , justify = "full")
+            console.print(Panel(str(running_print_Balance2) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "green") , style = style , justify = "full")
+            console.print(Panel(str(running_print_Balance3) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "green") , style = style , justify = "full")
+        if wiftool ==1:
+            
+            mylist= []
+            data=[]
+            with open('wif.txt', newline='', encoding='utf-8') as f:
+                for line in f:
+                    mylist.append(line.strip())
+                    for x in range(0,len(mylist)):
+                        WIF = mylist[x]
+                        count+=1
+                        total+=5
+                    if WIF.startswith('5H') or WIF.startswith('5J') or WIF.startswith('5K') or WIF.startswith('K') or WIF.startswith('L'):
+                        if WIF.startswith('5H') or WIF.startswith('5J') or WIF.startswith('5K'):
+                            first_encode = base58.b58decode(WIF)
+                            private_key_full = binascii.hexlify(first_encode)
+                            private_key = private_key_full[2:-8]
+                            private_key_hex = private_key.decode("utf-8")
+                            dec = int(private_key_hex,16)
+                                
+                        elif WIF.startswith('K') or WIF.startswith('L'):
+                            first_encode = base58.b58decode(WIF)
+                            private_key_full = binascii.hexlify(first_encode)
+                            private_key = private_key_full[2:-8]
+                            private_key_hex = private_key.decode("utf-8")
+                            dec = int(private_key_hex[0:64],16)
+                        HEX = "%064x" % dec
+                        wifc = ice.btc_pvk_to_wif(HEX)
+                        wifu = ice.btc_pvk_to_wif(HEX, False) 
+                        uaddr = ice.privatekey_to_address(0, False, dec)
+                        caddr = ice.privatekey_to_address(0, True, dec) 
+                        p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
+                        bech32 = ice.privatekey_to_address(2, True, dec)  #bech32          
+                        urlblockuaddr = "https://bitcoin.atomicwallet.io/address/"+uaddr
+                        respone_blockuaddr = requests.get(urlblockuaddr)
+                        byte_stringuaddr = respone_blockuaddr.content
+                        source_codeuaddr = html.fromstring(byte_stringuaddr)
+                        xpatch_txiduaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                        treetxiduaddr = source_codeuaddr.xpath(xpatch_txiduaddr)
+                        xVoluaddr = str(treetxiduaddr[0].text_content())
+                        baluaddr = str(xVoluaddr)
+                        
+                        urlblockcaddr = "https://bitcoin.atomicwallet.io/address/"+caddr
+                        respone_blockcaddr = requests.get(urlblockcaddr)
+                        byte_stringcaddr = respone_blockcaddr.content
+                        source_codecaddr = html.fromstring(byte_stringcaddr)
+                        xpatch_txidcaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                        treetxidcaddr = source_codecaddr.xpath(xpatch_txidcaddr)
+                        xVolcaddr = str(treetxidcaddr[0].text_content())
+                        balcaddr = str(xVolcaddr)
+                        
+                        urlblockp2sh = "https://bitcoin.atomicwallet.io/address/"+p2sh
+                        respone_blockp2sh = requests.get(urlblockp2sh)
+                        byte_stringp2sh = respone_blockp2sh.content
+                        source_codep2sh = html.fromstring(byte_stringp2sh)
+                        xpatch_txidp2sh = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                        treetxidp2sh = source_codep2sh.xpath(xpatch_txidp2sh)
+                        xVolp2sh = str(treetxidp2sh[0].text_content())
+                        balp2sh = str(xVolp2sh)
+                        
+                        urlblockbech32 = "https://bitcoin.atomicwallet.io/address/"+bech32
+                        respone_blockbech32 = requests.get(urlblockbech32)
+                        byte_stringbech32 = respone_blockbech32.content
+                        source_codebech32 = html.fromstring(byte_stringbech32)
+                        xpatch_txidbech32 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                        treetxidbech32 = source_codebech32.xpath(xpatch_txidbech32)
+                        xVolbech32 = str(treetxidbech32[0].text_content())
+                        balbech32 = str(xVolbech32)
+                        ammount = '0 BTC'
+                        if int(baluaddr)> 0 or int(balcaddr)> 0 or int(balp2sh)> 0 or int(balbech32) > 0:
+                            urlblock1uaddr = "https://bitcoin.atomicwallet.io/address/"+uaddr
+                            respone_block1uaddr = requests.get(urlblock1uaddr)
+                            byte_string1uaddr = respone_block1uaddr.content
+                            source_code1uaddr = html.fromstring(byte_string1uaddr)
+                            xpatch_txid1uaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                            treetxid1uaddr = source_code1uaddr.xpath(xpatch_txid1uaddr)
+                            xVol1uaddr = str(treetxid1uaddr[0].text_content())
+                            valuaddr = str(xVol1uaddr)
+                            
+                            urlblock1caddr = "https://bitcoin.atomicwallet.io/address/"+caddr
+                            respone_block1caddr = requests.get(urlblock1caddr)
+                            byte_string1caddr = respone_block1caddr.content
+                            source_code1caddr = html.fromstring(byte_string1caddr)
+                            xpatch_txid1caddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                            treetxid1caddr = source_code1caddr.xpath(xpatch_txid1caddr)
+                            xVol1caddr = str(treetxid1caddr[0].text_content())
+                            valcaddr = str(xVol1caddr)
+                            
+                            urlblock1p2sh = "https://bitcoin.atomicwallet.io/address/"+p2sh
+                            respone_block1p2sh = requests.get(urlblock1p2sh)
+                            byte_string1p2sh = respone_block1p2sh.content
+                            source_code1p2sh = html.fromstring(byte_string1p2sh)
+                            xpatch_txid1p2sh = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                            treetxid1p2sh = source_code1p2sh.xpath(xpatch_txid1p2sh)
+                            xVol1p2sh = str(treetxid1p2sh[0].text_content())
+                            valp2sh = str(xVol1p2sh)
+                            
+                            urlblock1bech32 = "https://bitcoin.atomicwallet.io/address/"+bech32
+                            respone_block1bech32 = requests.get(urlblock1bech32)
+                            byte_string1bech32 = respone_block1bech32.content
+                            source_code1bech32 = html.fromstring(byte_string1bech32)
+                            xpatch_txid1bech32 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                            treetxid1bech32 = source_code1bech32.xpath(xpatch_txid1bech32)
+                            xVol1bech32 = str(treetxid1bech32[0].text_content())
+                            valbech32 = str(xVol1bech32)
+
+                            f=open('WIFsave.txt','a')
+                            f.write(f"  WIF  >>  \n{WIF}\n  WIF Compressed  >> {wifc} \n Bitcoin Address = {caddr}  Balance {valcaddr}  TX = {balcaddr}  BTC \n  WIF Uncompressed  >>  {wifu} \n Bitcoin Address = {uaddr}  Balance  {valuaddr}  TX = {baluaddr}  BTC  \n Bitcoin Address = {p2sh}  Balance  {valp2sh}  TX = {balp2sh}  BTC \n Bitcoin Address = {bech32} Balance  {valbech32}  TX = {balbech32}  BTC")
+                            f.close()
+                            TXS_print()
+
+                            w += 1
+                            if str(valuaddr) != str(ammount) or str(valcaddr) != str(ammount) or str(valp2sh) != str(ammount) or str(valbech32) != str(ammount):
+                                s += 1
+                                f=open('Found.txt','a')
+                                f.write(f"  WIF  >>  \n{WIF}\n  WIF Compressed  >> {wifc} \n Bitcoin Address = {caddr}  Balance {valcaddr}  TX = {balcaddr}  BTC \n  WIF Uncompressed  >>  {wifu} \n Bitcoin Address = {uaddr}  Balance  {valuaddr}  TX = {baluaddr}  BTC  \n Bitcoin Address = {p2sh}  Balance  {valp2sh}  TX = {balp2sh}  BTC \n Bitcoin Address = {bech32} Balance  {valbech32}  TX = {balbech32}  BTC")
+                                f.close()
+                                win_print()
+                        else :
+                            print_main()
+        if wiftool ==2:
+            print(INPUTNEEDED)
+            print('[green]WIF to Bitcoin Address Tool[/green]')
+            WIF = str(input('Enter Your Wallet Import Format WIF = '))
+            count+=1
+            total+=5
+            if WIF.startswith('5H') or WIF.startswith('5J') or WIF.startswith('5K') or WIF.startswith('K') or WIF.startswith('L'):
+                if WIF.startswith('5H') or WIF.startswith('5J') or WIF.startswith('5K'):
+                    first_encode = base58.b58decode(WIF)
+                    private_key_full = binascii.hexlify(first_encode)
+                    private_key = private_key_full[2:-8]
+                    private_key_hex = private_key.decode("utf-8")
+                    dec = int(private_key_hex,16)
+                        
+                elif WIF.startswith('K') or WIF.startswith('L'):
+                    first_encode = base58.b58decode(WIF)
+                    private_key_full = binascii.hexlify(first_encode)
+                    private_key = private_key_full[2:-8]
+                    private_key_hex = private_key.decode("utf-8")
+                    dec = int(private_key_hex[0:64],16)
+                HEX = "%064x" % dec
+                wifc = ice.btc_pvk_to_wif(HEX)
+                wifu = ice.btc_pvk_to_wif(HEX, False) 
+                uaddr = ice.privatekey_to_address(0, False, dec)
+                caddr = ice.privatekey_to_address(0, True, dec) 
+                p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
+                bech32 = ice.privatekey_to_address(2, True, dec)  #bech32          
+                urlblockuaddr = "https://bitcoin.atomicwallet.io/address/"+uaddr
+                respone_blockuaddr = requests.get(urlblockuaddr)
+                byte_stringuaddr = respone_blockuaddr.content
+                source_codeuaddr = html.fromstring(byte_stringuaddr)
+                xpatch_txiduaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                treetxiduaddr = source_codeuaddr.xpath(xpatch_txiduaddr)
+                xVoluaddr = str(treetxiduaddr[0].text_content())
+                baluaddr = str(xVoluaddr)
+                
+                urlblockcaddr = "https://bitcoin.atomicwallet.io/address/"+caddr
+                respone_blockcaddr = requests.get(urlblockcaddr)
+                byte_stringcaddr = respone_blockcaddr.content
+                source_codecaddr = html.fromstring(byte_stringcaddr)
+                xpatch_txidcaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                treetxidcaddr = source_codecaddr.xpath(xpatch_txidcaddr)
+                xVolcaddr = str(treetxidcaddr[0].text_content())
+                balcaddr = str(xVolcaddr)
+                
+                urlblockp2sh = "https://bitcoin.atomicwallet.io/address/"+p2sh
+                respone_blockp2sh = requests.get(urlblockp2sh)
+                byte_stringp2sh = respone_blockp2sh.content
+                source_codep2sh = html.fromstring(byte_stringp2sh)
+                xpatch_txidp2sh = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                treetxidp2sh = source_codep2sh.xpath(xpatch_txidp2sh)
+                xVolp2sh = str(treetxidp2sh[0].text_content())
+                balp2sh = str(xVolp2sh)
+                
+                urlblockbech32 = "https://bitcoin.atomicwallet.io/address/"+bech32
+                respone_blockbech32 = requests.get(urlblockbech32)
+                byte_stringbech32 = respone_blockbech32.content
+                source_codebech32 = html.fromstring(byte_stringbech32)
+                xpatch_txidbech32 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                treetxidbech32 = source_codebech32.xpath(xpatch_txidbech32)
+                xVolbech32 = str(treetxidbech32[0].text_content())
+                balbech32 = str(xVolbech32)
+                ammount = '0 BTC'
+                if int(baluaddr)> 0 or int(balcaddr)> 0 or int(balp2sh)> 0 or int(balbech32) > 0:
+                    urlblock1uaddr = "https://bitcoin.atomicwallet.io/address/"+uaddr
+                    respone_block1uaddr = requests.get(urlblock1uaddr)
+                    byte_string1uaddr = respone_block1uaddr.content
+                    source_code1uaddr = html.fromstring(byte_string1uaddr)
+                    xpatch_txid1uaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    treetxid1uaddr = source_code1uaddr.xpath(xpatch_txid1uaddr)
+                    xVol1uaddr = str(treetxid1uaddr[0].text_content())
+                    valuaddr = str(xVol1uaddr)
                     
-            elif WIF.startswith('K') or WIF.startswith('L'):
-                first_encode = base58.b58decode(WIF)
-                private_key_full = binascii.hexlify(first_encode)
-                private_key = private_key_full[2:-8]
-                private_key_hex = private_key.decode("utf-8")
-                dec = int(private_key_hex[0:64],16)
-            HEX = "%064x" % dec
-            wifc = ice.btc_pvk_to_wif(HEX)
-            wifu = ice.btc_pvk_to_wif(HEX, False) 
-            uaddr = ice.privatekey_to_address(0, False, dec)
-            caddr = ice.privatekey_to_address(0, True, dec) 
-            p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
-            bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
-            ethaddr = ice.privatekey_to_ETH_address(dec)            
-            length = len(bin(dec))
-            length -=2
-            print('\nDecimal = ',dec, '  bits ', length, '\n Hexadecimal = ', HEX)
-            data_info()
-            print('[yellow] WIF Entered  >> [ [/yellow]', WIF, '[yellow]][/yellow]')
-            print('[yellow] HEX Returned  >> [ [/yellow]', HEX, '[yellow]][/yellow]')
-            print('[yellow] DEC Returned  >> [ [/yellow]', dec, '[yellow]][/yellow]')
-            print('[yellow] WIF Compressed  >> [ [/yellow]', wifc, '[yellow]][/yellow]')
-            print('[yellow] WIF Uncompressed  >> [ [/yellow]', wifu, '[yellow]][/yellow]')
-            get_balance(caddr)
-            get_balance1(uaddr)
-            get_balance2(p2sh)
-            get_balance3(bech32)
-            get_balance4(ethaddr)
-            time.sleep(1.5)
-            for data_w in data:
-                hash160 = data_w['hash160']
-                address = data_w['address']
-                n_tx = data_w['n_tx']
-                total_received = data_w['total_received']
-                total_sent = data_w['total_sent']
-                final_balance = data_w['final_balance']
-                print('================== Block Chain ==================')
-                print('Bitcoin address   = ', address)
-                print('hash160   = ', hash160)
-                print('Number of tx    = ', n_tx)
-                print('Total Received  = ', total_received)
-                print('Total Sent      = ', total_sent)
-                print('Final Balance   = ', final_balance)
-                print('================== Block Chain ==================')
-                time.sleep(3.0)
+                    urlblock1caddr = "https://bitcoin.atomicwallet.io/address/"+caddr
+                    respone_block1caddr = requests.get(urlblock1caddr)
+                    byte_string1caddr = respone_block1caddr.content
+                    source_code1caddr = html.fromstring(byte_string1caddr)
+                    xpatch_txid1caddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    treetxid1caddr = source_code1caddr.xpath(xpatch_txid1caddr)
+                    xVol1caddr = str(treetxid1caddr[0].text_content())
+                    valcaddr = str(xVol1caddr)
+                    
+                    urlblock1p2sh = "https://bitcoin.atomicwallet.io/address/"+p2sh
+                    respone_block1p2sh = requests.get(urlblock1p2sh)
+                    byte_string1p2sh = respone_block1p2sh.content
+                    source_code1p2sh = html.fromstring(byte_string1p2sh)
+                    xpatch_txid1p2sh = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    treetxid1p2sh = source_code1p2sh.xpath(xpatch_txid1p2sh)
+                    xVol1p2sh = str(treetxid1p2sh[0].text_content())
+                    valp2sh = str(xVol1p2sh)
+                    
+                    urlblock1bech32 = "https://bitcoin.atomicwallet.io/address/"+bech32
+                    respone_block1bech32 = requests.get(urlblock1bech32)
+                    byte_string1bech32 = respone_block1bech32.content
+                    source_code1bech32 = html.fromstring(byte_string1bech32)
+                    xpatch_txid1bech32 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    treetxid1bech32 = source_code1bech32.xpath(xpatch_txid1bech32)
+                    xVol1bech32 = str(treetxid1bech32[0].text_content())
+                    valbech32 = str(xVol1bech32)
+
+                    f=open('WIFsave.txt','a')
+                    f.write(f"  WIF  >>  \n{WIF}\n  WIF Compressed  >> {wifc} \n Bitcoin Address = {caddr}  Balance {valcaddr}  TX = {balcaddr}  BTC \n  WIF Uncompressed  >>  {wifu} \n Bitcoin Address = {uaddr}  Balance  {valuaddr}  TX = {baluaddr}  BTC  \n Bitcoin Address = {p2sh}  Balance  {valp2sh}  TX = {balp2sh}  BTC \n Bitcoin Address = {bech32} Balance  {valbech32}  TX = {balbech32}  BTC")
+                    f.close()
+                    TXS_print()
+
+                    w += 1
+                    if str(valuaddr) != str(ammount) or str(valcaddr) != str(ammount) or str(valp2sh) != str(ammount) or str(valbech32) != str(ammount):
+                        s += 1
+                        f=open('Found.txt','a')
+                        f.write(f"  WIF  >>  \n{WIF}\n  WIF Compressed  >> {wifc} \n Bitcoin Address = {caddr}  Balance {valcaddr}  TX = {balcaddr}  BTC \n  WIF Uncompressed  >>  {wifu} \n Bitcoin Address = {uaddr}  Balance  {valuaddr}  TX = {baluaddr}  BTC  \n Bitcoin Address = {p2sh}  Balance  {valp2sh}  TX = {balp2sh}  BTC \n Bitcoin Address = {bech32} Balance  {valbech32}  TX = {balbech32}  BTC")
+                        f.close()
+                        win_print()
+                else :
+                    print_main()
             
     elif start == 11:
         promptrsz= '''[yellow]
@@ -1627,9 +1856,9 @@ while True:
             print(promptdiplay)
             startprint=int(input('TYPE HERE =   ')) 
             while True:
-                c1 = random.choice('0123456789abcdef')
-                c2 = random.choice('0123456789abcdef')
-                c3 = random.choice('0123456789abcdef')
+                c1 = '0' #random.choice('0123456789abcdef')
+                c2 = '0' #random.choice('0123456789abcdef')
+                c3 = '0' #random.choice('0123456789abcdef')
                 c4 = random.choice('0123456789abcdef')
                 c5 = random.choice('0123456789abcdef')
                 c6 = random.choice('0123456789abcdef')
