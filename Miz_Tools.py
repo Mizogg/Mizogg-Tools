@@ -29,76 +29,102 @@ j=0
 pbar=tqdm(initial=j)
 # =============================================================================
 def get_balance(caddr):
-    contents = requests.get("https://btcbook.guarda.co/api/v2/address/" + caddr)
-    res = contents.json()
-    ress = json.dumps(res)
-    resload = json.loads(ress)
-    info = str(resload)
-    balance = (resload['balance'])
-    totalReceived = (resload['totalReceived'])
-    totalSent = (resload['totalSent'])
-    txs = (resload['txs'])
-    addressinfo = (resload['address'])
-    print('BTC Address : ', addressinfo)
+    urlblock = "https://bitcoin.atomicwallet.io/address/" + caddr
+    respone_block = requests.get(urlblock)
+    byte_string = respone_block.content
+    source_code = html.fromstring(byte_string)
+    received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+    receivedid = source_code.xpath(received_id)
+    totalReceived = str(receivedid[0].text_content())
+    sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+    sentid = source_code.xpath(sent_id)
+    totalSent = str(sentid[0].text_content())
+    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+    balanceid = source_code.xpath(balance_id)
+    balance = str(balanceid[0].text_content())
+    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+    txsid = source_code.xpath(txs_id)
+    txs = str(txsid[0].text_content())
+    print('BTC Address : ', caddr)
     print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
     return balance
 
     
 def get_balance1(uaddr):
-    contents = requests.get("https://btcbook.guarda.co/api/v2/address/" + uaddr)
-    res = contents.json()
-    ress = json.dumps(res)
-    resload = json.loads(ress)
-    info = str(resload)
-    balance1 = (resload['balance'])
-    totalReceived = (resload['totalReceived'])
-    totalSent = (resload['totalSent'])
-    txs = (resload['txs'])
-    addressinfo = (resload['address'])
-    print('BTC Address : ', addressinfo)
+    urlblock = "https://bitcoin.atomicwallet.io/address/" + uaddr
+    respone_block = requests.get(urlblock)
+    byte_string = respone_block.content
+    source_code = html.fromstring(byte_string)
+    received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+    receivedid = source_code.xpath(received_id)
+    totalReceived = str(receivedid[0].text_content())
+    sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+    sentid = source_code.xpath(sent_id)
+    totalSent = str(sentid[0].text_content())
+    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+    balanceid = source_code.xpath(balance_id)
+    balance1 = str(balanceid[0].text_content())
+    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+    txsid = source_code.xpath(txs_id)
+    txs = str(txsid[0].text_content())
+    print('BTC Address : ', uaddr)
     print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance1) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
     return balance1
 
 def get_balance2(p2sh):
-    contents = requests.get("https://btcbook.guarda.co/api/v2/address/" + p2sh)
-    res = contents.json()
-    ress = json.dumps(res)
-    resload = json.loads(ress)
-    info = str(resload)
-    balance2 = (resload['balance'])
-    totalReceived = (resload['totalReceived'])
-    totalSent = (resload['totalSent'])
-    txs = (resload['txs'])
-    addressinfo = (resload['address'])
-    print('BTC Address : ', addressinfo)
+    urlblock = "https://bitcoin.atomicwallet.io/address/" + p2sh
+    respone_block = requests.get(urlblock)
+    byte_string = respone_block.content
+    source_code = html.fromstring(byte_string)
+    received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+    receivedid = source_code.xpath(received_id)
+    totalReceived = str(receivedid[0].text_content())
+    sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+    sentid = source_code.xpath(sent_id)
+    totalSent = str(sentid[0].text_content())
+    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+    balanceid = source_code.xpath(balance_id)
+    balance2 = str(balanceid[0].text_content())
+    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+    txsid = source_code.xpath(txs_id)
+    txs = str(txsid[0].text_content())
+    print('BTC Address : ', p2sh)
     print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
     return balance2
 
 def get_balance3(bech32):
-    contents = requests.get("https://btcbook.guarda.co/api/v2/address/" + bech32)
-    res = contents.json()
-    ress = json.dumps(res)
-    resload = json.loads(ress)
-    info = str(resload)
-    balance3 = (resload['balance'])
-    totalReceived = (resload['totalReceived'])
-    totalSent = (resload['totalSent'])
-    txs = (resload['txs'])
-    addressinfo = (resload['address'])
-    print('BTC Address : ', addressinfo)
+    urlblock = "https://bitcoin.atomicwallet.io/address/" + bech32
+    respone_block = requests.get(urlblock)
+    byte_string = respone_block.content
+    source_code = html.fromstring(byte_string)
+    received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+    receivedid = source_code.xpath(received_id)
+    totalReceived = str(receivedid[0].text_content())
+    sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+    sentid = source_code.xpath(sent_id)
+    totalSent = str(sentid[0].text_content())
+    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+    balanceid = source_code.xpath(balance_id)
+    balance3 = str(balanceid[0].text_content())
+    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+    txsid = source_code.xpath(txs_id)
+    txs = str(txsid[0].text_content())
+    print('BTC Address : ', bech32)
     print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
     return balance3
     
 def get_balance4(ethaddr):
-    contents = requests.get("https://ethbook.guarda.co/api/v2/address/" + ethaddr)
-    res = contents.json()
-    ress = json.dumps(res)
-    resload = json.loads(ress)
-    info = str(resload)
-    balance4 = (resload['balance'])
-    txs = (resload['txs'])
-    addressinfo = (resload['address'])
-    print('ETH Address : ', addressinfo)
+    urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
+    respone_block = requests.get(urlblock)
+    byte_string = respone_block.content
+    source_code = html.fromstring(byte_string)
+    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+    balanceid = source_code.xpath(balance_id)
+    balance4 = str(balanceid[0].text_content())
+    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+    txsid = source_code.xpath(txs_id)
+    txs = str(txsid[0].text_content())
+    print('ETH Address : ', ethaddr)
     print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
     return balance4
     
@@ -2234,24 +2260,19 @@ while True:
         if startETH == 1:
             print ('Ethereum Address Balance and Info Check Tool')
             ethaddr = str(input('Enter Your ETH Address Here : '))
-            contents = requests.get("https://ethbook.guarda.co/api/v2/address/" + ethaddr)
-
-            if contents.status_code==200:
-                res = contents.json()
-                balance = (res['balance'])
-                txs = (res['txs'])
-                addressinfo = (res['address'])
-                if txs > 0:
-                    nonTokenTxs = (res['nonTokenTxs'])
-                    tokens = (res['tokens'])
-                    print('[yellow] Ethereum Address Entered  >> [ [/yellow]', addressinfo, '[yellow]][/yellow]')
-                    print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance) + '][/green] Transactions: [green][' +  str(txs) + '][/green] Number of Tokens:[green][' + str(nonTokenTxs) + '][/green]')
-                    print('[yellow]Tokens   >> [ [/yellow]', tokens, '[yellow]][/yellow]')
-                    time.sleep(3)
-                else:
-                    print('[yellow] Ethereum Address Entered  >> [ [/yellow]', addressinfo, '[yellow]][/yellow]')
-                    print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
-                    time.sleep(3)    
+            urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
+            respone_block = requests.get(urlblock)
+            byte_string = respone_block.content
+            source_code = html.fromstring(byte_string)
+            balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            balanceid = source_code.xpath(balance_id)
+            balance4 = str(balanceid[0].text_content())
+            txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            txsid = source_code.xpath(txs_id)
+            txs = str(txsid[0].text_content())
+            print('ETH Address : ', ethaddr)
+            print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
+            time.sleep(3)    
         if startETH == 2:
             with open('eth.txt', newline='', encoding='utf-8') as f:
                 for line in f:
@@ -2260,22 +2281,27 @@ while True:
                 count+=1
                 ethaddr = mylist[i]
                 time.sleep(0.5)
-                contents = requests.get("https://ethbook.guarda.co/api/v2/address/" + ethaddr)
-                if contents.status_code==200:
-                    res = contents.json()
-                    balance = (res['balance'])
-                    txs = (res['txs'])
-                    addressinfo = (res['address'])
-                    if float(balance) > 0:
-                        print('[yellow] Ethereum Address Entered  >> [ [/yellow]', addressinfo, '[yellow]][/yellow]')
-                        print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
-                        with open("winner.txt", "a") as f:
-                            f.write('\nEthereum (ETH) Address : ' + addressinfo + ' : No. TXS = ' + str(txs) + ' : Balance = ' + str(balance))
-                            f.close   
-                        time.sleep(3)
-                    else:
-                        print('[yellow] Ethereum Address Entered  >> [ [/yellow]', addressinfo, '[yellow]][/yellow]')
-                        print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
+                urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
+                respone_block = requests.get(urlblock)
+                byte_string = respone_block.content
+                source_code = html.fromstring(byte_string)
+                balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+                balanceid = source_code.xpath(balance_id)
+                balance4 = str(balanceid[0].text_content())
+                txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+                txsid = source_code.xpath(txs_id)
+                txs = str(txsid[0].text_content())
+                ammount = '0 ETH'
+                if txs != 0:
+                    print('[yellow] Ethereum Address Entered  >> [ [/yellow]', ethaddr, '[yellow]][/yellow]')
+                    print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
+                    with open("winner.txt", "a") as f:
+                        f.write('\nEthereum (ETH) Address : ' + ethaddr + ' : No. TXS = ' + str(txs) + ' : Balance = ' + str(balance4))
+                        f.close   
+                    time.sleep(3)
+                else:
+                    print('ETH Address : ', ethaddr)
+                    print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
                 
     elif start ==26:
         promptword= '''
@@ -2324,15 +2350,19 @@ while True:
             length -=2
             print('\nmnemonic_words  : ', mnemonic_words)
             print('\nPrivatekey (dec): ', dec, '  bits ', length, '\nPrivatekey (hex): ', HEX)
-            contents = requests.get("https://ethbook.guarda.co/api/v2/address/" + ethaddr)
-            if contents.status_code==200:
-                res = contents.json()
-                balance = (res['balance'])
-                txs = (res['txs'])
-                addressinfo = (res['address'])
-                print('[yellow] Ethereum Address  >> [ [/yellow]', addressinfo, '[yellow]][/yellow]')
-                print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
-                time.sleep(3)
+            urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
+            respone_block = requests.get(urlblock)
+            byte_string = respone_block.content
+            source_code = html.fromstring(byte_string)
+            balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            balanceid = source_code.xpath(balance_id)
+            balance4 = str(balanceid[0].text_content())
+            txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            txsid = source_code.xpath(txs_id)
+            txs = str(txsid[0].text_content())
+            print('[yellow] Ethereum Address  >> [ [/yellow]', ethaddr, '[yellow]][/yellow]')
+            print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
+            time.sleep(3)
         if startwords == 2:
             print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
             R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
@@ -2384,15 +2414,19 @@ while True:
             length -=2
             print('\nmnemonic_words  : ', mnemonic_words)
             print('\nPrivatekey (dec): ', dec, '  bits ', length, '\nPrivatekey (hex): ', HEX)
-            contents = requests.get("https://ethbook.guarda.co/api/v2/address/" + ethaddr)
-            if contents.status_code==200:
-                res = contents.json()
-                balance = (res['balance'])
-                txs = (res['txs'])
-                addressinfo = (res['address'])
-                print('[yellow] Ethereum Address  >> [ [/yellow]', addressinfo, '[yellow]][/yellow]')
-                print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
-                time.sleep(3)
+            urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
+            respone_block = requests.get(urlblock)
+            byte_string = respone_block.content
+            source_code = html.fromstring(byte_string)
+            balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            balanceid = source_code.xpath(balance_id)
+            balance4 = str(balanceid[0].text_content())
+            txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            txsid = source_code.xpath(txs_id)
+            txs = str(txsid[0].text_content())
+            print('[yellow] Ethereum Address  >> [ [/yellow]', ethaddr, '[yellow]][/yellow]')
+            print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
+            time.sleep(3)
     elif start ==27:
         print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
         R = int(input('Enter Ammount Mnemonic Words 12/15/18/21/24 : '))
@@ -2505,7 +2539,6 @@ while True:
         else:
             print("WRONG NUMBER!!! Starting with english")
             Lang1 = "english"
-        display = int(input('1=Full Display (Slower) 2=Slient Mode (Faster) : '))
         while True:
             data=[]
             count += 1
@@ -2521,15 +2554,21 @@ while True:
             data_eth()
             for target_wallet in data:
                 ethaddr = target_wallet['address']
-                contents = requests.get("https://ethbook.guarda.co/api/v2/address/" + ethaddr)
-                if contents.status_code==200:
-                    res = contents.json()
-                    balance = (res['balance'])
-                    txs = (res['txs'])
-                    addressinfo = (res['address'])
-                    print('Mnemonic_words:  ',mnemonic_words)
-                    print('[yellow] Ethereum Address  >> [ [/yellow]', addressinfo, '[yellow]][/yellow]')
-                    print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
+                urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
+                respone_block = requests.get(urlblock)
+                byte_string = respone_block.content
+                source_code = html.fromstring(byte_string)
+                balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+                balanceid = source_code.xpath(balance_id)
+                balance4 = str(balanceid[0].text_content())
+                txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+                txsid = source_code.xpath(txs_id)
+                txs = str(txsid[0].text_content())
+                print('Mnemonic_words:  ',mnemonic_words)
+                print('[yellow] Ethereum Address  >> [ [/yellow]', ethaddr, '[yellow]][/yellow]')
+                print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
+                ammount = '0 ETH'
+                if txs != 0:
                     with open("winner.txt", "a") as f:
                         f.write(f"""\nMnemonic_words:  {mnemonic_words}
                         Derivation Path:  {target_wallet['path']}
