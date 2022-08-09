@@ -553,6 +553,8 @@ while True:
     count=0
     skip = 0
     ammount = 0.00000000
+    ammountbtc = '0 BTC'
+    ammounteth = '0 ETH'
     total= 0
     iteration = 0
     start_time = time.time()
@@ -720,7 +722,7 @@ while True:
                 count+=1
                 total+=7
                 print('Total HEX addresses Loaded:', line_count)
-                if float(balance) > 0 or float(balance1) > 0 or float(balance2) > 0 or  float(balance3) > 0 or  float(balance4) > 0 or float (get_doge(dogeaddr)) > ammount or float (get_doge(dogeuaddr)) > ammount:
+                if str(balance) != ammountbtc or str(balance1) != ammountbtc or str(balance2) != ammountbtc or str(balance3) != ammountbtc or  str(balance4) != ammounteth or float (get_doge(dogeaddr)) > ammount or float (get_doge(dogeuaddr)) > ammount:
                     print('[yellow] HEX Entered  >> [ [/yellow]', HEX, '[yellow]][/yellow]')
                     print('[yellow] DEC Returned  >> [ [/yellow]', dec, '[yellow]][/yellow]')
                     print('[yellow] WIF Compressed  >> [ [/yellow]', wifc, '[yellow]][/yellow]')
@@ -1436,7 +1438,7 @@ while True:
             wallet = BrainWallet()
             private_key, caddr = wallet.generate_address_from_passphrase(passphrase)
             balance = get_balance(caddr)
-            if float(balance) > ammount:
+            if str(balance) != ammountbtc:
                 print(' MATCH FOUND WINNER !!!!!!!!!!!!! ')
                 get_balance(caddr)
                 print(' MATCH FOUND WINNER !!!!!!!!!!!!! ')
