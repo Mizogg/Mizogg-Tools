@@ -8,8 +8,6 @@ then to run use any of the start.bat files
 
 ## Miz_Tools.py Version 11 Total 31 Tools
 
-Test it here :  https://replit.com/@Mizogg
-
 Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Python Libary
 
  Total Bitcoin and ETH Addresses Loaded  >> [ 44878766 ]
