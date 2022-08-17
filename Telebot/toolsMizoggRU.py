@@ -1,47 +1,69 @@
-import json, requests, hashlib, codecs, ecdsa, base58, binascii, random
-import hmac, struct, sys, os, smtplib
-from rich import print
-import secp256k1 as ice
-import hashlib, codecs, ecdsa, base58, binascii, random
-import hmac, struct, sys, os, time
-import bit
-from bit import Key
-from bit.format import bytes_to_wif
-from telebot import *
-from bloomfilter import BloomFilter, ScalableBloomFilter, SizeGrowthRate
-from pathlib import Path
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import hmac, struct, time, sys, os, codecs, binascii, ecdsa, hashlib, random, ctypes
 from time import sleep
+import secp256k1 as ice # download from https://github.com/iceland2k14/secp256k1
 import threading
 from threading import Thread
-import requests
+try:
+    from telebot import *
+    import bit
+    from bit import Key
+    from bit.format import bytes_to_wif
+    import requests
+    import base58
+    from rich import print
+    from bloomfilter import BloomFilter, ScalableBloomFilter, SizeGrowthRate
+    from lxml import html
+    
+    
+except ImportError:
+    import subprocess
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'bit']) # https://pypi.org/project/bit/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'requests']) # https://pypi.org/project/requests/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'rich']) # https://pypi.org/project/rich/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'base58']) # https://pypi.org/project/base58/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'simplebloomfilter']) # https://pypi.org/project/simplebloomfilter/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'bitarray==1.9.2'])
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'lxml']) # https://pypi.org/project/lxml/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'pyTelegramBotAPI']) # https://pypi.org/project/pyTelegramBotAPI/
+    from telebot import *
+    import bit
+    from bit import Key
+    from bit.format import bytes_to_wif
+    import requests
+    import base58
+    from rich import print
+    from bloomfilter import BloomFilter, ScalableBloomFilter, SizeGrowthRate
+    from lxml import html
+
+ctypes.windll.kernel32.SetConsoleTitleW('Mizogg Corp.Telegram Tools')
+
 # =============================================================================
-gmail_user = 'youremail@gmail.com'
-gmail_password = 'yourpassword'
-bot = telebot.TeleBot("yourapi")
+bot = telebot.TeleBot("YOURAPIKEY") # YOUR TELEGRAM API KEY
 # =============================================================================
 print('[yellow] Please with Database Loading.....[/yellow]')
-bloombtc = Path(__file__).resolve()
-ressbtc = bloombtc.parents[0] / 'BF/btc.bf'
-bloometh = Path(__file__).resolve()
-resseth = bloometh.parents[0] / 'BF/eth.bf'
 
-with open(resseth, "rb") as fp:
-    bloom_filter1 = BloomFilter.load(fp)   
-
-with open(ressbtc, "rb") as fp:
+with open("btc.bf", "rb") as fp:
     bloom_filter = BloomFilter.load(fp)
-
-btc_count = len(bloom_filter)
+btc_count = len(bloom_filter)    
+print('[yellow] Bitcoin Addresses Loaded  >> [ [/yellow]', btc_count, '[yellow]][/yellow]')
+    
+with open("eth.bf", "rb") as fp:
+    bloom_filter1 = BloomFilter.load(fp)   
 eth_count = len(bloom_filter1)
+print('[yellow] ETH Addresses Loaded  >> [ [/yellow]', eth_count, '[yellow]][/yellow]')
+
 addr_count = len(bloom_filter)+len(bloom_filter1)
 print('[yellow] Total Bitcoin and ETH Addresses Loaded  >> [ [/yellow]', addr_count, '[yellow]][/yellow]')
+print('[purple] <<  Telegram Bot Running  >> [/purple]')
 # =============================================================================
 
 n = "\n"
 order	= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
 maxN = 115792089237316195423570985008687907852837564279074904382605163141518161494336
 mylist = []
-
+ammount = '0 BTC'
 with open('words.txt', newline='', encoding='utf-8') as f:
     for line in f:
         mylist.append(line.strip())
@@ -217,39 +239,32 @@ def bip39seed_to_private_key4(bip39seed, n=1):
     return private_key
 # =============================================================================
 def get_balance(caddr):
-    contents = requests.get("https://btcbook.guarda.co/api/v2/address/" + caddr)
-    res = contents.json()
-    ress = json.dumps(res)
-    resload = json.loads(ress)
-    return resload
+    urlblock = "https://bitcoin.atomicwallet.io/address/" + caddr
+    respone_block = requests.get(urlblock)
+    byte_string = respone_block.content
+    source_code = html.fromstring(byte_string)
+    return source_code
     
 def get_balance1(uaddr):
-    contents = requests.get("https://btcbook.guarda.co/api/v2/address/" + uaddr)
-    res = contents.json()
-    ress = json.dumps(res)
-    resload1 = json.loads(ress)
-    return resload1
+    urlblock = "https://bitcoin.atomicwallet.io/address/" + uaddr
+    respone_block = requests.get(urlblock)
+    byte_string = respone_block.content
+    source_code1 = html.fromstring(byte_string)
+    return source_code1
 
 def get_balance2(p2sh):
-    contents = requests.get("https://btcbook.guarda.co/api/v2/address/" + p2sh)
-    res = contents.json()
-    ress = json.dumps(res)
-    resload2 = json.loads(ress)
-    return resload2
+    urlblock = "https://bitcoin.atomicwallet.io/address/" + p2sh
+    respone_block = requests.get(urlblock)
+    byte_string = respone_block.content
+    source_code2 = html.fromstring(byte_string)
+    return source_code2
 
 def get_balance3(bech32):
-    contents = requests.get("https://btcbook.guarda.co/api/v2/address/" + bech32)
-    res = contents.json()
-    ress = json.dumps(res)
-    resload3 = json.loads(ress)
-    return resload3
-    
-def get_balance4(ethaddr):
-    contents = requests.get("https://ethbook.guarda.co/api/v2/address/" + ethaddr)
-    res = contents.json()
-    ress = json.dumps(res)
-    resload4 = json.loads(ress)
-    return resload4
+    urlblock = "https://bitcoin.atomicwallet.io/address/" + bech32
+    respone_block = requests.get(urlblock)
+    byte_string = respone_block.content
+    source_code3 = html.fromstring(byte_string)
+    return source_code3
 # =============================================================================
 class BrainWallet:
 
@@ -359,8 +374,8 @@ def get_text(message):
         option8 = types.KeyboardButton("🪙Raven Адрес с проверкой баланса🪙")
         option9 = types.KeyboardButton("🪙ZCash Адрес с проверкой баланса🪙")
         back = types.KeyboardButton("🔙Назад")
-        markup_crypto.add(option1, option2, option3, option4, option5, option6, option7, option8, option9, back)
-        bot.send_message(message.chat.id, f"🤖 {message.from_user.first_name}! Выберите ₿itcoin, Bitcoin Cash, Ethereum и Ethereum Classic, Litecoin, Dogecoin, DASH, монету Raven, кнопку проверки баланса ZCASH. 🪓🔨⛏️", reply_markup=markup_crypto)
+        markup_crypto.add(option1, back)
+        bot.send_message(message.chat.id, f"🤖 {message.from_user.first_name}! Выберите ₿itcoin, COMING SOON(Bitcoin Cash, Ethereum и Ethereum Classic, Litecoin, Dogecoin, DASH, монету Raven, кнопку проверки баланса ZCASH). 🪓🔨⛏️", reply_markup=markup_crypto)
     
     if message.text=="🔙Назад":
         start(message)
@@ -607,17 +622,26 @@ def get_address(message):
     else:
         caddr = message.text
         if message.content_type == "text":
-            contents = requests.get("https://btcbook.guarda.co/api/v2/address/" + caddr)
-            if contents.status_code==200:
-                res = contents.json()
-                balance = (res['balance'])
-                totalReceived = (res['totalReceived'])
-                totalSent = (res['totalSent'])
-                txs = (res['txs'])
-                addressinfo = (res['address'])
+            urlblock = "https://bitcoin.atomicwallet.io/address/" + caddr
+            respone_block = requests.get(urlblock)
+            if respone_block.status_code==200:
+                byte_string = respone_block.content
+                source_code = html.fromstring(byte_string)
+                received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+                receivedid = source_code.xpath(received_id)
+                totalReceived = str(receivedid[0].text_content())
+                sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+                sentid = source_code.xpath(sent_id)
+                totalSent = str(sentid[0].text_content())
+                balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                balanceid = source_code.xpath(balance_id)
+                balance = str(balanceid[0].text_content())
+                txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                txsid = source_code.xpath(txs_id)
+                txs = str(txsid[0].text_content())
                 n = "\n"
-                bot.send_message(message.chat.id, f"        👇 ₿itcoin Адрес введен 👇{n}{n} {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs}")
-                print('[purple] Bitcoin Address Entered  >> [ [/purple]', addressinfo, '[purple]][/purple]')
+                bot.send_message(message.chat.id, f"        👇 ₿itcoin Адрес введен 👇{n}{n} {caddr} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs}")
+                print('[purple] Bitcoin Address Entered  >> [ [/purple]', caddr, '[purple]][/purple]')
                 print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
             else:
                 bot.send_message(message.chat.id, "🚫 This ₿itcoin адрес недействителен 🤪 Адрес BTC является буквенно-цифровым и всегда начинается с 1, 3 или bc1. Это пример адреса получателя: 1FeexV6bAHb8ybZjqQMjJrcCrHGW9sb6uF . Обратите внимание: это всего лишь пример адреса.")
@@ -625,7 +649,7 @@ def get_address(message):
         else:
             bot.send_message(message.chat.id, "🚫 This ₿itcoin адрес недействителен 🤪 Отправить в текстовом формате")
         start(message)
-
+'''
 def get_address_BCH(message):
     if message.text=="🔙Назад":
         start(message)
@@ -851,7 +875,7 @@ def get_address_ZEC(message):
         else:
             bot.send_message(message.chat.id, "🚫 This Zcash адрес недействителен 🤪 Отправить в текстовом формате")
         start(message)
-
+'''
 def checkHex(HEX):
     for ch in HEX:
         if ((ch < '0' or ch > '9') and (ch < 'a' or ch > 'f') and (ch < 'A' or ch > 'F')):
@@ -880,102 +904,82 @@ def get_HEX(message):
                     uaddr = ice.privatekey_to_address(0, False, dec)  #Uncompressed
                     p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
                     bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
-                    ethaddr = ice.privatekey_to_ETH_address(dec)
+                    #ethaddr = ice.privatekey_to_ETH_address(dec)
                     
-                    resload = get_balance(caddr)
-                    info = str(resload)
-                    balance = (resload['balance'])
-                    totalReceived = (resload['totalReceived'])
-                    totalSent = (resload['totalSent'])
-                    txs = (resload['txs'])
-                    addressinfo = (resload['address'])
+                    source_code = get_balance(caddr)
+                    received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+                    receivedid = source_code.xpath(received_id)
+                    totalReceived = str(receivedid[0].text_content())
+                    sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+                    sentid = source_code.xpath(sent_id)
+                    totalSent = str(sentid[0].text_content())
+                    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    balanceid = source_code.xpath(balance_id)
+                    balance = str(balanceid[0].text_content())
+                    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                    txsid = source_code.xpath(txs_id)
+                    txs = str(txsid[0].text_content())
 
-                    resload1 = get_balance1(uaddr)
-                    info1 = str(resload1)
-                    balance1 = (resload1['balance'])
-                    totalReceived1 = (resload1['totalReceived'])
-                    totalSent1 = (resload1['totalSent'])
-                    txs1 = (resload1['txs'])
-                    addressinfo1 = (resload1['address'])
+                    source_code1 = get_balance1(uaddr)
+                    received_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+                    receivedid1 = source_code1.xpath(received_id1)
+                    totalReceived1 = str(receivedid1[0].text_content())
+                    sent_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+                    sentid1 = source_code1.xpath(sent_id1)
+                    totalSent1 = str(sentid1[0].text_content())
+                    balance_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    balanceid1 = source_code1.xpath(balance_id1)
+                    balance1 = str(balanceid1[0].text_content())
+                    txs_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                    txsid1 = source_code1.xpath(txs_id1)
+                    txs1 = str(txsid1[0].text_content())
 
-                    resload2 = get_balance2(p2sh)
-                    info2 = str(resload2)
-                    balance2 = (resload2['balance'])
-                    totalReceived2 = (resload2['totalReceived'])
-                    totalSent2 = (resload2['totalSent'])
-                    txs2 = (resload2['txs'])
-                    addressinfo2 = (resload2['address'])
+                    source_code2 = get_balance2(p2sh)
+                    received_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+                    receivedid2 = source_code2.xpath(received_id2)
+                    totalReceived2 = str(receivedid2[0].text_content())
+                    sent_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+                    sentid2 = source_code2.xpath(sent_id2)
+                    totalSent2 = str(sentid2[0].text_content())
+                    balance_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    balanceid2 = source_code2.xpath(balance_id2)
+                    balance2 = str(balanceid2[0].text_content())
+                    txs_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                    txsid2 = source_code2.xpath(txs_id2)
+                    txs2 = str(txsid2[0].text_content())
 
-                    resload3 = get_balance3(bech32)
-                    info3 = str(resload3)
-                    balance3 = (resload3['balance'])
-                    totalReceived3 = (resload3['totalReceived'])
-                    totalSent3 = (resload3['totalSent'])
-                    txs3 = (resload3['txs'])
-                    addressinfo3 = (resload3['address'])
-                    
-                    resload4 = get_balance4(ethaddr)
-                    info4 = str(resload4)
-                    balance4 = (resload4['balance'])
-                    txs4 = (resload4['txs'])
-                    addressinfo4 = (resload4['address'])
+                    source_code3 = get_balance3(bech32)
+                    received_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+                    receivedid3 = source_code3.xpath(received_id3)
+                    totalReceived3 = str(receivedid3[0].text_content())
+                    sent_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+                    sentid3 = source_code3.xpath(sent_id3)
+                    totalSent3 = str(sentid3[0].text_content())
+                    balance_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    balanceid3 = source_code3.xpath(balance_id3)
+                    balance3 = str(balanceid3[0].text_content())
+                    txs_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                    txsid3 = source_code3.xpath(txs_id3)
+                    txs3 = str(txsid3[0].text_content())
 
                     n = "\n"
                     print('[purple] HEX Entered  >> [ [/purple]', HEX, '[purple]][/purple]')
                     print('[purple] Дек вернулся  >> [ [/purple]', dec, '[purple]][/purple]')
                     print('[purple] WIF сжатый  >> [ [/purple]', wifc, '[purple]][/purple]')
                     print('[purple] WIF без сжатия>> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('BTC Address : ', addressinfo)
+                    print('BTC Address : ', caddr)
                     print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
-                    print('BTC Address : ', addressinfo1)
+                    print('BTC Address : ', uaddr)
                     print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance1) + '][/green] totalReceived: [green][' +  str(totalReceived1) + '][/green] totalSent:[green][' + str(totalSent1) + '][/green] txs :[green][' + str(txs1) + '][/green]')
-                    print('BTC Address : ', addressinfo2)
+                    print('BTC Address : ', p2sh)
                     print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
-                    print('BTC Address : ', addressinfo3)
+                    print('BTC Address : ', bech32)
                     print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
-                    print('ETH Address : ', addressinfo4)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs4) + '][/green]')
 
-                    bot.send_message(message.chat.id, (f" 🔨 HEX Entered  >> 🔨 {n}{HEX}{n}{n} ⛏️ Дек вернулся  >> ⛏️ {n}{dec}  Биты {length}{n}{n} 🗝️ WIF сжатый  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF без сжатия>> 🔑 {n}{wifu}{n}{n} ₿биткойн адрес = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {addressinfo1} {n}{n}      💰 Balance 💰 {balance1}  BTC {n}      💸 TotalReceived 💸 {totalReceived1} {n}      📤 TotalSent 📤 {totalSent1} {n}      💵 Transactions 💵 {txs1}{n}{n} ₿биткойн адрес = {addressinfo2} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {addressinfo3} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}{n}{n} Адрес Эфириума = {addressinfo4} {n}{n}      💰 Balance 💰 {balance4} {n}      💵 Transactions 💵 {txs4}"))
-                    if txs4 > 0:
-                        nonTokenTxs = (resload4['nonTokenTxs'])
-                        tokens = (resload4['tokens'])
-                        bot.send_message(message.chat.id, f"Number of Tokens = {nonTokenTxs}")
-                        print('Number of Tokens:[green][' + str(nonTokenTxs) + '][/green]')
-                        print('[purple]Tokens   >> [ [/purple]', tokens, '[purple]][/purple]')
-                        tokeninfo = str(tokens)
-                        if len(tokeninfo) > 4096:
-                            for x in range(0, len(tokeninfo), 4096):
-                                bot.send_message(message.chat.id, tokeninfo[x:x+4096])
-                        else:
-                            bot.send_message(message.chat.id, tokeninfo)
-                    if txs > 0 or txs1 > 0 or txs2 > 0 or txs3 > 0 or txs4 > 0:
+                    bot.send_message(message.chat.id, (f" 🔨 HEX Entered  >> 🔨 {n}{HEX}{n}{n} ⛏️ Дек вернулся  >> ⛏️ {n}{dec}  Биты {length}{n}{n} 🗝️ WIF сжатый  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF без сжатия>> 🔑 {n}{wifu}{n}{n} ₿биткойн адрес = {caddr} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {uaddr} {n}{n}      💰 Balance 💰 {balance1}  BTC {n}      💸 TotalReceived 💸 {totalReceived1} {n}      📤 TotalSent 📤 {totalSent1} {n}      💵 Transactions 💵 {txs1}{n}{n} ₿биткойн адрес = {p2sh} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {bech32} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}"))
+                    if str(balance) != ammount or str(balance1) != ammount or str(balance2) != ammount or str(balance3) != ammount:
                         with open("data.txt", "a", encoding="utf-8") as f:
-                            f.write(f"""{n} HEX Entered  >>{HEX}{n} DEC Returned  >> {dec}  bits {length}{n} WIF Compressed  >> {wifc}{n} WIF Uncompressed  >> {wifu}{n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {addressinfo1} Balance  {balance1}  BTC TotalReceived  {totalReceived1} TotalSent  {totalSent1} Transactions  {txs1}{n} Bitcoin Address = {addressinfo2} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {addressinfo3} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}{n} Ethereum Address = {addressinfo4} Balance  {balance4} Transactions  {txs4}""")        
-                    if float(balance) > 0 or float(balance1) > 0 or float(balance2) > 0 or  float(balance3) > 0 or  float(balance4) > 0:
-                        sent_from = gmail_user
-                        to = ['youremail@gmail.com']
-                        subject = 'OMG Super Important Message'
-                        body = f"  HEX Entered  >>  {n}{HEX}{n} Дек вернулся  >>  {n}{dec}  Биты {length}{n}{n}  WIF сжатый  >>  {n}{wifc}{n}{n}  WIF без сжатия>>  {n}{wifu}{n}{n} Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance}  BTC {n}       TotalReceived {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs} {n}{n} Bitcoin Address = {addressinfo1} {n}{n}       Balance  {balance1}  BTC {n}       TotalReceived  {totalReceived1} {n}       TotalSent  {totalSent1} {n}      Transactions  {txs1}{n}{n} Bitcoin Address = {addressinfo2} {n}{n}       Balance  {balance2}  BTC {n}       TotalReceived  {totalReceived2} {n}       TotalSent  {totalSent2} {n}       Transactions  {txs2}{n}{n} Bitcoin Address = {addressinfo3} {n}{n}       Balance  {balance3}  BTC {n}       TotalReceived  {totalReceived3} {n}       TotalSent  {totalSent3} {n}       Transactions  {txs3}{n}{n} Адрес Эфириума = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
-                        
-                        email_text = """\
-                            From: %s
-                            To: %s
-                            Subject: %s
-
-                            %s
-                            """ % (sent_from, ", ".join(to), subject, body)
-
-                        try:
-                            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                            server.ehlo()
-                            server.login(gmail_user, gmail_password)
-                            server.sendmail(sent_from, to, email_text)
-                            server.close()
-                        
-                            print ('Email sent!')
-                        except:
-                            print('Something went wrong...')
+                            f.write(f"""{n} HEX Entered  >>{HEX}{n} DEC Returned  >> {dec}  bits {length}{n} WIF Compressed  >> {wifc}{n} WIF Uncompressed  >> {wifu}{n} Bitcoin Address = {caddr} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {uaddr} Balance  {balance1}  BTC TotalReceived  {totalReceived1} TotalSent  {totalSent1} Transactions  {txs1}{n} Bitcoin Address = {p2sh} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {bech32} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}""")
                 else:
                     bot.send_message(message.chat.id, "🚫 HEX OUT OF RANGE 🤪 Must be Lower Than FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 ")
                     start(message)
@@ -1006,102 +1010,82 @@ def get_DEC(message):
                     uaddr = ice.privatekey_to_address(0, False, dec)  #Uncompressed
                     p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
                     bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
-                    ethaddr = ice.privatekey_to_ETH_address(dec)
+                    #ethaddr = ice.privatekey_to_ETH_address(dec)
                     
-                    resload = get_balance(caddr)
-                    info = str(resload)
-                    balance = (resload['balance'])
-                    totalReceived = (resload['totalReceived'])
-                    totalSent = (resload['totalSent'])
-                    txs = (resload['txs'])
-                    addressinfo = (resload['address'])
+                    source_code = get_balance(caddr)
+                    received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+                    receivedid = source_code.xpath(received_id)
+                    totalReceived = str(receivedid[0].text_content())
+                    sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+                    sentid = source_code.xpath(sent_id)
+                    totalSent = str(sentid[0].text_content())
+                    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    balanceid = source_code.xpath(balance_id)
+                    balance = str(balanceid[0].text_content())
+                    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                    txsid = source_code.xpath(txs_id)
+                    txs = str(txsid[0].text_content())
 
-                    resload1 = get_balance1(uaddr)
-                    info1 = str(resload1)
-                    balance1 = (resload1['balance'])
-                    totalReceived1 = (resload1['totalReceived'])
-                    totalSent1 = (resload1['totalSent'])
-                    txs1 = (resload1['txs'])
-                    addressinfo1 = (resload1['address'])
+                    source_code1 = get_balance1(uaddr)
+                    received_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+                    receivedid1 = source_code1.xpath(received_id1)
+                    totalReceived1 = str(receivedid1[0].text_content())
+                    sent_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+                    sentid1 = source_code1.xpath(sent_id1)
+                    totalSent1 = str(sentid1[0].text_content())
+                    balance_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    balanceid1 = source_code1.xpath(balance_id1)
+                    balance1 = str(balanceid1[0].text_content())
+                    txs_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                    txsid1 = source_code1.xpath(txs_id1)
+                    txs1 = str(txsid1[0].text_content())
 
-                    resload2 = get_balance2(p2sh)
-                    info2 = str(resload2)
-                    balance2 = (resload2['balance'])
-                    totalReceived2 = (resload2['totalReceived'])
-                    totalSent2 = (resload2['totalSent'])
-                    txs2 = (resload2['txs'])
-                    addressinfo2 = (resload2['address'])
+                    source_code2 = get_balance2(p2sh)
+                    received_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+                    receivedid2 = source_code2.xpath(received_id2)
+                    totalReceived2 = str(receivedid2[0].text_content())
+                    sent_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+                    sentid2 = source_code2.xpath(sent_id2)
+                    totalSent2 = str(sentid2[0].text_content())
+                    balance_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    balanceid2 = source_code2.xpath(balance_id2)
+                    balance2 = str(balanceid2[0].text_content())
+                    txs_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                    txsid2 = source_code2.xpath(txs_id2)
+                    txs2 = str(txsid2[0].text_content())
 
-                    resload3 = get_balance3(bech32)
-                    info3 = str(resload3)
-                    balance3 = (resload3['balance'])
-                    totalReceived3 = (resload3['totalReceived'])
-                    totalSent3 = (resload3['totalSent'])
-                    txs3 = (resload3['txs'])
-                    addressinfo3 = (resload3['address'])
-                    
-                    resload4 = get_balance4(ethaddr)
-                    info4 = str(resload4)
-                    balance4 = (resload4['balance'])
-                    txs4 = (resload4['txs'])
-                    addressinfo4 = (resload4['address'])
+                    source_code3 = get_balance3(bech32)
+                    received_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+                    receivedid3 = source_code3.xpath(received_id3)
+                    totalReceived3 = str(receivedid3[0].text_content())
+                    sent_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+                    sentid3 = source_code3.xpath(sent_id3)
+                    totalSent3 = str(sentid3[0].text_content())
+                    balance_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+                    balanceid3 = source_code3.xpath(balance_id3)
+                    balance3 = str(balanceid3[0].text_content())
+                    txs_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+                    txsid3 = source_code3.xpath(txs_id3)
+                    txs3 = str(txsid3[0].text_content())
                     
                     n = "\n"
                     print('[purple] DEC Entered  >> [ [/purple]', dec, '[purple]][/purple]')
                     print('[purple] HEX возвращено  >> [ [/purple]', HEX, '[purple]][/purple]')
                     print('[purple] WIF сжатый  >> [ [/purple]', wifc, '[purple]][/purple]')
                     print('[purple] WIF без сжатия>> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('BTC Address : ', addressinfo)
+                    print('BTC Address : ', caddr)
                     print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
-                    print('BTC Address : ', addressinfo1)
+                    print('BTC Address : ', uaddr)
                     print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance1) + '][/green] totalReceived: [green][' +  str(totalReceived1) + '][/green] totalSent:[green][' + str(totalSent1) + '][/green] txs :[green][' + str(txs1) + '][/green]')
-                    print('BTC Address : ', addressinfo2)
+                    print('BTC Address : ', p2sh)
                     print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
-                    print('BTC Address : ', addressinfo3)
+                    print('BTC Address : ', bech32)
                     print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
-                    print('ETH Address : ', addressinfo4)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs4) + '][/green]')
                     
-                    bot.send_message(message.chat.id, (f" ⛏️ DEC Entered  >> ⛏️{n}{dec}  Биты {length}{n}{n} 🔨 HEX возвращено  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF сжатый  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF без сжатия>> 🔑 {n}{wifu}{n}{n} ₿биткойн адрес = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {addressinfo1} {n}{n}      💰 Balance 💰 {balance1}  BTC {n}      💸 TotalReceived 💸 {totalReceived1} {n}      📤 TotalSent 📤 {totalSent1} {n}      💵 Transactions 💵 {txs1}{n}{n} ₿биткойн адрес = {addressinfo2} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {addressinfo3} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}{n}{n} Адрес Эфириума = {addressinfo4} {n}{n}      💰 Balance 💰 {balance4} {n}      💵 Transactions 💵 {txs4}"))
-                    if txs4 > 0:
-                        nonTokenTxs = (resload4['nonTokenTxs'])
-                        tokens = (resload4['tokens'])
-                        bot.send_message(message.chat.id, f"Number of Tokens = {nonTokenTxs}")
-                        print('Number of Tokens:[green][' + str(nonTokenTxs) + '][/green]')
-                        print('[purple]Tokens   >> [ [/purple]', tokens, '[purple]][/purple]')
-                        tokeninfo = str(tokens)
-                        if len(tokeninfo) > 4096:
-                            for x in range(0, len(tokeninfo), 4096):
-                                bot.send_message(message.chat.id, tokeninfo[x:x+4096])
-                        else:
-                            bot.send_message(message.chat.id, tokeninfo)#
-                    if txs > 0 or txs1 > 0 or txs2 > 0 or txs3 > 0 or txs4 > 0:
+                    bot.send_message(message.chat.id, (f" ⛏️ DEC Entered  >> ⛏️{n}{dec}  Биты {length}{n}{n} 🔨 HEX возвращено  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF сжатый  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF без сжатия>> 🔑 {n}{wifu}{n}{n} ₿биткойн адрес = {caddr} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {uaddr} {n}{n}      💰 Balance 💰 {balance1}  BTC {n}      💸 TotalReceived 💸 {totalReceived1} {n}      📤 TotalSent 📤 {totalSent1} {n}      💵 Transactions 💵 {txs1}{n}{n} ₿биткойн адрес = {p2sh} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {bech32} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}"))
+                    if str(balance) != ammount or str(balance1) != ammount or str(balance2) != ammount or str(balance3) != ammount:
                         with open("data.txt", "a", encoding="utf-8") as f:
-                            f.write(f"""{n} DEC Entered  >>{dec}{n} HEX Returned  >> {HEX}  bits {length}{n} WIF Compressed  >> {wifc}{n} WIF Uncompressed  >> {wifu}{n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {addressinfo1} Balance  {balance1}  BTC TotalReceived  {totalReceived1} TotalSent  {totalSent1} Transactions  {txs1}{n} Bitcoin Address = {addressinfo2} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {addressinfo3} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}{n} Ethereum Address = {addressinfo4} Balance  {balance4} Transactions  {txs4}""")        
-                    if float(balance) > 0 or float(balance1) > 0 or float(balance2) > 0 or  float(balance3) > 0 or  float(balance4) > 0:
-                        sent_from = gmail_user
-                        to = ['youremail@gmail.com']
-                        subject = 'OMG Super Important Message'
-                        body = f"  DEC Entered  >> {n}{dec}  Биты {length}{n}{n}  HEX возвращено  >> {n} {HEX}{n}{n}  WIF сжатый  >>  {n}{wifc}{n}{n}  WIF без сжатия>>  {n}{wifu}{n}{n} Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance}  BTC {n}       TotalReceived {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs} {n}{n} Bitcoin Address = {addressinfo1} {n}{n}       Balance  {balance1}  BTC {n}       TotalReceived  {totalReceived1} {n}       TotalSent  {totalSent1} {n}      Transactions  {txs1}{n}{n} Bitcoin Address = {addressinfo2} {n}{n}       Balance  {balance2}  BTC {n}       TotalReceived  {totalReceived2} {n}       TotalSent  {totalSent2} {n}       Transactions  {txs2}{n}{n} Bitcoin Address = {addressinfo3} {n}{n}       Balance  {balance3}  BTC {n}       TotalReceived  {totalReceived3} {n}       TotalSent  {totalSent3} {n}       Transactions  {txs3}{n}{n} Адрес Эфириума = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
-                        
-                        email_text = """\
-                            From: %s
-                            To: %s
-                            Subject: %s
-
-                            %s
-                            """ % (sent_from, ", ".join(to), subject, body)
-
-                        try:
-                            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                            server.ehlo()
-                            server.login(gmail_user, gmail_password)
-                            server.sendmail(sent_from, to, email_text)
-                            server.close()
-                        
-                            print ('Email sent!')
-                        except:
-                            print('Something went wrong...')
+                            f.write(f"""{n} DEC Entered  >>{dec}{n} HEX Returned  >> {HEX}  bits {length}{n} WIF Compressed  >> {wifc}{n} WIF Uncompressed  >> {wifu}{n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {uaddr} Balance  {balance1}  BTC TotalReceived  {totalReceived1} TotalSent  {totalSent1} Transactions  {txs1}{n} Bitcoin Address = {p2sh} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {bech32} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}""")
                 else:
                     bot.send_message(message.chat.id, "🚫 DEC OUT OF RANGE 🤪 Must be Lower than 115792089237316195423570985008687907852837564279074904382605163141518161494336 BITS256")
                     start(message) 
@@ -1119,45 +1103,32 @@ def get_BRAIN(message):
         passphrase = message.text
         wallet = BrainWallet()
         private_key, addr = wallet.generate_address_from_passphrase(passphrase)
-        contents = requests.get("https://btcbook.guarda.co/api/v2/address/" + addr)
-
-        if contents.status_code==200:
-            res = contents.json()
-            balance = (res['balance'])
-            totalReceived = (res['totalReceived'])
-            totalSent = (res['totalSent'])
-            txs = (res['txs'])
-            addressinfo = (res['address'])
+        urlblock = "https://bitcoin.atomicwallet.io/address/" + addr
+        respone_block = requests.get(urlblock)
+        if respone_block.status_code==200:
+            byte_string = respone_block.content
+            source_code = html.fromstring(byte_string)
+            received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid = source_code.xpath(received_id)
+            totalReceived = str(receivedid[0].text_content())
+            sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid = source_code.xpath(sent_id)
+            totalSent = str(sentid[0].text_content())
+            balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid = source_code.xpath(balance_id)
+            balance = str(balanceid[0].text_content())
+            txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid = source_code.xpath(txs_id)
+            txs = str(txsid[0].text_content())
             n = "\n"
-            bot.send_message(message.chat.id, f"      🧠 BrainWallet Entered 🤯{n}{n} {passphrase} {n}{n}      🕵️ Private Key In HEX 🕵️ {n} {private_key} {n}{n}      👇 ₿itcoin Adress 👇{n} {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs}")
+            bot.send_message(message.chat.id, f"      🧠 BrainWallet Entered 🤯{n}{n} {passphrase} {n}{n}      🕵️ Private Key In HEX 🕵️ {n} {private_key} {n}{n}      👇 ₿itcoin Adress 👇{n} {addr} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs}")
             print('\nPassphrase     = ',passphrase)
             print('Private Key      = ',private_key)
-            print('[purple] Bitcoin Address  >> [ [/purple]', addressinfo, '[purple]][/purple]')
+            print('[purple] Bitcoin Address  >> [ [/purple]', addr, '[purple]][/purple]')
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
-            if float(balance) > 0:
-                sent_from = gmail_user
-                to = ['youremail@gmail.com']
-                subject = 'OMG Super Important Message'
-                body = f"       BrainWallet Entered {n}{n} {passphrase} {n}{n}       Private Key In HEX  {n} {private_key} {n}{n}       Bitcoin Adress {n} {addressinfo} {n}{n}       Balance  {balance}  BTC {n}      TotalReceived  {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs}"
-                
-                email_text = """\
-                    From: %s
-                    To: %s
-                    Subject: %s
-
-                    %s
-                    """ % (sent_from, ", ".join(to), subject, body)
-
-                try:
-                    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                    server.ehlo()
-                    server.login(gmail_user, gmail_password)
-                    server.sendmail(sent_from, to, email_text)
-                    server.close()
-                
-                    print ('Email sent!')
-                except:
-                    print('Something went wrong...')
+            if str(balance) != ammount:
+                with open("data.txt", "a", encoding="utf-8") as f:
+                    f.write(f"""{n}BrainWallet Entered {passphrase} {n} Private Key In HEX {private_key} {n} Bitcoin Adress {addr} Balance  {balance}  BTC TotalReceived  {totalReceived} TotalSent  {totalSent} Transactions  {txs}""")
         else:
             bot.send_message(message.chat.id, "🤯🧠Что-то пошло не так с вашим мозгом🧠🤯")
             print('[red]Что-то пошло не так с вашим мозгом[/red]')
@@ -1189,45 +1160,32 @@ def get_BRAIN_RANDOM(message):
             passphrase = ' '.join(random.sample(mylist, random.randint(24,50)))
         wallet = BrainWallet()
         private_key, addr = wallet.generate_address_from_passphrase(passphrase)
-        contents = requests.get("https://btcbook.guarda.co/api/v2/address/" + addr)
-
-        if contents.status_code==200:
-            res = contents.json()
-            balance = (res['balance'])
-            totalReceived = (res['totalReceived'])
-            totalSent = (res['totalSent'])
-            txs = (res['txs'])
-            addressinfo = (res['address'])
+        urlblock = "https://bitcoin.atomicwallet.io/address/" + addr
+        respone_block = requests.get(urlblock)
+        if respone_block.status_code==200:
+            byte_string = respone_block.content
+            source_code = html.fromstring(byte_string)
+            received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid = source_code.xpath(received_id)
+            totalReceived = str(receivedid[0].text_content())
+            sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid = source_code.xpath(sent_id)
+            totalSent = str(sentid[0].text_content())
+            balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid = source_code.xpath(balance_id)
+            balance = str(balanceid[0].text_content())
+            txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid = source_code.xpath(txs_id)
+            txs = str(txsid[0].text_content())
             n = "\n"
-            bot.send_message(message.chat.id, f"      🧠 BrainWallet Entered 🤯{n}{n} {passphrase} {n}{n}      🕵️ Private Key In HEX 🕵️ {n} {private_key} {n}{n}      👇 ₿itcoin Adress 👇{n} {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs}")
+            bot.send_message(message.chat.id, f"      🧠 BrainWallet Entered 🤯{n}{n} {passphrase} {n}{n}      🕵️ Private Key In HEX 🕵️ {n} {private_key} {n}{n}      👇 ₿itcoin Adress 👇{n} {addr} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs}")
             print('\nPassphrase     = ',passphrase)
             print('Private Key      = ',private_key)
-            print('[purple] Bitcoin Address  >> [ [/purple]', addressinfo, '[purple]][/purple]')
+            print('[purple] Bitcoin Address  >> [ [/purple]', addr, '[purple]][/purple]')
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
-            if float(balance) > 0:
-                sent_from = gmail_user
-                to = ['youremail@gmail.com']
-                subject = 'OMG Super Important Message'
-                body = f"       BrainWallet Entered {n}{n} {passphrase} {n}{n}       Private Key In HEX  {n} {private_key} {n}{n}       Bitcoin Adress {n} {addressinfo} {n}{n}       Balance  {balance}  BTC {n}      TotalReceived  {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs}"
-                
-                email_text = """\
-                    From: %s
-                    To: %s
-                    Subject: %s
-
-                    %s
-                    """ % (sent_from, ", ".join(to), subject, body)
-
-                try:
-                    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                    server.ehlo()
-                    server.login(gmail_user, gmail_password)
-                    server.sendmail(sent_from, to, email_text)
-                    server.close()
-                
-                    print ('Email sent!')
-                except:
-                    print('Something went wrong...')
+            if str(balance) != ammount:
+                with open("data.txt", "a", encoding="utf-8") as f:
+                    f.write(f"""{n}BrainWallet Entered {passphrase} {n} Private Key In HEX {private_key} {n} Bitcoin Adress {addr} Balance  {balance}  BTC TotalReceived  {totalReceived} TotalSent  {totalSent} Transactions  {txs}""")
         else:
             bot.send_message(message.chat.id, "🤯🧠Что-то пошло не так с вашим мозгом🧠🤯")
             print('[red]Что-то пошло не так с вашим мозгом[/red]')
@@ -1259,48 +1217,66 @@ def get_WIF(message):
             caddr = ice.privatekey_to_address(0, True, dec) 
             p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
             bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
-            ethaddr = ice.privatekey_to_ETH_address(dec)            
+            #ethaddr = ice.privatekey_to_ETH_address(dec)            
             length = len(bin(dec))
             length -=2
             print('\nDecimal = ',dec, '  Биты ', length, '\n Hexadecimal = ', HEX)
 
-            resload = get_balance(caddr)
-            info = str(resload)
-            balance = (resload['balance'])
-            totalReceived = (resload['totalReceived'])
-            totalSent = (resload['totalSent'])
-            txs = (resload['txs'])
-            addressinfo = (resload['address'])
+            source_code = get_balance(caddr)
+            received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid = source_code.xpath(received_id)
+            totalReceived = str(receivedid[0].text_content())
+            sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid = source_code.xpath(sent_id)
+            totalSent = str(sentid[0].text_content())
+            balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid = source_code.xpath(balance_id)
+            balance = str(balanceid[0].text_content())
+            txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid = source_code.xpath(txs_id)
+            txs = str(txsid[0].text_content())
 
-            resload1 = get_balance1(uaddr)
-            info1 = str(resload1)
-            balance1 = (resload1['balance'])
-            totalReceived1 = (resload1['totalReceived'])
-            totalSent1 = (resload1['totalSent'])
-            txs1 = (resload1['txs'])
-            addressinfo1 = (resload1['address'])
-            
-            resload2 = get_balance2(p2sh)
-            info2 = str(resload2)
-            balance2 = (resload2['balance'])
-            totalReceived2 = (resload2['totalReceived'])
-            totalSent2 = (resload2['totalSent'])
-            txs2 = (resload2['txs'])
-            addressinfo2 = (resload2['address'])
+            source_code1 = get_balance1(uaddr)
+            received_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid1 = source_code1.xpath(received_id1)
+            totalReceived1 = str(receivedid1[0].text_content())
+            sent_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid1 = source_code1.xpath(sent_id1)
+            totalSent1 = str(sentid1[0].text_content())
+            balance_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid1 = source_code1.xpath(balance_id1)
+            balance1 = str(balanceid1[0].text_content())
+            txs_id1 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid1 = source_code1.xpath(txs_id1)
+            txs1 = str(txsid1[0].text_content())
 
-            resload3 = get_balance3(bech32)
-            info3 = str(resload3)
-            balance3 = (resload3['balance'])
-            totalReceived3 = (resload3['totalReceived'])
-            totalSent3 = (resload3['totalSent'])
-            txs3 = (resload3['txs'])
-            addressinfo3 = (resload3['address'])
-            
-            resload4 = get_balance4(ethaddr)
-            info4 = str(resload4)
-            balance4 = (resload4['balance'])
-            txs4 = (resload4['txs'])
-            addressinfo4 = (resload4['address'])
+            source_code2 = get_balance2(p2sh)
+            received_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid2 = source_code2.xpath(received_id2)
+            totalReceived2 = str(receivedid2[0].text_content())
+            sent_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid2 = source_code2.xpath(sent_id2)
+            totalSent2 = str(sentid2[0].text_content())
+            balance_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid2 = source_code2.xpath(balance_id2)
+            balance2 = str(balanceid2[0].text_content())
+            txs_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid2 = source_code2.xpath(txs_id2)
+            txs2 = str(txsid2[0].text_content())
+
+            source_code3 = get_balance3(bech32)
+            received_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid3 = source_code3.xpath(received_id3)
+            totalReceived3 = str(receivedid3[0].text_content())
+            sent_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid3 = source_code3.xpath(sent_id3)
+            totalSent3 = str(sentid3[0].text_content())
+            balance_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid3 = source_code3.xpath(balance_id3)
+            balance3 = str(balanceid3[0].text_content())
+            txs_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid3 = source_code3.xpath(txs_id3)
+            txs3 = str(txsid3[0].text_content())
             
             n = "\n"
             print('[purple] WIF Entered  >> [ [/purple]', WIF, '[purple]][/purple]')
@@ -1308,41 +1284,18 @@ def get_WIF(message):
             print('[purple] Дек вернулся  >> [ [/purple]', dec, '[purple]][/purple]')
             print('[purple] WIF сжатый  >> [ [/purple]', wifc, '[purple]][/purple]')
             print('[purple] WIF без сжатия>> [ [/purple]', wifu, '[purple]][/purple]')
-            print('BTC Address : ', addressinfo)
+            print('BTC Address : ', caddr)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
-            print('BTC Address : ', addressinfo1)
+            print('BTC Address : ', uaddr)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance1) + '][/green] totalReceived: [green][' +  str(totalReceived1) + '][/green] totalSent:[green][' + str(totalSent1) + '][/green] txs :[green][' + str(txs1) + '][/green]')
-            print('BTC Address : ', addressinfo2)
+            print('BTC Address : ', p2sh)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
-            print('BTC Address : ', addressinfo3)
+            print('BTC Address : ', bech32)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
-            print('ETH Address : ', addressinfo4)
-            print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs4) + '][/green]')
-            bot.send_message(message.chat.id, (f" 🔥 WIF Entered  >> 🔥 {n}{WIF}  {n}{n}🔨 HEX возвращено  >> 🔨{n}{HEX} {n}{n}⛏️ Дек вернулся  >> ⛏️ {n}{dec}  Биты {length} {n}{n}🗝️ WIF сжатый  >> 🗝️{wifc} {n}{n} 🔑 WIF без сжатия>>  🔑 {n}{wifu} {n}{n} ₿биткойн адрес = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {addressinfo1} {n}{n}      💰 Balance 💰 {balance1}  BTC {n}      💸 TotalReceived 💸 {totalReceived1} {n}      📤 TotalSent 📤 {totalSent1} {n}      💵 Transactions 💵 {txs1} {n}{n} ₿биткойн адрес = {addressinfo2} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {addressinfo3} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}{n}{n} Адрес Эфириума = {addressinfo4} {n}{n}      💰 Balance 💰 {balance4} {n}      💵 Transactions 💵 {txs4}"))
-            if float(balance) > 0 or float(balance1) > 0 or float(balance2) > 0 or float(balance3) > 0 or float(balance4) > 0:
-                sent_from = gmail_user
-                to = ['youremail@gmail.com']
-                subject = 'OMG Super Important Message'
-                body = f"  WIF Entered  >>  {n}{WIF}  {n}{n} HEX возвращено  >> {n}{HEX} {n}{n} Дек вернулся  >>  {n}{dec}  Биты {length} {n}{n} WIF сжатый  >> {wifc} {n}{n}  WIF без сжатия>>   {n}{wifu} {n}{n} Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance}  BTC {n}       TotalReceived  {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs} {n}{n} Bitcoin Address = {addressinfo1} {n}{n}       Balance  {balance1}  BTC {n}       TotalReceived  {totalReceived1} {n}       TotalSent  {totalSent1} {n}       Transactions  {txs1} {n}{n} Bitcoin Address = {addressinfo2} {n}{n}       Balance  {balance2}  BTC {n}       TotalReceived  {totalReceived2} {n}       TotalSent  {totalSent2} {n}       Transactions  {txs2}{n}{n} Bitcoin Address = {addressinfo3} {n}{n}       Balance  {balance3}  BTC {n}       TotalReceived  {totalReceived3} {n}       TotalSent  {totalSent3} {n}       Transactions  {txs3}{n}{n} Адрес Эфириума = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
-                
-                email_text = """\
-                    From: %s
-                    To: %s
-                    Subject: %s
-
-                    %s
-                    """ % (sent_from, ", ".join(to), subject, body)
-
-                try:
-                    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                    server.ehlo()
-                    server.login(gmail_user, gmail_password)
-                    server.sendmail(sent_from, to, email_text)
-                    server.close()
-                
-                    print ('Email sent!')
-                except:
-                    print('Something went wrong...')
+            bot.send_message(message.chat.id, (f" 🔥 WIF Entered  >> 🔥 {n}{WIF}  {n}{n}🔨 HEX возвращено  >> 🔨{n}{HEX} {n}{n}⛏️ Дек вернулся  >> ⛏️ {n}{dec}  Биты {length} {n}{n}🗝️ WIF сжатый  >> 🗝️{wifc} {n}{n} 🔑 WIF без сжатия>>  🔑 {n}{wifu} {n}{n} ₿биткойн адрес = {caddr} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {uaddr} {n}{n}      💰 Balance 💰 {balance1}  BTC {n}      💸 TotalReceived 💸 {totalReceived1} {n}      📤 TotalSent 📤 {totalSent1} {n}      💵 Transactions 💵 {txs1} {n}{n} ₿биткойн адрес = {p2sh} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {bech32} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}"))
+            if str(balance) != ammount or str(balance1) != ammount or str(balance2) != ammount or str(balance3) != ammount:
+                with open("data.txt", "a", encoding="utf-8") as f:
+                    f.write(f"""{n} WIF Entered  >>  {WIF} {n} HEX Returned  >>{HEX}{n} DEC Returned  >> {dec}  bits {length}{n} WIF Compressed  >> {wifc}{n} WIF Uncompressed  >> {wifu}{n} Bitcoin Address = {caddr} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {uaddr} Balance  {balance1}  BTC TotalReceived  {totalReceived1} TotalSent  {totalSent1} Transactions  {txs1}{n} Bitcoin Address = {p2sh} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {bech32} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}""")
         else:
             bot.send_message(message.chat.id, "⚠️⛔ Неверный WIF Try Again ⛔⚠️")
             print('[red]Неверный WIF Try Again[/red]')
@@ -1364,89 +1317,67 @@ def get_words(message):
             caddr = ice.privatekey_to_address(0, True, (int.from_bytes(pvk, "big")))
             p2sh = ice.privatekey_to_address(1, True, (int.from_bytes(pvk2, "big")))
             bech32 = ice.privatekey_to_address(2, True, (int.from_bytes(pvk3, "big")))
-            ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
+            #ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
             
-            resload = get_balance(caddr)
-            info = str(resload)
-            balance = (resload['balance'])
-            totalReceived = (resload['totalReceived'])
-            totalSent = (resload['totalSent'])
-            txs = (resload['txs'])
-            addressinfo = (resload['address'])
-            
-            resload2 = get_balance2(p2sh)
-            info2 = str(resload2)
-            balance2 = (resload2['balance'])
-            totalReceived2 = (resload2['totalReceived'])
-            totalSent2 = (resload2['totalSent'])
-            txs2 = (resload2['txs'])
-            addressinfo2 = (resload2['address'])
-            
-            resload3 = get_balance3(bech32)
-            info3 = str(resload3)
-            balance3 = (resload3['balance'])
-            totalReceived3 = (resload3['totalReceived'])
-            totalSent3 = (resload3['totalSent'])
-            txs3 = (resload3['txs'])
-            addressinfo3 = (resload3['address'])
-            
-            resload4 = get_balance4(ethaddr)
-            info4 = str(resload4)
-            balance4 = (resload4['balance'])
-            txs4 = (resload4['txs'])
-            addressinfo4 = (resload4['address'])
+            source_code = get_balance(caddr)
+            received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid = source_code.xpath(received_id)
+            totalReceived = str(receivedid[0].text_content())
+            sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid = source_code.xpath(sent_id)
+            totalSent = str(sentid[0].text_content())
+            balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid = source_code.xpath(balance_id)
+            balance = str(balanceid[0].text_content())
+            txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid = source_code.xpath(txs_id)
+            txs = str(txsid[0].text_content())
+
+            source_code2 = get_balance2(p2sh)
+            received_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid2 = source_code2.xpath(received_id2)
+            totalReceived2 = str(receivedid2[0].text_content())
+            sent_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid2 = source_code2.xpath(sent_id2)
+            totalSent2 = str(sentid2[0].text_content())
+            balance_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid2 = source_code2.xpath(balance_id2)
+            balance2 = str(balanceid2[0].text_content())
+            txs_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid2 = source_code2.xpath(txs_id2)
+            txs2 = str(txsid2[0].text_content())
+
+            source_code3 = get_balance3(bech32)
+            received_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid3 = source_code3.xpath(received_id3)
+            totalReceived3 = str(receivedid3[0].text_content())
+            sent_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid3 = source_code3.xpath(sent_id3)
+            totalSent3 = str(sentid3[0].text_content())
+            balance_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid3 = source_code3.xpath(balance_id3)
+            balance3 = str(balanceid3[0].text_content())
+            txs_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid3 = source_code3.xpath(txs_id3)
+            txs3 = str(txsid3[0].text_content())
             
             print('[purple] Mnemonics words 12 (English)  >> [ [/purple]', mnem, '[purple]][/purple]')
             print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
             print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
             print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-            print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
+            #print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
             print('BTC Address : ', addressinfo)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
-            print('BTC Address : ', addressinfo2)
+            print('BTC Address : ', p2sh)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
-            print('BTC Address : ', addressinfo3)
+            print('BTC Address : ', bech32)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
-            print('ETH Address : ', addressinfo4)
-            print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs4) + '][/green]')
-            bot.send_message(message.chat.id, (f" Mnemonics words 12 (English)  >> {n} {mnem}  {n}{n} ₿биткойн адрес = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {addressinfo2} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {addressinfo3} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}{n}{n} Адрес Эфириума = {addressinfo4} {n}{n}      💰 Balance 💰 {balance4} {n}      💵 Transactions 💵 {txs4}"))
-            if txs4 > 0:
-                nonTokenTxs = (resload4['nonTokenTxs'])
-                tokens = (resload4['tokens'])
-                bot.send_message(message.chat.id, f"Number of Tokens = {nonTokenTxs}")
-                print('Number of Tokens:[green][' + str(nonTokenTxs) + '][/green]')
-                print('[purple]Tokens   >> [ [/purple]', tokens, '[purple]][/purple]')
-                tokeninfo = str(tokens)
-                if len(tokeninfo) > 4096:
-                    for x in range(0, len(tokeninfo), 4096):
-                        bot.send_message(message.chat.id, tokeninfo[x:x+4096])
-                else:
-                    bot.send_message(message.chat.id, tokeninfo)
-                    
-            if float(balance) > 0 or float(balance2) > 0 or  float(balance3) > 0 or  float(balance4) > 0:
-                sent_from = gmail_user
-                to = ['youremail@gmail.com']
-                subject = 'OMG Super Important Message'
-                body = f" Mnemonics words 12 (English)  >> {n} {mnem}  {n}{n} Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance}  BTC {n}       TotalReceived  {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs} {n}{n} Bitcoin Address = {addressinfo2} {n}{n}       Balance  {balance2}  BTC {n}       TotalReceived  {totalReceived2} {n}       TotalSent  {totalSent2} {n}       Transactions  {txs2}{n}{n} Bitcoin Address = {addressinfo3} {n}{n}       Balance  {balance3}  BTC {n}       TotalReceived  {totalReceived3} {n}       TotalSent  {totalSent3} {n}       Transactions  {txs3}{n}{n} Адрес Эфириума = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
-                
-                email_text = """\
-                    From: %s
-                    To: %s
-                    Subject: %s
 
-                    %s
-                    """ % (sent_from, ", ".join(to), subject, body)
+            bot.send_message(message.chat.id, (f" Mnemonics words 12 (English)  >> {n} {mnem}  {n}{n} ₿биткойн адрес = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {p2sh} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {bech32} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}{"))
+            if str(balance) != ammount or str(balance2) != ammount or str(balance3) != ammount:
+                with open("data.txt", "a", encoding="utf-8") as f:
+                    f.write(f"""{n} Mnemonics Words 12 (English)  >> {n} {mnem} {n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {p2sh} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {bech32} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}""")
 
-                try:
-                    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                    server.ehlo()
-                    server.login(gmail_user, gmail_password)
-                    server.sendmail(sent_from, to, email_text)
-                    server.close()
-                
-                    print ('Email sent!')
-                except:
-                    print('Something went wrong...')
             
         elif message.text=="✨24 Слово ️Мненомика✨":
             mnem = create_valid_mnemonics(strength=256)
@@ -1458,89 +1389,65 @@ def get_words(message):
             caddr = ice.privatekey_to_address(0, True, (int.from_bytes(pvk, "big")))
             p2sh = ice.privatekey_to_address(1, True, (int.from_bytes(pvk2, "big")))
             bech32 = ice.privatekey_to_address(2, True, (int.from_bytes(pvk3, "big")))
-            ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
+            #ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
             
-            resload = get_balance(caddr)
-            info = str(resload)
-            balance = (resload['balance'])
-            totalReceived = (resload['totalReceived'])
-            totalSent = (resload['totalSent'])
-            txs = (resload['txs'])
-            addressinfo = (resload['address'])
-            
-            resload2 = get_balance2(p2sh)
-            info2 = str(resload2)
-            balance2 = (resload2['balance'])
-            totalReceived2 = (resload2['totalReceived'])
-            totalSent2 = (resload2['totalSent'])
-            txs2 = (resload2['txs'])
-            addressinfo2 = (resload2['address'])
-            
-            resload3 = get_balance3(bech32)
-            info3 = str(resload3)
-            balance3 = (resload3['balance'])
-            totalReceived3 = (resload3['totalReceived'])
-            totalSent3 = (resload3['totalSent'])
-            txs3 = (resload3['txs'])
-            addressinfo3 = (resload3['address'])
-            
-            resload4 = get_balance4(ethaddr)
-            info4 = str(resload4)
-            balance4 = (resload4['balance'])
-            txs4 = (resload4['txs'])
-            addressinfo4 = (resload4['address'])
+            source_code = get_balance(caddr)
+            received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid = source_code.xpath(received_id)
+            totalReceived = str(receivedid[0].text_content())
+            sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid = source_code.xpath(sent_id)
+            totalSent = str(sentid[0].text_content())
+            balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid = source_code.xpath(balance_id)
+            balance = str(balanceid[0].text_content())
+            txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid = source_code.xpath(txs_id)
+            txs = str(txsid[0].text_content())
+
+            source_code2 = get_balance2(p2sh)
+            received_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid2 = source_code2.xpath(received_id2)
+            totalReceived2 = str(receivedid2[0].text_content())
+            sent_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid2 = source_code2.xpath(sent_id2)
+            totalSent2 = str(sentid2[0].text_content())
+            balance_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid2 = source_code2.xpath(balance_id2)
+            balance2 = str(balanceid2[0].text_content())
+            txs_id2 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid2 = source_code2.xpath(txs_id2)
+            txs2 = str(txsid2[0].text_content())
+
+            source_code3 = get_balance3(bech32)
+            received_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
+            receivedid3 = source_code3.xpath(received_id3)
+            totalReceived3 = str(receivedid3[0].text_content())
+            sent_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
+            sentid3 = source_code3.xpath(sent_id3)
+            totalSent3 = str(sentid3[0].text_content())
+            balance_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
+            balanceid3 = source_code3.xpath(balance_id3)
+            balance3 = str(balanceid3[0].text_content())
+            txs_id3 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
+            txsid3 = source_code3.xpath(txs_id3)
+            txs3 = str(txsid3[0].text_content())
             
             print('[purple] Mnemonics 24 words (English)  >> [ [/purple]', mnem, '[purple]][/purple]')
             print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
             print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
             print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-            print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
+            #print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
             print('BTC Address : ', addressinfo)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
-            print('BTC Address : ', addressinfo2)
+            print('BTC Address : ', p2sh)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
-            print('BTC Address : ', addressinfo3)
+            print('BTC Address : ', bech32)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
-            print('ETH Address : ', addressinfo4)
-            print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs4) + '][/green]')
-            bot.send_message(message.chat.id, (f" Mnemonics 24 words (English)  >> {n} {mnem}  {n}{n} ₿биткойн адрес = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {addressinfo2} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {addressinfo3} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}{n}{n} Адрес Эфириума = {addressinfo4} {n}{n}      💰 Balance 💰 {balance4} {n}      💵 Transactions 💵 {txs4}"))
-            if txs4 > 0:
-                nonTokenTxs = (resload4['nonTokenTxs'])
-                tokens = (resload4['tokens'])
-                bot.send_message(message.chat.id, f"Number of Tokens = {nonTokenTxs}")
-                print('Number of Tokens:[green][' + str(nonTokenTxs) + '][/green]')
-                print('[purple]Tokens   >> [ [/purple]', tokens, '[purple]][/purple]')
-                tokeninfo = str(tokens)
-                if len(tokeninfo) > 4096:
-                    for x in range(0, len(tokeninfo), 4096):
-                        bot.send_message(message.chat.id, tokeninfo[x:x+4096])
-                else:
-                    bot.send_message(message.chat.id, tokeninfo)
-                    
-            if float(balance) > 0 or float(balance2) > 0 or  float(balance3) > 0 or  float(balance4) > 0:
-                sent_from = gmail_user
-                to = ['youremail@gmail.com']
-                subject = 'OMG Super Important Message'
-                body = f" Mnemonics 24 words (English)  >> {n} {mnem}  {n}{n} Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance}  BTC {n}       TotalReceived  {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs} {n}{n} Bitcoin Address = {addressinfo2} {n}{n}       Balance  {balance2}  BTC {n}       TotalReceived  {totalReceived2} {n}       TotalSent  {totalSent2} {n}       Transactions  {txs2}{n}{n} Bitcoin Address = {addressinfo3} {n}{n}       Balance  {balance3}  BTC {n}       TotalReceived  {totalReceived3} {n}       TotalSent  {totalSent3} {n}       Transactions  {txs3}{n}{n} Адрес Эфириума = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
-                
-                email_text = """\
-                    From: %s
-                    To: %s
-                    Subject: %s
-
-                    %s
-                    """ % (sent_from, ", ".join(to), subject, body)
-
-                try:
-                    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                    server.ehlo()
-                    server.login(gmail_user, gmail_password)
-                    server.sendmail(sent_from, to, email_text)
-                    server.close()
-                
-                    print ('Email sent!')
-                except:
-                    print('Something went wrong...')
+            bot.send_message(message.chat.id, (f" Mnemonics 24 words (English)  >> {n} {mnem}  {n}{n} ₿биткойн адрес = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {p2sh} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {bech32} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}"))
+            if str(balance) != ammount or str(balance2) != ammount or str(balance3) != ammount:
+                with open("data.txt", "a", encoding="utf-8") as f:
+                    f.write(f"""{n} Mnemonics Words 12 (English)  >> {n} {mnem} {n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {p2sh} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {bech32} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}""")         
         else:
             bot.send_message(message.chat.id, "⚠️⛔ Неверный words Try Again ⛔⚠️")
             print('[red]Неверный words Try Again[/red]')
