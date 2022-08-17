@@ -49,9 +49,10 @@ Using iceland2k14 secp256k1 https://github.com/iceland2k14/secp256k1  fastest Py
     *                   Extras Miscellaneous Tools                                            *
     *    Option 29.Doge Coin sequential Scan Balance Check              [OnLine]     = 29     *
     *    Option 30.Doge Coin Random Scan Balance Check                  [OnLine]     = 30     *
+    *    Option 31.NPOWER Bitcoin Hunting with HEX                     [OffLine]     = 31     *
     *                                                                                         *
     **************** Main Menu Mizogg's All Tools Colour Version made in Python ***************
-      Enter 1-30 : TYPE HERE =
+    Enter 1-31 : TYPE HERE =
  
     7
     Hexadecimal to Bitcoin Address Tool
@@ -92,7 +93,7 @@ NEW RSZ ADDED
 
 New All Tools in one 31 Options for Bitcoin DogeCoinand ETH. Only On https://mizogg.co.uk and https://github.com/Mizogg
 
-![image](https://user-images.githubusercontent.com/88630056/171266974-327a386e-da7d-40c6-ae10-1e6ebfea7652.png)
+![image](https://user-images.githubusercontent.com/88630056/185210108-61562525-d65e-4452-98ce-d540115767cd.png)
 
 ## 🚑🚑🚑 TELEGRAM TOOLS NOT WORKING NEED TO FIX 🚑🚑🚑 
 
