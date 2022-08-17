@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import time,sys, codecs, binascii, ecdsa, hashlib, csv, random, ctypes, itertools, json
+import time,sys, codecs, binascii, hashlib, csv, random, ctypes, itertools, json
 from time import sleep
 import secp256k1 as ice # download from https://github.com/iceland2k14/secp256k1
 try:
     from bit import *
     from bit.format import bytes_to_wif
     import requests
-    import bip32utils, base58
+    import ecdsa, bip32utils, base58
     from rich import print
     from rich.panel import Panel
     from rich.console import Console
@@ -40,10 +40,11 @@ except ImportError:
     subprocess.check_call(["python", '-m', 'pip', 'install', 'hdwallet']) # https://pypi.org/project/hdwallet/
     subprocess.check_call(["python", '-m', 'pip', 'install', 'lxml']) # https://pypi.org/project/lxml/
     subprocess.check_call(["python", '-m', 'pip', 'install', 'urllib3']) # https://pypi.org/project/urllib3/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'ecdsa']) # https://pypi.org/project/ecdsa/
     from bit import *
     from bit.format import bytes_to_wif
     import requests
-    import bip32utils, base58
+    import ecdsa, bip32utils, base58
     from rich import print
     from rich.panel import Panel
     from rich.console import Console
