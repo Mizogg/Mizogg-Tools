@@ -1,32 +1,88 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import json, requests, codecs, hashlib, ecdsa, bip32utils, binascii, sys, time, random, itertools, csv, base58
-from bit import *
-from bit.format import bytes_to_wif
-from tqdm import tqdm
-import secp256k1 as ice
-from mnemonic import Mnemonic
-from bloomfilter import BloomFilter, ScalableBloomFilter, SizeGrowthRate
-from pathlib import Path
-from urllib.request import urlopen
+import time,sys, codecs, binascii, ecdsa, hashlib, csv, random, ctypes, itertools, json
 from time import sleep
-from hdwallet import BIP44HDWallet
-from hdwallet.cryptocurrencies import EthereumMainnet
-from hdwallet.derivations import BIP44Derivation
-from hdwallet.utils import generate_mnemonic
-from hdwallet import HDWallet
-from typing import Optional
-from hdwallet.symbols import ETH as SYMBOL
-from rich import print
-from rich.panel import Panel
-from rich.console import Console
-from lxml import html
+import secp256k1 as ice # download from https://github.com/iceland2k14/secp256k1
+try:
+    from bit import *
+    from bit.format import bytes_to_wif
+    import requests
+    import bip32utils, base58
+    from rich import print
+    from rich.panel import Panel
+    from rich.console import Console
+    from tqdm import tqdm
+    from mnemonic import Mnemonic
+    from bloomfilter import BloomFilter, ScalableBloomFilter, SizeGrowthRate
+    from pathlib import Path
+    from urllib.request import urlopen
+    from hdwallet import BIP44HDWallet
+    from hdwallet.cryptocurrencies import EthereumMainnet
+    from hdwallet.derivations import BIP44Derivation
+    from hdwallet.utils import generate_mnemonic
+    from hdwallet import HDWallet
+    from typing import Optional
+    from hdwallet.symbols import ETH as SYMBOL
+    from lxml import html
+    
+    
+except ImportError:
+    import subprocess
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'bit']) # https://pypi.org/project/bit/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'requests']) # https://pypi.org/project/requests/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'rich']) # https://pypi.org/project/rich/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'base58']) # https://pypi.org/project/base58/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'bip32utils']) # https://pypi.org/project/bip32utils/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'simplebloomfilter']) # https://pypi.org/project/simplebloomfilter/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'bitarray==1.9.2'])
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'tqdm']) # https://pypi.org/project/tqdm/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'mnemonic']) # https://pypi.org/project/mnemonic/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'hdwallet']) # https://pypi.org/project/hdwallet/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'lxml']) # https://pypi.org/project/lxml/
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'urllib3']) # https://pypi.org/project/urllib3/
+    from bit import *
+    from bit.format import bytes_to_wif
+    import requests
+    import bip32utils, base58
+    from rich import print
+    from rich.panel import Panel
+    from rich.console import Console
+    from tqdm import tqdm
+    from mnemonic import Mnemonic
+    from bloomfilter import BloomFilter, ScalableBloomFilter, SizeGrowthRate
+    from pathlib import Path
+    from urllib.request import urlopen
+    from hdwallet import BIP44HDWallet
+    from hdwallet.cryptocurrencies import EthereumMainnet
+    from hdwallet.derivations import BIP44Derivation
+    from hdwallet.utils import generate_mnemonic
+    from hdwallet import HDWallet
+    from typing import Optional
+    from hdwallet.symbols import ETH as SYMBOL
+    from lxml import html
+
 console = Console()
+console.clear()
+ctypes.windll.kernel32.SetConsoleTitleW('Mizogg Corp.(Miz_Tools.py)')
 # =============================================================================
 n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
 alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 j=0
 pbar=tqdm(initial=j)
+Mizogg = '''[red]
+                ╔═╗╔═╗                   
+                ║║╚╝║║                   
+                ║╔╗╔╗║╔╗╔═══╗╔══╗╔══╗╔══╗
+                ║║║║║║╠╣╠══║║║╔╗║║╔╗║║╔╗║
+                ║║║║║║║║║║══╣║╚╝║║╚╝║║╚╝║
+                ╚╝╚╝╚╝╚╝╚═══╝╚══╝╚═╗║╚═╗║
+                                 ╔═╝║╔═╝║
+                                 ╚══╝╚══╝
+                  ___            ___  
+                 (o o)          (o o) 
+                (  V  ) MIZOGG (  V  )
+                --m-m------------m-m--
+[/red]'''
 # =============================================================================
 def get_balance(caddr):
     urlblock = "https://bitcoin.atomicwallet.io/address/" + caddr
@@ -190,6 +246,37 @@ Bitcoin Address UnCompressed = {uaddr}
 Bitcoin Address p2sh         = {p2sh}
 Bitcoin Address Bc1  bech32  = {bech32}
 ETH Address = {ethaddr}""")
+
+def Print_result_Npower():
+    print(f"""\nPrivateKey (hex) : {HEX}
+PrivateKey (dec) : {DEC} : {length}Bits
+Bitcoin Address Compressed   = {caddr}
+Bitcoin Address UnCompressed = {uaddr}
+Bitcoin Address p2sh         = {p2sh}
+Bitcoin Address Bc1  bech32  = {bech32}
+
+PrivateKey (hex) : {HEX1}
+PrivateKey (dec) : {DEC1} : {length1}Bits
+Bitcoin Address Compressed   = {caddr1}
+Bitcoin Address UnCompressed = {uaddr1}
+Bitcoin Address p2sh         = {p2sh1}
+Bitcoin Address Bc1  bech32  = {bech321}""")
+
+def SAVE_result_Npower():
+    with open("found.txt", "a", encoding="utf-8") as f:
+        f.write(f"""\nPrivateKey (hex) : {HEX}
+PrivateKey (dec) : {DEC} : {length}Bits
+Bitcoin Address Compressed   = {caddr}
+Bitcoin Address UnCompressed = {uaddr}
+Bitcoin Address p2sh         = {p2sh}
+Bitcoin Address Bc1  bech32  = {bech32}
+
+PrivateKey (hex) : {HEX1}
+PrivateKey (dec) : {DEC1} : {length1}Bits
+Bitcoin Address Compressed   = {caddr1}
+Bitcoin Address UnCompressed = {uaddr1}
+Bitcoin Address p2sh         = {p2sh1}
+Bitcoin Address Bc1  bech32  = {bech321}""")
 # =============================================================================
 def data_info():
     blocs=requests.get("https://blockchain.info/rawaddr/"+caddr)
@@ -544,6 +631,7 @@ prompt='''[yellow]
     *[/yellow]                   [green]Extras Miscellaneous Tools[/green]                                            [yellow]*
     *[/yellow]    Option 29.Doge Coin sequential Scan Balance Check              [yellow][OnLine][/yellow]     = 29     [yellow]*
     *[/yellow]    Option 30.Doge Coin Random Scan Balance Check                  [yellow][OnLine][/yellow]     = 30     [yellow]*
+    *[/yellow]    Option 31.NPOWER Bitcoin Hunting with HEX                          [red][OffLine][/red]     = 31     [yellow]*
     *                                                                                         *
     **************** Main Menu Mizogg's All Tools Colour Version made in Python ***************[/yellow]'''
 
@@ -559,7 +647,7 @@ while True:
     iteration = 0
     start_time = time.time()
     print(prompt)
-    delay_print('Enter 1-30 : ') 
+    delay_print('Enter 1-31 : ') 
     start=int(input('TYPE HERE = '))
     if start == 1:
         print(INPUTNEEDED)
@@ -721,6 +809,7 @@ while True:
                 balance4 = get_balance4(ethaddr)
                 count+=1
                 total+=7
+                ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total)) 
                 print('Total HEX addresses Loaded:', line_count)
                 if str(balance) != ammountbtc or str(balance1) != ammountbtc or str(balance2) != ammountbtc or str(balance3) != ammountbtc or  str(balance4) != ammounteth or float (get_doge(dogeaddr)) > ammount or float (get_doge(dogeuaddr)) > ammount:
                     print('[yellow] HEX Entered  >> [ [/yellow]', HEX, '[yellow]][/yellow]')
@@ -1366,7 +1455,8 @@ while True:
             caddr = mylist[i]
             balance = get_balance(caddr)
             time.sleep(0.5)
-            if float(balance) > ammount:
+            ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Remaining=' + str(remaining)) 
+            if str(balance) != ammountbtc:
                 print(' MATCH FOUND WINNER !!!!!!!!!!!!! ')
                 f=open('balance.txt','a')
                 f.write('\nBitcoin Address = ' + caddr + '    Balance = ' + str(balance) + ' BTC')
@@ -1438,6 +1528,7 @@ while True:
             wallet = BrainWallet()
             private_key, caddr = wallet.generate_address_from_passphrase(passphrase)
             balance = get_balance(caddr)
+            ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Remaining=' + str(remaining)) 
             if str(balance) != ammountbtc:
                 print(' MATCH FOUND WINNER !!!!!!!!!!!!! ')
                 get_balance(caddr)
@@ -1456,7 +1547,7 @@ while True:
         promptMnemonic= '''
     *********************** Mnemonic Words Generator Random [Offline] *****************************
     *                                                                                             *
-    *    ** This Tool needs a file called btc.txt with a list of Bitcoin Addresses Database       *
+    *    ** This Tool needs a file called btc.bf with a list of Bitcoin Addresses Database        *
     *    ** ANY MNEMONIC WORDS FOUND THAT MATCH BTC DATABASE WILL SAVE TO  (winner.txt)           *
     *                                                                                             *
     *********************** Mnemonic Words Generator Random  [Offline] ****************************
@@ -1509,6 +1600,7 @@ while True:
             seed = mnemo.to_seed(mnemonic_words, passphrase="")
             entropy = mnemo.to_entropy(mnemonic_words)
             data_wallet()
+            ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total)) 
             for target_wallet in data:
                 address = target_wallet['address']
                 if address in bloom_filter:
@@ -1537,7 +1629,7 @@ while True:
     *********************** Bitcoin random scan randomly in Range Tool ************************
     *                                                                                         *
     *    ** Bitcoin random scan randomly in Range [Offline]                                   *
-    *    ** This Tool needs a file called btc.txt with a list of Bitcoin Addresses Database   *
+    *    ** This Tool needs a file called btc.bf with a list of Bitcoin Addresses Database    *
     *    ** ANY MATCHING WALLETS GENERATED THAT MATCH BTC DATABASE WILL SAVE TO(winner.txt)   *
     *                                                                                         *
     **************[+] Starting.........Please Wait.....Bitcoin Address List Loading.....*******
@@ -1562,7 +1654,9 @@ while True:
             uaddr = ice.privatekey_to_address(0, False, int(seed))  #Uncompressed
             P2SH = ice.privatekey_to_address(1, True, int(seed)) #p2sh
             BECH32 = ice.privatekey_to_address(2, True, int(seed))  #bech32
-
+            count+=1
+            total+=4
+            ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total)) 
             if caddr in bloom_filter or uaddr in bloom_filter or P2SH in bloom_filter or BECH32 in bloom_filter :
                 print('\nMatch Found')
                 print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPrivatekey Uncompressed: ', wifu, '\nPrivatekey compressed: ', wifc, '\nPublic Address 1 Uncompressed: ', uaddr, '\nPublic Address 1 Compressed: ', caddr, '\nPublic Address 3 P2SH: ', P2SH, '\nPublic Address bc1 BECH32: ', BECH32)
@@ -1613,6 +1707,7 @@ while True:
                 count += 1
                 total += rangediv*4
                 SEQ_wallet()
+                ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Remaining=' + str(finish))
                 for data_w in data:
                     caddr = data_w['caddr']
                     uaddr = data_w['uaddr']
@@ -1686,7 +1781,10 @@ while True:
             caddrk2 = ice.privatekey_to_address(0, True, k2) #Compressed
             uaddrk2 = ice.privatekey_to_address(0, False, k2)  #Uncompressed
             P2SHk2 = ice.privatekey_to_address(1, True, k2) #p2sh
-            BECH32k2 = ice.privatekey_to_address(2, True, k2)  #bech32    
+            BECH32k2 = ice.privatekey_to_address(2, True, k2)  #bech32
+            count+=1
+            total+=8
+            ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))            
             if caddrk1 in bloom_filter or uaddrk1 in bloom_filter or P2SHk1 in bloom_filter or BECH32k1 in bloom_filter :
                 print('\nMatch Found')
                 print('\nPrivatekey (dec): ', k1,'\nPrivatekey (hex): ', HEXk1, '\nPrivatekey Uncompressed: ', wifuk1, '\nPrivatekey compressed: ', wifck1, '\nPublic Address 1 Uncompressed: ', uaddrk1, '\nPublic Address 1 Compressed: ', caddrk1, '\nPublic Address 3 P2SH: ', P2SHk1, '\nPublic Address bc1 BECH32: ', BECH32k1)
@@ -1754,7 +1852,10 @@ while True:
             caddrk2 = ice.privatekey_to_address(0, True, k2) #Compressed
             uaddrk2 = ice.privatekey_to_address(0, False, k2)  #Uncompressed
             P2SHk2 = ice.privatekey_to_address(1, True, k2) #p2sh
-            BECH32k2 = ice.privatekey_to_address(2, True, k2)  #bech32    
+            BECH32k2 = ice.privatekey_to_address(2, True, k2)  #bech32
+            count+=1
+            total+=8
+            ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))            
             if caddrk1 in bloom_filter or uaddrk1 in bloom_filter or P2SHk1 in bloom_filter or BECH32k1 in bloom_filter :
                 print('\nMatch Found')
                 print('\nPrivatekey (dec): ', k1,'\nPrivatekey (hex): ', HEXk1, '\nPrivatekey Uncompressed: ', wifuk1, '\nPrivatekey compressed: ', wifck1, '\nPublic Address 1 Uncompressed: ', uaddrk1, '\nPublic Address 1 Compressed: ', caddrk1, '\nPublic Address 3 P2SH: ', P2SHk1, '\nPublic Address bc1 BECH32: ', BECH32k1)
@@ -1884,9 +1985,9 @@ while True:
             print(promptdiplay)
             startprint=int(input('TYPE HERE =   ')) 
             while True:
-                c1 = '0' #random.choice('0123456789abcdef')
-                c2 = '0' #random.choice('0123456789abcdef')
-                c3 = '0' #random.choice('0123456789abcdef')
+                c1 = random.choice('0123456789abcdef')
+                c2 = random.choice('0123456789abcdef')
+                c3 = random.choice('0123456789abcdef')
                 c4 = random.choice('0123456789abcdef')
                 c5 = random.choice('0123456789abcdef')
                 c6 = random.choice('0123456789abcdef')
@@ -1960,6 +2061,9 @@ while True:
                 ethaddr = ice.privatekey_to_ETH_address(dec)
                 length = len(bin(dec))
                 length -=2
+                count+=1
+                total+=5
+                ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))
                 if caddr in bloom_filter or uaddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
                     print_data_plain()
                     save_data_plain()
@@ -2007,6 +2111,9 @@ while True:
                 ethaddr = ice.privatekey_to_ETH_address(dec)
                 length = len(bin(dec))
                 length -=2
+                count+=1
+                total+=5
+                ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))
                 if caddr in bloom_filter or uaddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
                     print_data_plain()
                     save_data_plain()
@@ -2052,6 +2159,9 @@ while True:
                 ethaddr = ice.privatekey_to_ETH_address(dec)
                 length = len(bin(dec))
                 length -=2
+                count+=1
+                total+=5
+                ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))
                 if caddr in bloom_filter or uaddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
                     print('PrivateKey (hex) : ', HEX)
                     print('PrivateKey (dec) : ', dec)
@@ -2105,6 +2215,9 @@ while True:
                 ethaddr = ice.privatekey_to_ETH_address(dec)
                 length = len(bin(dec))
                 length -=2
+                count+=1
+                total+=5
+                ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))
                 if caddr in bloom_filter or uaddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
                     print_data_plain()
                     save_data_plain()
@@ -2150,6 +2263,9 @@ while True:
                 ethaddr = ice.privatekey_to_ETH_address(dec)
                 length = len(bin(dec))
                 length -=2
+                count+=1
+                total+=5
+                ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))
                 if caddr in bloom_filter or uaddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
                     print('PrivateKey (hex) : ', HEX)
                     print('PrivateKey (dec) : ', dec)
@@ -2262,18 +2378,8 @@ while True:
         if startETH == 1:
             print ('Ethereum Address Balance and Info Check Tool')
             ethaddr = str(input('Enter Your ETH Address Here : '))
-            urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
-            respone_block = requests.get(urlblock)
-            byte_string = respone_block.content
-            source_code = html.fromstring(byte_string)
-            balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
-            balanceid = source_code.xpath(balance_id)
-            balance4 = str(balanceid[0].text_content())
-            txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
-            txsid = source_code.xpath(txs_id)
-            txs = str(txsid[0].text_content())
             print('ETH Address : ', ethaddr)
-            print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
+            get_balance4(ethaddr)
             time.sleep(3)    
         if startETH == 2:
             with open('eth.txt', newline='', encoding='utf-8') as f:
@@ -2294,6 +2400,7 @@ while True:
                 txsid = source_code.xpath(txs_id)
                 txs = str(txsid[0].text_content())
                 ammount = '0 ETH'
+                ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count))
                 if txs != 0:
                     print('[yellow] Ethereum Address Entered  >> [ [/yellow]', ethaddr, '[yellow]][/yellow]')
                     print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
@@ -2352,18 +2459,8 @@ while True:
             length -=2
             print('\nmnemonic_words  : ', mnemonic_words)
             print('\nPrivatekey (dec): ', dec, '  bits ', length, '\nPrivatekey (hex): ', HEX)
-            urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
-            respone_block = requests.get(urlblock)
-            byte_string = respone_block.content
-            source_code = html.fromstring(byte_string)
-            balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
-            balanceid = source_code.xpath(balance_id)
-            balance4 = str(balanceid[0].text_content())
-            txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
-            txsid = source_code.xpath(txs_id)
-            txs = str(txsid[0].text_content())
             print('[yellow] Ethereum Address  >> [ [/yellow]', ethaddr, '[yellow]][/yellow]')
-            print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
+            get_balance4(ethaddr)
             time.sleep(3)
         if startwords == 2:
             print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
@@ -2416,18 +2513,8 @@ while True:
             length -=2
             print('\nmnemonic_words  : ', mnemonic_words)
             print('\nPrivatekey (dec): ', dec, '  bits ', length, '\nPrivatekey (hex): ', HEX)
-            urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
-            respone_block = requests.get(urlblock)
-            byte_string = respone_block.content
-            source_code = html.fromstring(byte_string)
-            balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
-            balanceid = source_code.xpath(balance_id)
-            balance4 = str(balanceid[0].text_content())
-            txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
-            txsid = source_code.xpath(txs_id)
-            txs = str(txsid[0].text_content())
             print('[yellow] Ethereum Address  >> [ [/yellow]', ethaddr, '[yellow]][/yellow]')
-            print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
+            get_balance4(ethaddr)
             time.sleep(3)
     elif start ==27:
         print('Mnemonic 12/15/18/21/24 Words to ETH Address Tool')
@@ -2471,6 +2558,7 @@ while True:
             data=[]
             count += 1
             total += divs
+            ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))
             MNEMONIC: str = generate_mnemonic(language=Lang1, strength=s1)
             PASSPHRASE: Optional[str] = None
             bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
@@ -2545,6 +2633,7 @@ while True:
             data=[]
             count += 1
             total += divs
+            ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))
             MNEMONIC: str = generate_mnemonic(language=Lang1, strength=s1)
             PASSPHRASE: Optional[str] = None
             bip44_hdwallet: BIP44HDWallet = BIP44HDWallet(cryptocurrency=EthereumMainnet)
@@ -2606,6 +2695,9 @@ while True:
             balanceDoge = get_doge(dogeaddr)
             balanceDoge1 = get_doge(dogeuaddr)
             time.sleep(1.0) #Can be removed
+            count+=1
+            total+=2
+            ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))
             if float(balanceDoge) > float(ammount) or float(balanceDoge1) < ammount:
                 print('\n Match Found')
                 print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPublic Address DOGE Uncompressed : ', dogeuaddr, '  Balance = ',  str(balanceDoge1), '\nPublic Address DOGE Compressed   : ', dogeaddr, '  Balance = ',  str(balanceDoge))
@@ -2646,6 +2738,9 @@ while True:
             balanceDoge = get_doge(dogeaddr)
             balanceDoge1 = get_doge(dogeuaddr)
             time.sleep(1.0) #Can be removed
+            count+=1
+            total+=2
+            ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))
             if float(balanceDoge) > float(ammount) or float(balanceDoge1) < ammount:
                 print('\n Match Found')
                 print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPublic Address DOGE Uncompressed : ', dogeuaddr, '  Balance = ',  str(balanceDoge1), '\nPublic Address DOGE Compressed   : ', dogeaddr, '  Balance = ',  str(balanceDoge))
@@ -2658,5 +2753,42 @@ while True:
                 f.close()
             else:
                 print('\nPrivatekey (dec): ', seed,'\nPrivatekey (hex): ', HEX, '\nPublic Address DOGE Uncompressed : ', dogeuaddr, '  Balance = ',  str(balanceDoge1), '\nPublic Address DOGE Compressed   : ', dogeaddr, '  Balance = ',  str(balanceDoge))
+                
+    elif start ==31:
+        print (Mizogg)
+        time.sleep(1)
+        print(' ℹ️Total Bitcoin addresses Loadedℹ️: ',str (btc_count))
+        jump = int(input('HEX Range Numbers 2-9 '))
+        for combination in itertools.product(range(jump), repeat=60): # change this line  repeat=max 64
+            count+=1
+            total+=8
+            joined = str(''.join(map(str, combination)))
+            # altstart= 'ff11' + joined # change amount of repeat -1 per altstart repeat=60
+            # altstart= 'ffffff11' + joined # change amount of repeat -1 per altstart repeat=56
+            altstart= ' ' + joined # change amount of repeat -1 per altstart repeat=64
+            HEX = altstart
+            DEC = int(HEX, 16)
+            length = len(bin(DEC))
+            length -=2
+            caddr = ice.privatekey_to_address(0, True, DEC)
+            uaddr = ice.privatekey_to_address(0, False, DEC)
+            p2sh = ice.privatekey_to_address(1, True, DEC)
+            bech32 = ice.privatekey_to_address(2, True, DEC)
+            
+            DEC1 =(DEC*(n-1))%n
+            HEX1 = "%064x" % DEC1
+            length1 = len(bin(DEC1))
+            length1 -=2
+            caddr1 = ice.privatekey_to_address(0, True, DEC1)
+            uaddr1 = ice.privatekey_to_address(0, False, DEC1)
+            p2sh1 = ice.privatekey_to_address(1, True, DEC1)
+            bech321 = ice.privatekey_to_address(2, True, DEC1)
+            ctypes.windll.kernel32.SetConsoleTitleW('Count=' + str(count) + ' Total=' + str(total))
+            #Print_result_Npower()
+            print (altstart)
+            #pbar.update(20)
+            if caddr in bloom_filter or uaddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or caddr1 in bloom_filter or uaddr1 in bloom_filter or p2sh1 in bloom_filter or bech321 in bloom_filter:
+                Print_result_Npower()
+                SAVE_result_Npower()
     else:
-        print('WRONG NUMBER!!! MUST CHOSE 1 - 30 ')
+        print('WRONG NUMBER!!! MUST CHOSE 1 - 31 ')
