@@ -1366,17 +1366,17 @@ def get_words(message):
             print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
             print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
             #print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-            print('BTC Address : ', addressinfo)
+            print('BTC Address : ', caddr)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
             print('BTC Address : ', p2sh)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
             print('BTC Address : ', bech32)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
 
-            bot.send_message(message.chat.id, (f" Mnemonics words 12 (English)  >> {n} {mnem}  {n}{n} ₿биткойн адрес = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {p2sh} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {bech32} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}"))
+            bot.send_message(message.chat.id, (f" Mnemonics words 12 (English)  >> {n} {mnem}  {n}{n} ₿биткойн адрес = {caddr} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {p2sh} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {bech32} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}"))
             if str(balance) != ammount or str(balance2) != ammount or str(balance3) != ammount:
                 with open("data.txt", "a", encoding="utf-8") as f:
-                    f.write(f"""{n} Mnemonics Words 12 (English)  >> {n} {mnem} {n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {p2sh} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {bech32} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}""")
+                    f.write(f"""{n} Mnemonics Words 12 (English)  >> {n} {mnem} {n} Bitcoin Address = {caddr} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {p2sh} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {bech32} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}""")
 
             
         elif message.text=="✨24 Слово ️Мненомика✨":
@@ -1438,16 +1438,16 @@ def get_words(message):
             print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
             print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
             #print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-            print('BTC Address : ', addressinfo)
+            print('BTC Address : ', caddr)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
             print('BTC Address : ', p2sh)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
             print('BTC Address : ', bech32)
             print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
-            bot.send_message(message.chat.id, (f" Mnemonics 24 words (English)  >> {n} {mnem}  {n}{n} ₿биткойн адрес = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {p2sh} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {bech32} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}"))
+            bot.send_message(message.chat.id, (f" Mnemonics 24 words (English)  >> {n} {mnem}  {n}{n} ₿биткойн адрес = {caddr} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿биткойн адрес = {p2sh} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿биткойн адрес = {bech32} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}"))
             if str(balance) != ammount or str(balance2) != ammount or str(balance3) != ammount:
                 with open("data.txt", "a", encoding="utf-8") as f:
-                    f.write(f"""{n} Mnemonics Words 12 (English)  >> {n} {mnem} {n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {p2sh} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {bech32} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}""")         
+                    f.write(f"""{n} Mnemonics Words 12 (English)  >> {n} {mnem} {n} Bitcoin Address = {caddr} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {p2sh} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {bech32} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}""")         
         else:
             bot.send_message(message.chat.id, "⚠️⛔ Неверный words Try Again ⛔⚠️")
             print('[red]Неверный words Try Again[/red]')
