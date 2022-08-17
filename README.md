@@ -6,7 +6,7 @@ Install_libraries.bat to get started( Only needs to be done once)
 
 then to run use any of the start.bat files
 
-## Miz_Tools.py Version 10 Total 30 Tools
+## Miz_Tools.py Version 11 Total 31 Tools
 
 Test it here :  https://replit.com/@Mizogg
 
@@ -90,12 +90,13 @@ NEW RSZ ADDED
       PubKey: 04e3896e6cabfa05a332368443877d826efc7ace23019bd5c2bc7497f3711f009e873b1fcc03222f118a6ff696efa9ec9bb3678447aae159491c75468dcc245a6c
 
 
-New All Tools in one 30 Options for Bitcoin DogeCoinand ETH. Only On https://mizogg.co.uk and https://github.com/Mizogg
+New All Tools in one 31 Options for Bitcoin DogeCoinand ETH. Only On https://mizogg.co.uk and https://github.com/Mizogg
 
 ![image](https://user-images.githubusercontent.com/88630056/171266974-327a386e-da7d-40c6-ae10-1e6ebfea7652.png)
 
+## 🚑🚑🚑 TELEGRAM TOOLS NOT WORKING NEED TO FIX 🚑🚑🚑 
 
-###  ✨✨✨✨Mizogg Tool's in Telegream ✨✨✨✨
+✨✨✨✨Mizogg Tool's in Telegream ✨✨✨✨
 
 ℹ️ Requirements ℹ️
 ```
@@ -126,5 +127,7 @@ Create a Bot room and Get API KEY
 
 ![image](https://user-images.githubusercontent.com/88630056/169119186-1f287adb-a688-4c99-a941-03e6f0eae634.png)
 ![image](https://user-images.githubusercontent.com/88630056/169120062-582ea1d9-c479-4234-87de-4550344bfce9.png)
+
+## 🚑🚑🚑 TELEGRAM TOOLS NOT WORKING NEED TO FIX 🚑🚑🚑 
 
 ### Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
