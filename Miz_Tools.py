@@ -14,7 +14,6 @@ try:
     from tqdm import tqdm
     from mnemonic import Mnemonic
     from bloomfilter import BloomFilter, ScalableBloomFilter, SizeGrowthRate
-    from pathlib import Path
     from urllib.request import urlopen
     from hdwallet import BIP44HDWallet
     from hdwallet.cryptocurrencies import EthereumMainnet
@@ -51,7 +50,6 @@ except ImportError:
     from tqdm import tqdm
     from mnemonic import Mnemonic
     from bloomfilter import BloomFilter, ScalableBloomFilter, SizeGrowthRate
-    from pathlib import Path
     from urllib.request import urlopen
     from hdwallet import BIP44HDWallet
     from hdwallet.cryptocurrencies import EthereumMainnet
@@ -187,15 +185,11 @@ def get_balance4(ethaddr):
     
 # =============================================================================
 print('[yellow] Please with Database Loading.....[/yellow]')
-bloombtc = Path(__file__).resolve()
-ressbtc = bloombtc.parents[0] / 'BF/btc.bf'
-bloometh = Path(__file__).resolve()
-resseth = bloometh.parents[0] / 'BF/eth.bf'
 
-with open(resseth, "rb") as fp:
+with open('eth.bf', "rb") as fp:
     bloom_filter1 = BloomFilter.load(fp)   
 
-with open(ressbtc, "rb") as fp:
+with open('btc.bf', "rb") as fp:
     bloom_filter = BloomFilter.load(fp)
 
 btc_count = len(bloom_filter)
