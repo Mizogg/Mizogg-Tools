@@ -93,14 +93,13 @@ New All Tools in one 31 Options for Bitcoin DogeCoinand ETH. Only On https://miz
 
 ![image](https://user-images.githubusercontent.com/88630056/185210108-61562525-d65e-4452-98ce-d540115767cd.png)
 
-## 🚑🚑🚑 TELEGRAM TOOLS NOT WORKING NEED TO FIX 🚑🚑🚑 
 
 ✨✨✨✨Mizogg Tool's in Telegream ✨✨✨✨
 
 ℹ️ Requirements ℹ️
 ```
 pip install bit
-pip install requests
+pip install httplib2
 pip install mnemonic
 pip install bip32utils
 pip install base58
