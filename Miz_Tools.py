@@ -23,7 +23,6 @@ from hdwallet import BIP44HDWallet
 from hdwallet.cryptocurrencies import EthereumMainnet
 from hdwallet.derivations import BIP44Derivation
 from hdwallet.utils import generate_mnemonic
-from lxml import html
 from mnemonic import Mnemonic
 from rich import print
 from rich.console import Console
@@ -31,6 +30,8 @@ from rich.panel import Panel
 from tqdm import tqdm
 
 import secp256k1 as ice  # download from https://github.com/iceland2k14/secp256k1
+
+APIKEY = "?apiKey=freekey" # replace freekey with your API KEY
 
 console = Console()
 console.clear()
@@ -56,101 +57,47 @@ Mizogg = '''[red]
 [/red]'''
 # =============================================================================
 def get_balance(caddr):
-    urlblock = "https://bitcoin.atomicwallet.io/address/" + caddr
-    respone_block = requests.get(urlblock)
-    byte_string = respone_block.content
-    source_code = html.fromstring(byte_string)
-    received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
-    receivedid = source_code.xpath(received_id)
-    totalReceived = str(receivedid[0].text_content())
-    sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
-    sentid = source_code.xpath(sent_id)
-    totalSent = str(sentid[0].text_content())
-    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-    balanceid = source_code.xpath(balance_id)
-    balance = str(balanceid[0].text_content())
-    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-    txsid = source_code.xpath(txs_id)
-    txs = str(txsid[0].text_content())
+    response = requests.get("https://blockstream.info/api/address/" + str(caddr))
+    balance = float(response.json()['chain_stats']['funded_txo_sum'])
+    totalSent = float(response.json()['chain_stats']['spent_txo_sum'])
+    txs = response.json()['chain_stats']['funded_txo_count']
     print('BTC Address : ', caddr)
-    print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' + str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
+    print('[red][*][/red] [yellow] >>[/yellow] Total Received: [green] [' + str(balance) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
     return balance
 
     
 def get_balance1(uaddr):
-    urlblock = "https://bitcoin.atomicwallet.io/address/" + uaddr
-    respone_block = requests.get(urlblock)
-    byte_string = respone_block.content
-    source_code = html.fromstring(byte_string)
-    received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
-    receivedid = source_code.xpath(received_id)
-    totalReceived = str(receivedid[0].text_content())
-    sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
-    sentid = source_code.xpath(sent_id)
-    totalSent = str(sentid[0].text_content())
-    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-    balanceid = source_code.xpath(balance_id)
-    balance1 = str(balanceid[0].text_content())
-    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-    txsid = source_code.xpath(txs_id)
-    txs = str(txsid[0].text_content())
+    response = requests.get("https://blockstream.info/api/address/" + str(uaddr))
+    balance1 = float(response.json()['chain_stats']['funded_txo_sum'])
+    totalSent = float(response.json()['chain_stats']['spent_txo_sum'])
+    txs = response.json()['chain_stats']['funded_txo_count']
     print('BTC Address : ', uaddr)
-    print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance1) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
+    print('[red][*][/red] [yellow] >>[/yellow] Total Received: [green] [' + str(balance1) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
     return balance1
 
 def get_balance2(p2sh):
-    urlblock = "https://bitcoin.atomicwallet.io/address/" + p2sh
-    respone_block = requests.get(urlblock)
-    byte_string = respone_block.content
-    source_code = html.fromstring(byte_string)
-    received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
-    receivedid = source_code.xpath(received_id)
-    totalReceived = str(receivedid[0].text_content())
-    sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
-    sentid = source_code.xpath(sent_id)
-    totalSent = str(sentid[0].text_content())
-    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-    balanceid = source_code.xpath(balance_id)
-    balance2 = str(balanceid[0].text_content())
-    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-    txsid = source_code.xpath(txs_id)
-    txs = str(txsid[0].text_content())
+    response = requests.get("https://blockstream.info/api/address/" + str(p2sh))
+    balance2 = float(response.json()['chain_stats']['funded_txo_sum'])
+    totalSent = float(response.json()['chain_stats']['spent_txo_sum'])
+    txs = response.json()['chain_stats']['funded_txo_count']
     print('BTC Address : ', p2sh)
-    print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
+    print('[red][*][/red] [yellow] >>[/yellow] Total Received: [green] [' + str(balance2) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
     return balance2
 
 def get_balance3(bech32):
-    urlblock = "https://bitcoin.atomicwallet.io/address/" + bech32
-    respone_block = requests.get(urlblock)
-    byte_string = respone_block.content
-    source_code = html.fromstring(byte_string)
-    received_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
-    receivedid = source_code.xpath(received_id)
-    totalReceived = str(receivedid[0].text_content())
-    sent_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
-    sentid = source_code.xpath(sent_id)
-    totalSent = str(sentid[0].text_content())
-    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-    balanceid = source_code.xpath(balance_id)
-    balance3 = str(balanceid[0].text_content())
-    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-    txsid = source_code.xpath(txs_id)
-    txs = str(txsid[0].text_content())
+    response = requests.get("https://blockstream.info/api/address/" + str(bech32))
+    balance3 = float(response.json()['chain_stats']['funded_txo_sum'])
+    totalSent = float(response.json()['chain_stats']['spent_txo_sum'])
+    txs = response.json()['chain_stats']['funded_txo_count']
     print('BTC Address : ', bech32)
-    print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
+    print('[red][*][/red] [yellow] >>[/yellow] Total Received: [green] [' + str(balance3) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
     return balance3
     
 def get_balance4(ethaddr):
-    urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
-    respone_block = requests.get(urlblock)
-    byte_string = respone_block.content
-    source_code = html.fromstring(byte_string)
-    balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
-    balanceid = source_code.xpath(balance_id)
-    balance4 = str(balanceid[0].text_content())
-    txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
-    txsid = source_code.xpath(txs_id)
-    txs = str(txsid[0].text_content())
+    blocs = requests.get("https://api.ethplorer.io/getAddressInfo/" + ethaddr + APIKEY)
+    ress = blocs.json()
+    balance4 = float(blocs.json()['ETH']['balance'])
+    txs = dict(ress)["countTxs"]
     print('ETH Address : ', ethaddr)
     print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
     return balance4
@@ -608,8 +555,6 @@ while True:
     count=0
     skip = 0
     ammount = 0.00000000
-    ammountbtc = '0 BTC'
-    ammounteth = '0 ETH'
     total= 0
     iteration = 0
     start_time = time.time()
@@ -777,27 +722,17 @@ while True:
                 count+=1
                 total+=7
                 print('Total HEX addresses Loaded:', line_count)
-                if str(balance) != ammountbtc or str(balance1) != ammountbtc or str(balance2) != ammountbtc or str(balance3) != ammountbtc or  str(balance4) != ammounteth or float (get_doge(dogeaddr)) > ammount or float (get_doge(dogeuaddr)) > ammount:
+                if int(balance) > 0 or int(balance1) > 0 or int(balance2) > 0 or int(balance3) > 0 or  float(balance4) > ammount or float (get_doge(dogeaddr)) > ammount or float (get_doge(dogeuaddr)) > ammount:
                     print('[yellow] HEX Entered  >> [ [/yellow]', HEX, '[yellow]][/yellow]')
                     print('[yellow] DEC Returned  >> [ [/yellow]', dec, '[yellow]][/yellow]')
                     print('[yellow] WIF Compressed  >> [ [/yellow]', wifc, '[yellow]][/yellow]')
                     print('[yellow] WIF Uncompressed  >> [ [/yellow]', wifu, '[yellow]][/yellow]')
-                    get_balance(caddr)
-                    get_balance1(uaddr)
-                    get_balance2(p2sh)
-                    get_balance3(bech32)
-                    get_balance4(ethaddr)
                     print('Dogecoin Address Compressed   = ', dogeaddr, '    Balance = ', get_doge(dogeaddr))
                     print('Dogecoin Address UnCompressed = ', dogeuaddr, '    Balance = ', get_doge(dogeuaddr))
                     f=open('winner.txt','a')
-                    f.write(f"  HEX Entered  >>  \n{HEX}\n DEC Returned  >>  \n{dec}  bits {length}\n\n  WIF Compressed  >>  \n{wifc}\n\n  WIF Uncompressed  >>  \n{wifu}\n\n Bitcoin Address = {caddr}  Balance  {balance}  BTC \n\n Bitcoin Address = {uaddr}  Balance  {balance1}  BTC \n\n Bitcoin Address = {p2sh}  Balance  {balance2}  BTC \n\n Bitcoin Address = {bech32} Balance  {balance3}  BTC \n\n Ethereum Address = {ethaddr}  Balance  {balance4} \n\n Dogecoin Address Compressed = {dogeaddr} \n\n       Balance  {get_doge(dogeaddr)} \n\n Dogecoin Address UnCompressed = {dogeuaddr} \n\n       Balance  {get_doge(dogeuaddr)}")
+                    f.write(f"  HEX Entered  >>  \n{HEX}\n DEC Returned  >>  \n{dec}  bits {length}\n\n  WIF Compressed  >>  \n{wifc}\n\n  WIF Uncompressed  >>  \n{wifu}\n\n Bitcoin Address = {caddr}  Total Received  {balance}  BTC \n\n Bitcoin Address = {uaddr}  Total Received  {balance1}  BTC \n\n Bitcoin Address = {p2sh}  Total Received  {balance2}  BTC \n\n Bitcoin Address = {bech32} Total Received  {balance3}  BTC \n\n Ethereum Address = {ethaddr}  Balance  {balance4} \n\n Dogecoin Address Compressed = {dogeaddr} \n\n       Balance  {get_doge(dogeaddr)} \n\n Dogecoin Address UnCompressed = {dogeuaddr} \n\n       Balance  {get_doge(dogeuaddr)}")
                 else: 
                     print('Scan Number : ', count, ' : Total Wallets Checked : ', total)
-                    get_balance(caddr)
-                    get_balance1(uaddr)
-                    get_balance2(p2sh)
-                    get_balance3(bech32)
-                    get_balance4(ethaddr)
                     print('Dogecoin Address Compressed   = ', dogeaddr, '    Balance = ', get_doge(dogeaddr))
                     print('Dogecoin Address UnCompressed = ', dogeuaddr, '    Balance = ', get_doge(dogeuaddr))
                     time.sleep(1.5)
@@ -942,32 +877,6 @@ while True:
     [yellow] Add:[/yellow][green1] {caddr}[/green1][red1]  WIFC:[/red1][white]{wifc}[/white]
     [yellow] Add:[/yellow][green1] {p2sh}[/green1][red1]
     [yellow] Add:[/yellow][green1] {bech32}[/green1][red1]''')
-        def TXS_print():
-            running_print = str('[gold1 on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(baluaddr)+'[gold1]  BAL:[aquamarine1]'+str(valuaddr)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(uaddr)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]\nWIF: [grey54]'+str(wifu)+'[/]')
-            running_print1 = str('[gold1 on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balcaddr)+'[gold1]  BAL:[aquamarine1]'+str(valcaddr)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(caddr)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]\nWIF: [grey54]'+str(wifc)+'[/]')
-            running_print2 = str('[gold1 on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balp2sh)+'[gold1]  BAL:[aquamarine1]'+str(valp2sh)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(p2sh)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]')
-            running_print3 = str('[gold1 on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balbech32)+'[gold1]  BAL:[aquamarine1]'+str(valbech32)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(bech32)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]')
-
-            style = "gold1 on grey11"
-            console.print(Panel(str(running_print) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "red") , style = "gold1 on grey11" , justify = "full")
-            console.print(Panel(str(running_print1) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "red") , style = "gold1 on grey11" , justify = "full")
-            console.print(Panel(str(running_print2) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "red") , style = "gold1 on grey11" , justify = "full")
-            console.print(Panel(str(running_print3) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "red") , style = "gold1 on grey11" , justify = "full")
-
-        def win_print():
-            running_print_Balance = str(
-                '[green on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(baluaddr)+'[gold1]  BAL:[aquamarine1]'+str(valuaddr)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(uaddr)+'[gold1 on grey15] \nWIF: '+'[orange_red1]'+str(WIF)+'[/]\nWIF: [grey54]'+str(wifu)+'[/][green] \nDec => [/green] ' +str(dec) + '[green]\n HEX => [/green]'+ str(HEX))
-            running_print_Balance1 = str(
-                '[green on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balcaddr)+'[gold1]  BAL:[aquamarine1]'+str(valcaddr)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(caddr)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]\nWIF: [grey54]'+str(wifc)+'[/][green] \nDec => [/green] ' +str(dec) + '[green]\n HEX => [/green]'+ str(HEX))
-            running_print_Balance2 = str(
-                '[green on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balp2sh)+'[gold1]  BAL:[aquamarine1]'+str(valp2sh)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(p2sh)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]')
-            running_print_Balance3 = str(
-                '[green on grey15]Total Checked: '+'[orange_red1]'+str(count)+'[/][gold1 on grey15] '+' Found:'+'[white]'+str(w)+'[/]'+'[/][gold1] TX: '+'[/][aquamarine1]'+str(balbech32)+'[gold1]  BAL:[aquamarine1]'+str(valbech32)+'\n[/][gold1 on grey15]Addr: '+'[white] '+str(bech32)+'[gold1 on grey15] WIF: '+'[orange_red1]'+str(WIF)+'[/]')
-            style = "gold1 on grey11"
-            console.print(Panel(str(running_print_Balance) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "green") , style = style , justify = "full")
-            console.print(Panel(str(running_print_Balance1) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "green") , style = style , justify = "full")
-            console.print(Panel(str(running_print_Balance2) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "green") , style = style , justify = "full")
-            console.print(Panel(str(running_print_Balance3) , title = "[white]Found Wallet [/]" , subtitle = "[green_yellow blink] Good Luck Happy Hunting [/]" , style = "green") , style = style , justify = "full")
         if wiftool ==1:
             
             mylist= []
@@ -1000,91 +909,15 @@ while True:
                         caddr = ice.privatekey_to_address(0, True, dec) 
                         p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
                         bech32 = ice.privatekey_to_address(2, True, dec)  #bech32          
-                        urlblockuaddr = "https://bitcoin.atomicwallet.io/address/"+uaddr
-                        respone_blockuaddr = requests.get(urlblockuaddr)
-                        byte_stringuaddr = respone_blockuaddr.content
-                        source_codeuaddr = html.fromstring(byte_stringuaddr)
-                        xpatch_txiduaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-                        treetxiduaddr = source_codeuaddr.xpath(xpatch_txiduaddr)
-                        xVoluaddr = str(treetxiduaddr[0].text_content())
-                        baluaddr = str(xVoluaddr)
-                        
-                        urlblockcaddr = "https://bitcoin.atomicwallet.io/address/"+caddr
-                        respone_blockcaddr = requests.get(urlblockcaddr)
-                        byte_stringcaddr = respone_blockcaddr.content
-                        source_codecaddr = html.fromstring(byte_stringcaddr)
-                        xpatch_txidcaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-                        treetxidcaddr = source_codecaddr.xpath(xpatch_txidcaddr)
-                        xVolcaddr = str(treetxidcaddr[0].text_content())
-                        balcaddr = str(xVolcaddr)
-                        
-                        urlblockp2sh = "https://bitcoin.atomicwallet.io/address/"+p2sh
-                        respone_blockp2sh = requests.get(urlblockp2sh)
-                        byte_stringp2sh = respone_blockp2sh.content
-                        source_codep2sh = html.fromstring(byte_stringp2sh)
-                        xpatch_txidp2sh = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-                        treetxidp2sh = source_codep2sh.xpath(xpatch_txidp2sh)
-                        xVolp2sh = str(treetxidp2sh[0].text_content())
-                        balp2sh = str(xVolp2sh)
-                        
-                        urlblockbech32 = "https://bitcoin.atomicwallet.io/address/"+bech32
-                        respone_blockbech32 = requests.get(urlblockbech32)
-                        byte_stringbech32 = respone_blockbech32.content
-                        source_codebech32 = html.fromstring(byte_stringbech32)
-                        xpatch_txidbech32 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-                        treetxidbech32 = source_codebech32.xpath(xpatch_txidbech32)
-                        xVolbech32 = str(treetxidbech32[0].text_content())
-                        balbech32 = str(xVolbech32)
-                        ammount = '0 BTC'
-                        if int(baluaddr)> 0 or int(balcaddr)> 0 or int(balp2sh)> 0 or int(balbech32) > 0:
-                            urlblock1uaddr = "https://bitcoin.atomicwallet.io/address/"+uaddr
-                            respone_block1uaddr = requests.get(urlblock1uaddr)
-                            byte_string1uaddr = respone_block1uaddr.content
-                            source_code1uaddr = html.fromstring(byte_string1uaddr)
-                            xpatch_txid1uaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-                            treetxid1uaddr = source_code1uaddr.xpath(xpatch_txid1uaddr)
-                            xVol1uaddr = str(treetxid1uaddr[0].text_content())
-                            valuaddr = str(xVol1uaddr)
-                            
-                            urlblock1caddr = "https://bitcoin.atomicwallet.io/address/"+caddr
-                            respone_block1caddr = requests.get(urlblock1caddr)
-                            byte_string1caddr = respone_block1caddr.content
-                            source_code1caddr = html.fromstring(byte_string1caddr)
-                            xpatch_txid1caddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-                            treetxid1caddr = source_code1caddr.xpath(xpatch_txid1caddr)
-                            xVol1caddr = str(treetxid1caddr[0].text_content())
-                            valcaddr = str(xVol1caddr)
-                            
-                            urlblock1p2sh = "https://bitcoin.atomicwallet.io/address/"+p2sh
-                            respone_block1p2sh = requests.get(urlblock1p2sh)
-                            byte_string1p2sh = respone_block1p2sh.content
-                            source_code1p2sh = html.fromstring(byte_string1p2sh)
-                            xpatch_txid1p2sh = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-                            treetxid1p2sh = source_code1p2sh.xpath(xpatch_txid1p2sh)
-                            xVol1p2sh = str(treetxid1p2sh[0].text_content())
-                            valp2sh = str(xVol1p2sh)
-                            
-                            urlblock1bech32 = "https://bitcoin.atomicwallet.io/address/"+bech32
-                            respone_block1bech32 = requests.get(urlblock1bech32)
-                            byte_string1bech32 = respone_block1bech32.content
-                            source_code1bech32 = html.fromstring(byte_string1bech32)
-                            xpatch_txid1bech32 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-                            treetxid1bech32 = source_code1bech32.xpath(xpatch_txid1bech32)
-                            xVol1bech32 = str(treetxid1bech32[0].text_content())
-                            valbech32 = str(xVol1bech32)
-
+                        balance = get_balance(caddr)
+                        balance1 = get_balance1(uaddr)
+                        balance2 = get_balance2(p2sh)
+                        balance3 = get_balance3(bech32)
+                        if int(balance) > 0 or int(balance1) > 0 or int(balance2) > 0 or int(balance3) > 0:
                             f=open('WIFsave.txt','a')
-                            f.write(f"  WIF  >>  \n{WIF}\n  WIF Compressed  >> {wifc} \n Bitcoin Address = {caddr}  Balance {valcaddr}  TX = {balcaddr}  BTC \n  WIF Uncompressed  >>  {wifu} \n Bitcoin Address = {uaddr}  Balance  {valuaddr}  TX = {baluaddr}  BTC  \n Bitcoin Address = {p2sh}  Balance  {valp2sh}  TX = {balp2sh}  BTC \n Bitcoin Address = {bech32} Balance  {valbech32}  TX = {balbech32}  BTC")
+                            f.write(f"  WIF  >>  \n{WIF}\n  WIF Compressed  >> {wifc} \n Bitcoin Address = {caddr}  Total Received {balance} \n  WIF Uncompressed  >>  {wifu} \n Bitcoin Address = {uaddr}  Total Received  {balance1}  \n Bitcoin Address = {p2sh}  Total Received  {balance2} \n Bitcoin Address = {bech32} Total Received  {balance3}")
                             f.close()
-                            TXS_print()
-
-                            w += 1
-                            if str(valuaddr) != str(ammount) or str(valcaddr) != str(ammount) or str(valp2sh) != str(ammount) or str(valbech32) != str(ammount):
-                                s += 1
-                                f=open('Found.txt','a')
-                                f.write(f"  WIF  >>  \n{WIF}\n  WIF Compressed  >> {wifc} \n Bitcoin Address = {caddr}  Balance {valcaddr}  TX = {balcaddr}  BTC \n  WIF Uncompressed  >>  {wifu} \n Bitcoin Address = {uaddr}  Balance  {valuaddr}  TX = {baluaddr}  BTC  \n Bitcoin Address = {p2sh}  Balance  {valp2sh}  TX = {balp2sh}  BTC \n Bitcoin Address = {bech32} Balance  {valbech32}  TX = {balbech32}  BTC")
-                                f.close()
-                                win_print()
+                            
                         else :
                             print_main()
         if wiftool ==2:
@@ -1114,91 +947,15 @@ while True:
                 caddr = ice.privatekey_to_address(0, True, dec) 
                 p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
                 bech32 = ice.privatekey_to_address(2, True, dec)  #bech32          
-                urlblockuaddr = "https://bitcoin.atomicwallet.io/address/"+uaddr
-                respone_blockuaddr = requests.get(urlblockuaddr)
-                byte_stringuaddr = respone_blockuaddr.content
-                source_codeuaddr = html.fromstring(byte_stringuaddr)
-                xpatch_txiduaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-                treetxiduaddr = source_codeuaddr.xpath(xpatch_txiduaddr)
-                xVoluaddr = str(treetxiduaddr[0].text_content())
-                baluaddr = str(xVoluaddr)
-                
-                urlblockcaddr = "https://bitcoin.atomicwallet.io/address/"+caddr
-                respone_blockcaddr = requests.get(urlblockcaddr)
-                byte_stringcaddr = respone_blockcaddr.content
-                source_codecaddr = html.fromstring(byte_stringcaddr)
-                xpatch_txidcaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-                treetxidcaddr = source_codecaddr.xpath(xpatch_txidcaddr)
-                xVolcaddr = str(treetxidcaddr[0].text_content())
-                balcaddr = str(xVolcaddr)
-                
-                urlblockp2sh = "https://bitcoin.atomicwallet.io/address/"+p2sh
-                respone_blockp2sh = requests.get(urlblockp2sh)
-                byte_stringp2sh = respone_blockp2sh.content
-                source_codep2sh = html.fromstring(byte_stringp2sh)
-                xpatch_txidp2sh = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-                treetxidp2sh = source_codep2sh.xpath(xpatch_txidp2sh)
-                xVolp2sh = str(treetxidp2sh[0].text_content())
-                balp2sh = str(xVolp2sh)
-                
-                urlblockbech32 = "https://bitcoin.atomicwallet.io/address/"+bech32
-                respone_blockbech32 = requests.get(urlblockbech32)
-                byte_stringbech32 = respone_blockbech32.content
-                source_codebech32 = html.fromstring(byte_stringbech32)
-                xpatch_txidbech32 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[4]/td[2]'
-                treetxidbech32 = source_codebech32.xpath(xpatch_txidbech32)
-                xVolbech32 = str(treetxidbech32[0].text_content())
-                balbech32 = str(xVolbech32)
-                ammount = '0 BTC'
-                if int(baluaddr)> 0 or int(balcaddr)> 0 or int(balp2sh)> 0 or int(balbech32) > 0:
-                    urlblock1uaddr = "https://bitcoin.atomicwallet.io/address/"+uaddr
-                    respone_block1uaddr = requests.get(urlblock1uaddr)
-                    byte_string1uaddr = respone_block1uaddr.content
-                    source_code1uaddr = html.fromstring(byte_string1uaddr)
-                    xpatch_txid1uaddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-                    treetxid1uaddr = source_code1uaddr.xpath(xpatch_txid1uaddr)
-                    xVol1uaddr = str(treetxid1uaddr[0].text_content())
-                    valuaddr = str(xVol1uaddr)
-                    
-                    urlblock1caddr = "https://bitcoin.atomicwallet.io/address/"+caddr
-                    respone_block1caddr = requests.get(urlblock1caddr)
-                    byte_string1caddr = respone_block1caddr.content
-                    source_code1caddr = html.fromstring(byte_string1caddr)
-                    xpatch_txid1caddr = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-                    treetxid1caddr = source_code1caddr.xpath(xpatch_txid1caddr)
-                    xVol1caddr = str(treetxid1caddr[0].text_content())
-                    valcaddr = str(xVol1caddr)
-                    
-                    urlblock1p2sh = "https://bitcoin.atomicwallet.io/address/"+p2sh
-                    respone_block1p2sh = requests.get(urlblock1p2sh)
-                    byte_string1p2sh = respone_block1p2sh.content
-                    source_code1p2sh = html.fromstring(byte_string1p2sh)
-                    xpatch_txid1p2sh = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-                    treetxid1p2sh = source_code1p2sh.xpath(xpatch_txid1p2sh)
-                    xVol1p2sh = str(treetxid1p2sh[0].text_content())
-                    valp2sh = str(xVol1p2sh)
-                    
-                    urlblock1bech32 = "https://bitcoin.atomicwallet.io/address/"+bech32
-                    respone_block1bech32 = requests.get(urlblock1bech32)
-                    byte_string1bech32 = respone_block1bech32.content
-                    source_code1bech32 = html.fromstring(byte_string1bech32)
-                    xpatch_txid1bech32 = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[3]/td[2]'
-                    treetxid1bech32 = source_code1bech32.xpath(xpatch_txid1bech32)
-                    xVol1bech32 = str(treetxid1bech32[0].text_content())
-                    valbech32 = str(xVol1bech32)
-
+                balance = get_balance(caddr)
+                balance1 = get_balance1(uaddr)
+                balance2 = get_balance2(p2sh)
+                balance3 = get_balance3(bech32)
+                if int(balance) > 0 or int(balance1) > 0 or int(balance2) > 0 or int(balance3) > 0:
                     f=open('WIFsave.txt','a')
-                    f.write(f"  WIF  >>  \n{WIF}\n  WIF Compressed  >> {wifc} \n Bitcoin Address = {caddr}  Balance {valcaddr}  TX = {balcaddr}  BTC \n  WIF Uncompressed  >>  {wifu} \n Bitcoin Address = {uaddr}  Balance  {valuaddr}  TX = {baluaddr}  BTC  \n Bitcoin Address = {p2sh}  Balance  {valp2sh}  TX = {balp2sh}  BTC \n Bitcoin Address = {bech32} Balance  {valbech32}  TX = {balbech32}  BTC")
+                    f.write(f"  WIF  >>  \n{WIF}\n  WIF Compressed  >> {wifc} \n Bitcoin Address = {caddr}  Total Received {balance} \n  WIF Uncompressed  >>  {wifu} \n Bitcoin Address = {uaddr}  Total Received  {balance1}  \n Bitcoin Address = {p2sh}  Total Received  {balance2} \n Bitcoin Address = {bech32} Total Received  {balance3}")
                     f.close()
-                    TXS_print()
-
-                    w += 1
-                    if str(valuaddr) != str(ammount) or str(valcaddr) != str(ammount) or str(valp2sh) != str(ammount) or str(valbech32) != str(ammount):
-                        s += 1
-                        f=open('Found.txt','a')
-                        f.write(f"  WIF  >>  \n{WIF}\n  WIF Compressed  >> {wifc} \n Bitcoin Address = {caddr}  Balance {valcaddr}  TX = {balcaddr}  BTC \n  WIF Uncompressed  >>  {wifu} \n Bitcoin Address = {uaddr}  Balance  {valuaddr}  TX = {baluaddr}  BTC  \n Bitcoin Address = {p2sh}  Balance  {valp2sh}  TX = {balp2sh}  BTC \n Bitcoin Address = {bech32} Balance  {valbech32}  TX = {balbech32}  BTC")
-                        f.close()
-                        win_print()
+                    
                 else :
                     print_main()
             
@@ -1421,7 +1178,7 @@ while True:
             caddr = mylist[i]
             balance = get_balance(caddr)
             time.sleep(0.5)
-            if str(balance) != ammountbtc:
+            if int(balance) > 0:
                 print(' MATCH FOUND WINNER !!!!!!!!!!!!! ')
                 f=open('balance.txt','a')
                 f.write('\nBitcoin Address = ' + caddr + '    Balance = ' + str(balance) + ' BTC')
@@ -1493,7 +1250,7 @@ while True:
             wallet = BrainWallet()
             private_key, caddr = wallet.generate_address_from_passphrase(passphrase)
             balance = get_balance(caddr)
-            if str(balance) != ammountbtc:
+            if int(balance) >0:
                 print(' MATCH FOUND WINNER !!!!!!!!!!!!! ')
                 get_balance(caddr)
                 print(' MATCH FOUND WINNER !!!!!!!!!!!!! ')
@@ -2343,16 +2100,10 @@ while True:
                 count+=1
                 ethaddr = mylist[i]
                 time.sleep(0.5)
-                urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
-                respone_block = requests.get(urlblock)
-                byte_string = respone_block.content
-                source_code = html.fromstring(byte_string)
-                balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
-                balanceid = source_code.xpath(balance_id)
-                balance4 = str(balanceid[0].text_content())
-                txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
-                txsid = source_code.xpath(txs_id)
-                txs = str(txsid[0].text_content())
+                blocs = requests.get("https://api.ethplorer.io/getAddressInfo/" + ethaddr + APIKEY)
+                ress = blocs.json()
+                balance4 = float(blocs.json()['ETH']['balance'])
+                txs = dict(ress)["countTxs"]
                 ammount = '0 ETH'
                 if txs != 0:
                     print('[yellow] Ethereum Address Entered  >> [ [/yellow]', ethaddr, '[yellow]][/yellow]')
@@ -2596,16 +2347,10 @@ while True:
             data_eth()
             for target_wallet in data:
                 ethaddr = target_wallet['address']
-                urlblock = "https://ethereum.atomicwallet.io/address/" + ethaddr
-                respone_block = requests.get(urlblock)
-                byte_string = respone_block.content
-                source_code = html.fromstring(byte_string)
-                balance_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[1]/td[2]'
-                balanceid = source_code.xpath(balance_id)
-                balance4 = str(balanceid[0].text_content())
-                txs_id = '/html/body/main/div/div[2]/div[1]/table/tbody/tr[2]/td[2]'
-                txsid = source_code.xpath(txs_id)
-                txs = str(txsid[0].text_content())
+                blocs = requests.get("https://api.ethplorer.io/getAddressInfo/" + ethaddr + APIKEY)
+                ress = blocs.json()
+                balance4 = dict(ress)["balance"]
+                txs = dict(ress)["countTxs"]
                 print('Mnemonic_words:  ',mnemonic_words)
                 print('[yellow] Ethereum Address  >> [ [/yellow]', ethaddr, '[yellow]][/yellow]')
                 print('[red][*][/red] [yellow] >>[/yellow] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs) + '][/green]')
