@@ -2,44 +2,45 @@
 # -*- coding: utf-8 -*-
 import hmac, struct, time, sys, os, codecs, binascii, ecdsa, hashlib, random, json, smtplib
 from time import sleep
-import secp256k1 as ice # download from https://github.com/iceland2k14/secp256k1
+import secp256k1 as ice
 import threading
 from threading import Thread
+from telebot import *
+import bit
+from bit import Key
+from bit.format import bytes_to_wif
+import httplib2
+import base58
+from rich import print
+from bloomfilter import BloomFilter
 
-try:
-    from telebot import *
-    import bit
-    from bit import Key
-    from bit.format import bytes_to_wif
-    import httplib2
-    import base58
-    from rich import print
-    from bloomfilter import BloomFilter, ScalableBloomFilter, SizeGrowthRate
+gmail_user = 'user@gmail.com'# Your GMAIL EMAIL
+gmail_password = 'YOURPASSWORD' # Your PASSWORD
+bot = telebot.TeleBot("TelegrambotID") # YOUR TelegrambotID
+def send_email(message_in):
+    sent_from = gmail_user
+    to = ['user@gmail.com'] # Your GMAIL EMAIL
+    subject = 'OMG Super Important Message'
+    body = f"  {message_in}"
     
-    
-    
-except ImportError:
-    import subprocess
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'bit']) # https://pypi.org/project/bit/
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'rich']) # https://pypi.org/project/rich/
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'base58']) # https://pypi.org/project/base58/
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'simplebloomfilter']) # https://pypi.org/project/simplebloomfilter/
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'bitarray==1.9.2'])
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'httplib2']) # https://pypi.org/project/httplib2/
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'pyTelegramBotAPI']) # https://pypi.org/project/pyTelegramBotAPI/
-    from telebot import *
-    import bit
-    from bit import Key
-    from bit.format import bytes_to_wif
-    import httplib2
-    import base58
-    from rich import print
-    from bloomfilter import BloomFilter, ScalableBloomFilter, SizeGrowthRate
+    email_text = """\
+        From: %s
+        To: %s
+        Subject: %s
 
-# =============================================================================
-gmail_user = 'youremail'
-gmail_password = 'youremailpassword'
-bot = telebot.TeleBot("TelegrambotID") # crytpo
+        %s
+        """ % (sent_from, ", ".join(to), subject, body)
+
+    try:
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo()
+        server.login(gmail_user, gmail_password)
+        server.sendmail(sent_from, to, email_text)
+        server.close()
+    
+        print ('Email sent!')
+    except:
+        print('Something went wrong...')
 # =============================================================================
 print('[yellow] Please with Database Loading.....[/yellow]')
 
@@ -48,12 +49,13 @@ with open("btc.bf", "rb") as fp:
 btc_count = len(bloom_filter)    
 print('[yellow] Bitcoin Addresses Loaded  >> [ [/yellow]', btc_count, '[yellow]][/yellow]')
     
-with open("eth.bf", "rb") as fp:
-    bloom_filter1 = BloomFilter.load(fp)   
-eth_count = len(bloom_filter1)
+with open('eth.bf', "rb") as fp:
+    bloom_filtereth = BloomFilter.load(fp)
+
+eth_count = len(bloom_filtereth)
 print('[yellow] ETH Addresses Loaded  >> [ [/yellow]', eth_count, '[yellow]][/yellow]')
 
-addr_count = len(bloom_filter)+len(bloom_filter1)
+addr_count = btc_count+eth_count
 print('[yellow] Total Bitcoin and ETH Addresses Loaded  >> [ [/yellow]', addr_count, '[yellow]][/yellow]')
 print('[purple] <<  Telegram Bot Running  >> [/purple]')
 # =============================================================================
@@ -81,11 +83,6 @@ ICEWORDS = '''[red]
 █   █    █▄▄█   █▄▄▄   █   ▄   █       █   █  █ █       █▄▄▄▄▄█ █
 █▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█  █▄▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄█  █▄█▄▄▄▄▄▄██▄▄▄▄▄▄▄█
 
-
-                      ___            ___  
-                     (o o)          (o o) 
-                    (  V  ) MIZOGG (  V  )
-                    --m-m------------m-m--
 [/red]'''
 
 RANGER = '''[red]
@@ -97,12 +94,6 @@ RANGER = '''[red]
 █   █  █ █   ▄   █ █ █   █  █▄▄█ █   █▄▄▄█   █  █ █
 █▄▄▄█  █▄█▄▄█ █▄▄█▄█  █▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄█  █▄█
 
-
-
-                  ___            ___  
-                 (o o)          (o o) 
-                (  V  ) MIZOGG (  V  )
-                --m-m------------m-m--
 [/red]'''
 
 FULLRANGE = '''[red]
@@ -114,16 +105,9 @@ FULLRANGE = '''[red]
 █   █   █       █       █       █  █   █  █ █   ▄   █ █ █   █  █▄▄█ █   █▄▄▄ 
 █▄▄▄█   █▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█  █▄▄▄█  █▄█▄▄█ █▄▄█▄█  █▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█
 
-
-
-
-                          ___            ___  
-                         (o o)          (o o) 
-                        (  V  ) MIZOGG (  V  )
-                        --m-m------------m-m--
 [/red]'''
 # =============================================================================
-def create_valid_mnemonics(strength=128):
+def create_valid_mnemonics(strength):
 
     rbytes = os.urandom(strength // 8)
     h = hashlib.sha256(rbytes).hexdigest()
@@ -137,19 +121,23 @@ def create_valid_mnemonics(strength=128):
         result.append(wordlist[idx])
 
     return " ".join(result)
+# WORD Wallet
+order	= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+
+with open('english.txt') as f:
+    wordlist = f.read().split('\n')
 
 def mnem_to_seed(words):
     salt = 'mnemonic'
     seed = hashlib.pbkdf2_hmac("sha512",words.encode("utf-8"), salt.encode("utf-8"), 2048)
     return seed
 
-
 def bip39seed_to_bip32masternode(seed):
     h = hmac.new(b'Bitcoin seed', seed, hashlib.sha512).digest()
     key, chain_code = h[:32], h[32:]
     return key, chain_code
 
-def parse_derivation_path(str_derivation_path="m/44'/0'/0'/0/0"):      # 60' is for ETH 0' is for BTC
+def parse_derivation_path(str_derivation_path="m/44'/0'/0'/0/0"):
     path = []
     if str_derivation_path[0:2] != 'm/':
         raise ValueError("Can't recognize derivation path. It should look like \"m/44'/0'/0'/0\".")
@@ -178,7 +166,6 @@ def derive_bip32childkey(parent_key, parent_chain_code, i):
     if (i & 0x80000000) != 0:
         key = b'\x00' + parent_key
     else:
-#        key = bytes(PublicKey(parent_key))
         key = bit.Key.from_bytes(parent_key).public_key
     d = key + struct.pack('>L', i)
     while True:
@@ -195,7 +182,6 @@ def derive_bip32childkey(parent_key, parent_chain_code, i):
     
 def bip39seed_to_private_key(bip39seed, n=1):
     const = "m/44'/0'/0'/0/"
-#    str_derivation_path = const + str(n-1)
     str_derivation_path = "m/44'/0'/0'/0/0"
     derivation_path = parse_derivation_path(str_derivation_path)
     master_private_key, master_chain_code = bip39seed_to_bip32masternode(bip39seed)
@@ -206,7 +192,6 @@ def bip39seed_to_private_key(bip39seed, n=1):
     
 def bip39seed_to_private_key2(bip39seed, n=1):
     const = "m/49'/0'/0'/0/"
-#    str_derivation_path = const + str(n-1)
     str_derivation_path = "m/49'/0'/0'/0/0"
     derivation_path = parse_derivation_path2(str_derivation_path)
     master_private_key, master_chain_code = bip39seed_to_bip32masternode(bip39seed)
@@ -217,7 +202,6 @@ def bip39seed_to_private_key2(bip39seed, n=1):
 
 def bip39seed_to_private_key3(bip39seed, n=1):
     const = "m/84'/0'/0'/0/"
-#    str_derivation_path = const + str(n-1)
     str_derivation_path = "m/84'/0'/0'/0/0"
     derivation_path = parse_derivation_path2(str_derivation_path)
     master_private_key, master_chain_code = bip39seed_to_bip32masternode(bip39seed)
@@ -228,7 +212,6 @@ def bip39seed_to_private_key3(bip39seed, n=1):
 
 def bip39seed_to_private_key4(bip39seed, n=1):
     const = "m/44'/60'/0'/0/"
-#    str_derivation_path = const + str(n-1)
     str_derivation_path = "m/44'/60'/0'/0/0"
     derivation_path = parse_derivation_path2(str_derivation_path)
     master_private_key, master_chain_code = bip39seed_to_bip32masternode(bip39seed)
@@ -237,29 +220,11 @@ def bip39seed_to_private_key4(bip39seed, n=1):
         private_key, chain_code = derive_bip32childkey(private_key, chain_code, i)
     return private_key
 # =============================================================================
-def get_balance(caddr):
+def get_balance(addr):
     h = httplib2.Http(".cache")
-    (resp_headers, content) = h.request("https://btcbook.guarda.co/api/v2/address/" + caddr, "GET")
+    (resp_headers, content) = h.request("https://btcbook.guarda.co/api/v2/address/" + addr, "GET")
     resload = json.loads(content.decode("utf-8"))
     return resload
-    
-def get_balance1(uaddr):
-    h = httplib2.Http(".cache")
-    (resp_headers, content) = h.request("https://btcbook.guarda.co/api/v2/address/" + uaddr, "GET")
-    resload1 = json.loads(content.decode("utf-8"))
-    return resload1
-
-def get_balance2(p2sh):
-    h = httplib2.Http(".cache")
-    (resp_headers, content) = h.request("https://btcbook.guarda.co/api/v2/address/" + p2sh, "GET")
-    resload2 = json.loads(content.decode("utf-8"))
-    return resload2
-
-def get_balance3(bech32):
-    h = httplib2.Http(".cache")
-    (resp_headers, content) = h.request("https://btcbook.guarda.co/api/v2/address/" + bech32, "GET")
-    resload3 = json.loads(content.decode("utf-8"))
-    return resload3
     
 def get_balance4(ethaddr):
     h = httplib2.Http(".cache")
@@ -343,6 +308,21 @@ class BrainWallet:
             b58_string = '1' + b58_string
         return b58_string
 # =============================================================================
+
+def generate_addresses(dec):
+    dec = int(dec)
+    HEX = "%064x" % dec
+    wifc = ice.btc_pvk_to_wif(HEX)
+    wifu = ice.btc_pvk_to_wif(HEX, False)
+    caddr = ice.privatekey_to_address(0, True, dec)
+    uaddr = ice.privatekey_to_address(0, False, dec)
+    p2sh = ice.privatekey_to_address(1, True, dec)
+    bech32 = ice.privatekey_to_address(2, True, dec)
+    ethaddr = ice.privatekey_to_ETH_address(dec)
+    length = len(bin(int(dec)))
+    length -=2
+    return caddr, uaddr, p2sh, bech32, ethaddr, HEX, wifc, wifu, length
+    
 @bot.message_handler(commands=["start"])
 def start(message):
     print('[green]starting..........[/green]')
@@ -567,7 +547,7 @@ def get_text(message):
 
         send_message = bot.send_message(message.chat.id, f"🤖 {message.from_user.first_name}! 🔋Power Hour Words 🔋✨(Pro Access)✨", reply_markup=markup_power)
 
-        bot.register_next_step_handler(send_message, get_POWER)
+        bot.register_next_step_handler(send_message, get_mnemo)
         
     if message.text=="🔋Power Hour Range 🔋✨(Pro Access)✨":
         print('[red]Power Hour Tool Entered [/red]')
@@ -582,7 +562,7 @@ def get_text(message):
 
         send_message = bot.send_message(message.chat.id, f"🤖 {message.from_user.first_name}! 🔋Power Hour Range 🔋✨(Pro Access)✨", reply_markup=markup_POWER_FULLRANGE)
 
-        bot.register_next_step_handler(send_message, get_POWER_FULLRANGE)
+        bot.register_next_step_handler(send_message, get_range_time)
 
     if message.text=="✨Range Selector ✨(Pro Access)✨":
         print('[red]Range Selector Tool Entered [/red]')
@@ -615,7 +595,7 @@ def get_text(message):
 
         send_message = bot.send_message(message.chat.id, f"🤖 {message.from_user.first_name}! 🧠✨Range Selector ✨(Pro Access)✨", reply_markup=markup_POWER_RANGE)
 
-        bot.register_next_step_handler(send_message, get_POWER_RANGE)
+        bot.register_next_step_handler(send_message, get_ranges)
     if message.text=="Stop":
         global run
         run = False
@@ -904,282 +884,240 @@ def checkHex(HEX):
     return True
 
 def get_HEX(message):
-    if message.text=="🔙Back":
+    if message.text == "🔙Back":
         start(message)
     else:
         HEX = message.text
         if message.content_type == "text":
-            checkHex(HEX)
-            if checkHex(HEX)==True:
+            if checkHex(HEX):
                 dec = int(HEX, 16)
                 if dec < maxN:
-                    length = len(bin(dec))
-                    length -=2
-                    print('\nHexadecimal = ',HEX, '\nTo Decimal = ', dec, '  bits ', length)
+                    length = len(bin(dec)) - 2
+                    print(f"\nHexadecimal = {HEX}\nTo Decimal = {dec}  bits {length}")
                     wifc = ice.btc_pvk_to_wif(HEX)
                     wifu = ice.btc_pvk_to_wif(HEX, False)
-                    caddr = ice.privatekey_to_address(0, True, dec) #Compressed
-                    uaddr = ice.privatekey_to_address(0, False, dec)  #Uncompressed
-                    p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
-                    bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
+                    addresses = [
+                        ("Compressed", 0, True),
+                        ("Uncompressed", 0, False),
+                        ("p2sh", 1, True),
+                        ("bech32", 2, True)
+                    ]
+                    balances = []
+
+                    for address in addresses:
+                        addr_type, index, compressed = address
+                        addr = ice.privatekey_to_address(index, compressed, dec)
+                        resload = get_balance(addr)
+                        balance = resload["balance"]
+                        totalReceived = resload["totalReceived"]
+                        totalSent = resload["totalSent"]
+                        txs = resload["txs"]
+                        addressinfo = resload["address"]
+                        balances.append((addr_type, balance, totalReceived, totalSent, txs, addressinfo))
+
                     ethaddr = ice.privatekey_to_ETH_address(dec)
-                    
-                    resload = get_balance(caddr)
-                    info = str(resload)
-                    balance = (resload['balance'])
-                    totalReceived = (resload['totalReceived'])
-                    totalSent = (resload['totalSent'])
-                    txs = (resload['txs'])
-                    addressinfo = (resload['address'])
-
-                    resload1 = get_balance1(uaddr)
-                    info1 = str(resload1)
-                    balance1 = (resload1['balance'])
-                    totalReceived1 = (resload1['totalReceived'])
-                    totalSent1 = (resload1['totalSent'])
-                    txs1 = (resload1['txs'])
-                    addressinfo1 = (resload1['address'])
-
-                    resload2 = get_balance2(p2sh)
-                    info2 = str(resload2)
-                    balance2 = (resload2['balance'])
-                    totalReceived2 = (resload2['totalReceived'])
-                    totalSent2 = (resload2['totalSent'])
-                    txs2 = (resload2['txs'])
-                    addressinfo2 = (resload2['address'])
-
-                    resload3 = get_balance3(bech32)
-                    info3 = str(resload3)
-                    balance3 = (resload3['balance'])
-                    totalReceived3 = (resload3['totalReceived'])
-                    totalSent3 = (resload3['totalSent'])
-                    txs3 = (resload3['txs'])
-                    addressinfo3 = (resload3['address'])
-                    
                     resload4 = get_balance4(ethaddr)
-                    info4 = str(resload4)
-                    balance4 = (resload4['balance'])
-                    txs4 = (resload4['txs'])
-                    addressinfo4 = (resload4['address'])
+                    balance4 = resload4["balance"]
+                    txs4 = resload4["txs"]
+                    addressinfo4 = resload4["address"]
+                    nonTokenTxs = resload4.get("nonTokenTxs")
+                    tokens = resload4.get("tokens")
 
-                    n = "\n"
-                    print('[purple] HEX Entered  >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] DEC Returned  >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('BTC Address : ', addressinfo)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
-                    print('BTC Address : ', addressinfo1)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance1) + '][/green] totalReceived: [green][' +  str(totalReceived1) + '][/green] totalSent:[green][' + str(totalSent1) + '][/green] txs :[green][' + str(txs1) + '][/green]')
-                    print('BTC Address : ', addressinfo2)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
-                    print('BTC Address : ', addressinfo3)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
-                    print('ETH Address : ', addressinfo4)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs4) + '][/green]')
+                    print(f"[purple] HEX Entered  >> [ [/purple]{HEX}[purple]][/purple]")
+                    print(f"[purple] DEC Returned  >> [ [/purple]{dec}[purple]][/purple]")
+                    print(f"[purple] WIF Compressed  >> [ [/purple]{wifc}[purple]][/purple]")
+                    print(f"[purple] WIF Uncompressed  >> [ [/purple]{wifu}[purple]][/purple]")
 
-                    bot.send_message(message.chat.id, (f" 🔨 HEX Entered  >> 🔨 {n}{HEX}{n}{n} ⛏️ DEC Returned  >> ⛏️ {n}{dec}  bits {length}{n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿itcoin Address = {addressinfo1} {n}{n}      💰 Balance 💰 {balance1}  BTC {n}      💸 TotalReceived 💸 {totalReceived1} {n}      📤 TotalSent 📤 {totalSent1} {n}      💵 Transactions 💵 {txs1}{n}{n} ₿itcoin Address = {addressinfo2} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿itcoin Address = {addressinfo3} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}{n}{n} Ethereum Address = {addressinfo4} {n}{n}      💰 Balance 💰 {balance4} {n}      💵 Transactions 💵 {txs4}"))
+                    for balance in balances:
+                        addr_type, balance_val, totalReceived, totalSent, txs, addressinfo = balance
+                        print(f"BTC Address : {addressinfo}")
+                        print(f"[red][*][/red] [purple] >>[/purple] Balance: [green] [{balance_val}][/green] totalReceived: [green][{totalReceived}][/green] totalSent:[green][{totalSent}][/green] txs :[green][{txs}][/green]")
+
+                    print(f"ETH Address : {addressinfo4}")
+                    print(f"[red][*][/red] [purple] >>[/purple] Balance: [green] [{balance4}][/green] Transactions: [green][{txs4}][/green]")
+
+                    bot.send_message(message.chat.id, f"🔨 HEX Entered  >> 🔨{n}{HEX}{n}{n}⛏️ DEC Returned  >> ⛏️{n}{dec}  bits {length}{n}{n}🗝️ WIF Compressed  >> 🗝️{n}{wifc}{n}{n}🔑 WIF Uncompressed  >> 🔑{n}{wifu}{n}{n}")
+
+                    for balance in balances:
+                        addr_type, balance_val, totalReceived, totalSent, txs, addressinfo = balance
+                        bot.send_message(message.chat.id, f"BTC Address : {addressinfo}{n}{n}      💰 Balance 💰 {balance_val} BTC{n}      💸 TotalReceived 💸 {totalReceived}{n}      📤 TotalSent 📤 {totalSent}{n}      💵 Transactions 💵 {txs}")
+
+                    bot.send_message(message.chat.id, f"ETH Address : {addressinfo4}{n}{n}      💰 Balance 💰 {balance4}{n}      💵 Transactions 💵 {txs4}")
+
                     if txs4 > 0:
-                        try:
-                            nonTokenTxs = (resload4['nonTokenTxs'])
-                            tokens = (resload4['tokens'])
+                        if nonTokenTxs:
                             bot.send_message(message.chat.id, f"Number of Tokens = {nonTokenTxs}")
-                            print('Number of Tokens:[green][' + str(nonTokenTxs) + '][/green]')
-                            print('[purple]Tokens   >> [ [/purple]', tokens, '[purple]][/purple]')
+                            print(f"Number of Tokens:[green][{nonTokenTxs}][/green]")
+                            print(f"[purple]Tokens   >> [ [/purple]{tokens}[purple]][/purple]")
                             tokeninfo = str(tokens)
                             if len(tokeninfo) > 4096:
                                 for x in range(0, len(tokeninfo), 4096):
                                     bot.send_message(message.chat.id, tokeninfo[x:x+4096])
                             else:
                                 bot.send_message(message.chat.id, tokeninfo)
-                        except:
+                        else:
                             bot.send_message(message.chat.id, "🚫 No Tokens.🚫 ")
-                            print('[red] No Tokens[/red]')
-                            
-                    if txs > 0 or txs1 > 0 or txs2 > 0 or txs3 > 0 or txs4 > 0:
+                            print("[red] No Tokens[/red]")
+
+                    if any(int(balance[1]) > 0 for balance in balances):
                         with open("data.txt", "a", encoding="utf-8") as f:
-                            f.write(f"""{n} HEX Entered  >>{HEX}{n} DEC Returned  >> {dec}  bits {length}{n} WIF Compressed  >> {wifc}{n} WIF Uncompressed  >> {wifu}{n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {addressinfo1} Balance  {balance1}  BTC TotalReceived  {totalReceived1} TotalSent  {totalSent1} Transactions  {txs1}{n} Bitcoin Address = {addressinfo2} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {addressinfo3} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}{n} Ethereum Address = {addressinfo4} Balance  {balance4} Transactions  {txs4}""")
-                    if float(balance) > 0 or float(balance1) > 0 or float(balance2) > 0 or  float(balance3) > 0 or  float(balance4) > 0:
-                        sent_from = gmail_user
-                        to = ['youremail']
-                        subject = 'OMG Super Important Message'
-                        body = f"  HEX Entered  >>  {n}{HEX}{n} DEC Returned  >>  {n}{dec}  bits {length}{n}{n}  WIF Compressed  >>  {n}{wifc}{n}{n}  WIF Uncompressed  >>  {n}{wifu}{n}{n} Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance}  BTC {n}       TotalReceived {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs} {n}{n} Bitcoin Address = {addressinfo1} {n}{n}       Balance  {balance1}  BTC {n}       TotalReceived  {totalReceived1} {n}       TotalSent  {totalSent1} {n}      Transactions  {txs1}{n}{n} Bitcoin Address = {addressinfo2} {n}{n}       Balance  {balance2}  BTC {n}       TotalReceived  {totalReceived2} {n}       TotalSent  {totalSent2} {n}       Transactions  {txs2}{n}{n} Bitcoin Address = {addressinfo3} {n}{n}       Balance  {balance3}  BTC {n}       TotalReceived  {totalReceived3} {n}       TotalSent  {totalSent3} {n}       Transactions  {txs3}{n}{n} Ethereum Address = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
-                        
-                        email_text = """\
-                            From: %s
-                            To: %s
-                            Subject: %s
+                            f.write(f"{n} HEX Entered  >>{HEX}{n} DEC Returned  >> {dec}  bits {length}{n} WIF Compressed  >> {wifc}{n} WIF Uncompressed  >> {wifu}")
 
-                            %s
-                            """ % (sent_from, ", ".join(to), subject, body)
+                            for balance in balances:
+                                addr_type, balance_val, totalReceived, totalSent, txs, addressinfo = balance
+                                f.write(f" Bitcoin Address = {addressinfo} Balance  {balance_val}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs}")
 
-                        try:
-                            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                            server.ehlo()
-                            server.login(gmail_user, gmail_password)
-                            server.sendmail(sent_from, to, email_text)
-                            server.close()
-                        
-                            print ('Email sent!')
-                        except:
-                            print('Something went wrong...')
+                            f.write(f" Ethereum Address = {addressinfo4} Balance  {balance4} Transactions  {txs4}")
+
+                    if any(int(balance[1]) > 0 for balance in balances):
+                        body = f"  HEX Entered  >>  {n}{HEX}{n} DEC Returned  >>  {n}{dec}  bits {length}{n}{n}  WIF Compressed  >>  {n}{wifc}{n}{n}  WIF Uncompressed  >>  {n}{wifu}{n}{n}"
+
+                        for balance in balances:
+                            addr_type, balance_val, totalReceived, totalSent, txs, addressinfo = balance
+                            body += f" Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance_val}  BTC {n}       TotalReceived {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs}"
+
+                        body += f" Ethereum Address = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
+                        send_email(body)
+
                 else:
-                    bot.send_message(message.chat.id, "🚫 HEX OUT OF RANGE 🤪 Must be Lower Than FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 ")
+                    bot.send_message(message.chat.id, "🚫 HEX OUT OF RANGE 🤪 Must be Lower Than FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141")
                     start(message)
-            elif checkHex(HEX)==False:
+            else:
                 bot.send_message(message.chat.id, "🚫 HEX Entered is not valid 🤪")
-                print('[red] HEX Entered is not valid [/red]')
+                print("[red] HEX Entered is not valid [/red]")
         else:
             bot.send_message(message.chat.id, "🚫 HEX Entered is not valid 🤪 Send in text format")
         start(message)
 
 def get_DEC(message):
-    if message.text=="🔙Back":
+    if message.text == "🔙Back":
         start(message)
     else:
         string = message.text
         if message.content_type == "text":
             try:
-                val = int(string)
-                dec=int(val)
+                dec = int(string)
                 if dec < maxN:
                     HEX = "%064x" % dec
-                    length = len(bin(dec))
-                    length -=2
-                    print('\nDecimal = ',dec, '  bits ', length, '\nTo Hexadecimal = ', HEX)
+                    length = len(bin(dec)) - 2
+                    print(f"\nDecimal = {dec}  bits {length}\nTo Hexadecimal = {HEX}")
                     wifc = ice.btc_pvk_to_wif(HEX)
                     wifu = ice.btc_pvk_to_wif(HEX, False)
-                    caddr = ice.privatekey_to_address(0, True, dec) #Compressed
-                    uaddr = ice.privatekey_to_address(0, False, dec)  #Uncompressed
-                    p2sh = ice.privatekey_to_address(1, True, dec) #p2sh
-                    bech32 = ice.privatekey_to_address(2, True, dec)  #bech32
+                    addresses = [
+                        ("Compressed", 0, True),
+                        ("Uncompressed", 0, False),
+                        ("p2sh", 1, True),
+                        ("bech32", 2, True)
+                    ]
+                    balances = []
+
+                    for address in addresses:
+                        addr_type, index, compressed = address
+                        addr = ice.privatekey_to_address(index, compressed, dec)
+                        resload = get_balance(addr)
+                        balance = resload["balance"]
+                        totalReceived = resload["totalReceived"]
+                        totalSent = resload["totalSent"]
+                        txs = resload["txs"]
+                        addressinfo = resload["address"]
+                        balances.append((addr_type, balance, totalReceived, totalSent, txs, addressinfo))
+
                     ethaddr = ice.privatekey_to_ETH_address(dec)
-                    
-                    resload = get_balance(caddr)
-                    info = str(resload)
-                    balance = (resload['balance'])
-                    totalReceived = (resload['totalReceived'])
-                    totalSent = (resload['totalSent'])
-                    txs = (resload['txs'])
-                    addressinfo = (resload['address'])
-
-                    resload1 = get_balance1(uaddr)
-                    info1 = str(resload1)
-                    balance1 = (resload1['balance'])
-                    totalReceived1 = (resload1['totalReceived'])
-                    totalSent1 = (resload1['totalSent'])
-                    txs1 = (resload1['txs'])
-                    addressinfo1 = (resload1['address'])
-
-                    resload2 = get_balance2(p2sh)
-                    info2 = str(resload2)
-                    balance2 = (resload2['balance'])
-                    totalReceived2 = (resload2['totalReceived'])
-                    totalSent2 = (resload2['totalSent'])
-                    txs2 = (resload2['txs'])
-                    addressinfo2 = (resload2['address'])
-
-                    resload3 = get_balance3(bech32)
-                    info3 = str(resload3)
-                    balance3 = (resload3['balance'])
-                    totalReceived3 = (resload3['totalReceived'])
-                    totalSent3 = (resload3['totalSent'])
-                    txs3 = (resload3['txs'])
-                    addressinfo3 = (resload3['address'])
-                    
                     resload4 = get_balance4(ethaddr)
-                    info4 = str(resload4)
-                    balance4 = (resload4['balance'])
-                    txs4 = (resload4['txs'])
-                    addressinfo4 = (resload4['address'])
-                    
-                    n = "\n"
-                    print('[purple] DEC Entered  >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] HEX Returned  >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('BTC Address : ', addressinfo)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
-                    print('BTC Address : ', addressinfo1)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance1) + '][/green] totalReceived: [green][' +  str(totalReceived1) + '][/green] totalSent:[green][' + str(totalSent1) + '][/green] txs :[green][' + str(txs1) + '][/green]')
-                    print('BTC Address : ', addressinfo2)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
-                    print('BTC Address : ', addressinfo3)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
-                    print('ETH Address : ', addressinfo4)
-                    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs4) + '][/green]')
-                    
-                    bot.send_message(message.chat.id, (f" ⛏️ DEC Entered  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 HEX Returned  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿itcoin Address = {addressinfo1} {n}{n}      💰 Balance 💰 {balance1}  BTC {n}      💸 TotalReceived 💸 {totalReceived1} {n}      📤 TotalSent 📤 {totalSent1} {n}      💵 Transactions 💵 {txs1}{n}{n} ₿itcoin Address = {addressinfo2} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿itcoin Address = {addressinfo3} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}{n}{n} Ethereum Address = {addressinfo4} {n}{n}      💰 Balance 💰 {balance4} {n}      💵 Transactions 💵 {txs4}"))
+                    balance4 = resload4["balance"]
+                    txs4 = resload4["txs"]
+                    addressinfo4 = resload4["address"]
+                    nonTokenTxs = resload4.get("nonTokenTxs")
+                    tokens = resload4.get("tokens")
+
+                    print(f"[purple] DEC Entered  >> [ [/purple]{dec}[purple]][/purple]")
+                    print(f"[purple] HEX Returned  >> [ [/purple]{HEX}[purple]][/purple]")
+                    print(f"[purple] WIF Compressed  >> [ [/purple]{wifc}[purple]][/purple]")
+                    print(f"[purple] WIF Uncompressed  >> [ [/purple]{wifu}[purple]][/purple]")
+
+                    for balance in balances:
+                        addr_type, balance_val, totalReceived, totalSent, txs, addressinfo = balance
+                        print(f"BTC Address : {addressinfo}")
+                        print(f"[red][*][/red] [purple] >>[/purple] Balance: [green] [{balance_val}][/green] totalReceived: [green][{totalReceived}][/green] totalSent:[green][{totalSent}][/green] txs :[green][{txs}][/green]")
+
+                    print(f"ETH Address : {addressinfo4}")
+                    print(f"[red][*][/red] [purple] >>[/purple] Balance: [green] [{balance4}][/green] Transactions: [green][{txs4}][/green]")
+
+                    bot.send_message(message.chat.id, f"⛏️ DEC Entered  >> ⛏️{n}{dec}  bits {length}{n}{n}🔨 HEX Returned  >> 🔨{n}{HEX}{n}{n}🗝️ WIF Compressed  >> 🗝️{n}{wifc}{n}{n}🔑 WIF Uncompressed  >> 🔑{n}{wifu}{n}{n}")
+
+                    for balance in balances:
+                        addr_type, balance_val, totalReceived, totalSent, txs, addressinfo = balance
+                        bot.send_message(message.chat.id, f"BTC Address : {addressinfo}{n}{n}      💰 Balance 💰 {balance_val} BTC{n}      💸 TotalReceived 💸 {totalReceived}{n}      📤 TotalSent 📤 {totalSent}{n}      💵 Transactions 💵 {txs}")
+
+                    bot.send_message(message.chat.id, f"ETH Address : {addressinfo4}{n}{n}      💰 Balance 💰 {balance4}{n}      💵 Transactions 💵 {txs4}")
+
                     if txs4 > 0:
-                        try:
-                            nonTokenTxs = (resload4['nonTokenTxs'])
-                            tokens = (resload4['tokens'])
+                        if nonTokenTxs:
                             bot.send_message(message.chat.id, f"Number of Tokens = {nonTokenTxs}")
-                            print('Number of Tokens:[green][' + str(nonTokenTxs) + '][/green]')
-                            print('[purple]Tokens   >> [ [/purple]', tokens, '[purple]][/purple]')
+                            print(f"Number of Tokens:[green][{nonTokenTxs}][/green]")
+                            print(f"[purple]Tokens   >> [ [/purple]{tokens}[purple]][/purple]")
                             tokeninfo = str(tokens)
                             if len(tokeninfo) > 4096:
                                 for x in range(0, len(tokeninfo), 4096):
                                     bot.send_message(message.chat.id, tokeninfo[x:x+4096])
                             else:
                                 bot.send_message(message.chat.id, tokeninfo)
-                        except:
+                        else:
                             bot.send_message(message.chat.id, "🚫 No Tokens.🚫 ")
-                            print('[red] No Tokens[/red]')
-                    if txs > 0 or txs1 > 0 or txs2 > 0 or txs3 > 0 or txs4 > 0:
+                            print("[red] No Tokens[/red]")
+
+                    if any(int(balance[1]) > 0 for balance in balances):
                         with open("data.txt", "a", encoding="utf-8") as f:
-                            f.write(f"""{n} DEC Entered  >>{dec}{n} HEX Returned  >> {HEX}  bits {length}{n} WIF Compressed  >> {wifc}{n} WIF Uncompressed  >> {wifu}{n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {addressinfo1} Balance  {balance1}  BTC TotalReceived  {totalReceived1} TotalSent  {totalSent1} Transactions  {txs1}{n} Bitcoin Address = {addressinfo2} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {addressinfo3} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}{n} Ethereum Address = {addressinfo4} Balance  {balance4} Transactions  {txs4}""")        
-                    if float(balance) > 0 or float(balance1) > 0 or float(balance2) > 0 or  float(balance3) > 0 or  float(balance4) > 0:
-                        sent_from = gmail_user
-                        to = ['youremail']
-                        subject = 'OMG Super Important Message'
-                        body = f"  DEC Entered  >> {n}{dec}  bits {length}{n}{n}  HEX Returned  >> {n} {HEX}{n}{n}  WIF Compressed  >>  {n}{wifc}{n}{n}  WIF Uncompressed  >>  {n}{wifu}{n}{n} Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance}  BTC {n}       TotalReceived {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs} {n}{n} Bitcoin Address = {addressinfo1} {n}{n}       Balance  {balance1}  BTC {n}       TotalReceived  {totalReceived1} {n}       TotalSent  {totalSent1} {n}      Transactions  {txs1}{n}{n} Bitcoin Address = {addressinfo2} {n}{n}       Balance  {balance2}  BTC {n}       TotalReceived  {totalReceived2} {n}       TotalSent  {totalSent2} {n}       Transactions  {txs2}{n}{n} Bitcoin Address = {addressinfo3} {n}{n}       Balance  {balance3}  BTC {n}       TotalReceived  {totalReceived3} {n}       TotalSent  {totalSent3} {n}       Transactions  {txs3}{n}{n} Ethereum Address = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
-                        
-                        email_text = """\
-                            From: %s
-                            To: %s
-                            Subject: %s
+                            f.write(f"{n} DEC Entered  >>{dec}{n} HEX Returned  >> {HEX}  bits {length}{n} WIF Compressed  >> {wifc}{n} WIF Uncompressed  >> {wifu}")
 
-                            %s
-                            """ % (sent_from, ", ".join(to), subject, body)
+                            for balance in balances:
+                                addr_type, balance_val, totalReceived, totalSent, txs, addressinfo = balance
+                                f.write(f" Bitcoin Address = {addressinfo} Balance  {balance_val}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs}")
 
-                        try:
-                            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                            server.ehlo()
-                            server.login(gmail_user, gmail_password)
-                            server.sendmail(sent_from, to, email_text)
-                            server.close()
-                        
-                            print ('Email sent!')
-                        except:
-                            print('Something went wrong...')
+                            f.write(f" Ethereum Address = {addressinfo4} Balance  {balance4} Transactions  {txs4}")
+
+                    if any(int(balance[1]) > 0 for balance in balances):
+                        body = f"  DEC Entered  >> {n}{dec}  bits {length}{n}{n}  HEX Returned  >> {n} {HEX}{n}{n}  WIF Compressed  >>  {n}{wifc}{n}{n}  WIF Uncompressed  >>  {n}{wifu}{n}{n}"
+
+                        for balance in balances:
+                            addr_type, balance_val, totalReceived, totalSent, txs, addressinfo = balance
+                            body += f"Bitcoin Address = {addressinfo} Balance  {balance_val}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs}"
+
+                        body += f"Ethereum Address = {addressinfo4} Balance  {balance4} Transactions  {txs4}"
+                        send_email(body)
                 else:
-                    bot.send_message(message.chat.id, "🚫 DEC OUT OF RANGE 🤪 Must be Lower than 115792089237316195423570985008687907852837564279074904382605163141518161494336 BITS256")
-                    start(message)            
+                    bot.send_message(
+                        message.chat.id,
+                        "🚫 DEC OUT OF RANGE 🤪 Must be Lower than 115792089237316195423570985008687907852837564279074904382605163141518161494336 BITS256",
+                    )
+                    start(message)
             except ValueError:
-                bot.send_message(message.chat.id, "⚠️⛔ Invalid DEC Something Has Gone Wrong ⚠️⛔")
-                print('[red]Invalid DEC Something Has Gone Wrong[/red]')
+                bot.send_message(
+                    message.chat.id,
+                    "⚠️⛔ Invalid DEC Something Has Gone Wrong ⚠️⛔",
+                )
+                print("[red]Invalid DEC Something Has Gone Wrong[/red]")
         else:
-            bot.send_message(message.chat.id, "🚫 Invalid DEC Something Has Gone Wrong 🤪 Send in text format")
+            bot.send_message(
+                message.chat.id,
+                "🚫 Invalid DEC Something Has Gone Wrong 🤪 Send in text format",
+            )
         start(message)
 
 def get_BRAIN(message):
-    if message.text=="🔙Back":
+    if message.text == "🔙Back":
         start(message)
     if message.content_type == "text":
         passphrase = message.text
         wallet = BrainWallet()
         private_key, addr = wallet.generate_address_from_passphrase(passphrase)
         try:
-            h = httplib2.Http(".cache")
-            (resp_headers, content) = h.request("https://btcbook.guarda.co/api/v2/address/" + addr, "GET")
-            res = json.loads(content.decode("utf-8"))
-            balance = (res['balance'])
-            totalReceived = (res['totalReceived'])
-            totalSent = (res['totalSent'])
-            txs = (res['txs'])
-            addressinfo = (res['address'])
-            n = "\n"
+            resload = get_balance(addr)
+            balance = resload["balance"]
+            totalReceived = resload["totalReceived"]
+            totalSent = resload["totalSent"]
+            txs = resload["txs"]
+            addressinfo = resload["address"]
             bot.send_message(message.chat.id, f"      🧠 BrainWallet Entered 🤯{n}{n} {passphrase} {n}{n}      🕵️ Private Key In HEX 🕵️ {n} {private_key} {n}{n}      👇 ₿itcoin Adress 👇{n} {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs}")
             print('\nPassphrase     = ',passphrase)
             print('Private Key      = ',private_key)
@@ -1189,70 +1127,52 @@ def get_BRAIN(message):
                 with open("data.txt", "a", encoding="utf-8") as f:
                     f.write(f"""{n}BrainWallet Entered {passphrase} {n} Private Key In HEX {private_key} {n} Bitcoin Adress {addressinfo} Balance  {balance}  BTC TotalReceived  {totalReceived} TotalSent  {totalSent} Transactions  {txs}""")  
             if float(balance) > 0:
-                sent_from = gmail_user
-                to = ['youremail']
-                subject = 'OMG Super Important Message'
                 body = f"       BrainWallet Entered {n}{n} {passphrase} {n}{n}       Private Key In HEX  {n} {private_key} {n}{n}       Bitcoin Adress {n} {addressinfo} {n}{n}       Balance  {balance}  BTC {n}      TotalReceived  {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs}"
-                
-                email_text = """\
-                    From: %s
-                    To: %s
-                    Subject: %s
-
-                    %s
-                    """ % (sent_from, ", ".join(to), subject, body)
-
-                try:
-                    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                    server.ehlo()
-                    server.login(gmail_user, gmail_password)
-                    server.sendmail(sent_from, to, email_text)
-                    server.close()
-                
-                    print ('Email sent!')
-                except:
-                    print('Something went wrong...')
-        except:
-            bot.send_message(message.chat.id, "🤯🧠Something Has Gone Wrong with your Brain🧠🤯")
+                send_email(body)
+        except KeyError:
+            bot.send_message(message.chat.id, "🤯🧠 Something Has Gone Wrong with your Brain 🧠🤯")
             print('[red]Something Has Gone Wrong with your Brain[/red]')
+        except ValueError:
+            bot.send_message(message.chat.id, "🤯🧠 Invalid BrainWallet passphrase 🧠🤯")
+            print('[red]Invalid BrainWallet passphrase[/red]')
+        except Exception as e:
+            bot.send_message(message.chat.id, "🤯🧠 An error occurred with your BrainWallet 🧠🤯")
+            print(f'[red]An error occurred with your BrainWallet: {str(e)}[/red]')
     else:
-        bot.send_message(message.chat.id, "🤯🧠Something Has Gone Wrong with your Brain🧠🤯 Send in text format")
+        bot.send_message(message.chat.id, "🤯🧠 Something Has Gone Wrong with your Brain 🧠🤯 Send in text format")
     start(message)
 
 def get_BRAIN_RANDOM(message):
-    if message.text=="🔙Back":
+    if message.text == "🔙Back":
         start(message)
     else:
-        if message.text=="1-3 Words":
+        if message.text == "1-3 Words":
             passphrase = ' '.join(random.sample(mylist, random.randint(1,3)))
-        if message.text=="3-6 Words":
+        elif message.text == "3-6 Words":
             passphrase = ' '.join(random.sample(mylist, random.randint(3,6)))
-        if message.text=="6-9 Words":
+        elif message.text == "6-9 Words":
             passphrase = ' '.join(random.sample(mylist, random.randint(6,9)))
-        if message.text=="9-12 Words":
+        elif message.text == "9-12 Words":
             passphrase = ' '.join(random.sample(mylist, random.randint(9,12)))
-        if message.text=="12-15 Words":
+        elif message.text == "12-15 Words":
             passphrase = ' '.join(random.sample(mylist, random.randint(12,15)))
-        if message.text=="15-18 Words":
+        elif message.text == "15-18 Words":
             passphrase = ' '.join(random.sample(mylist, random.randint(15,18)))
-        if message.text=="18-21 Words":
+        elif message.text == "18-21 Words":
             passphrase = ' '.join(random.sample(mylist, random.randint(18,21)))
-        if message.text=="21-24 Words":
+        elif message.text == "21-24 Words":
             passphrase = ' '.join(random.sample(mylist, random.randint(21,24)))
-        if message.text=="24-50 Words":
+        elif message.text == "24-50 Words":
             passphrase = ' '.join(random.sample(mylist, random.randint(24,50)))
         wallet = BrainWallet()
         private_key, addr = wallet.generate_address_from_passphrase(passphrase)
         try:
-            h = httplib2.Http(".cache")
-            (resp_headers, content) = h.request("https://btcbook.guarda.co/api/v2/address/" + addr, "GET")
-            res = json.loads(content.decode("utf-8"))
-            balance = (res['balance'])
-            totalReceived = (res['totalReceived'])
-            totalSent = (res['totalSent'])
-            txs = (res['txs'])
-            addressinfo = (res['address'])
-            n = "\n"
+            resload = get_balance(addr)
+            balance = resload["balance"]
+            totalReceived = resload["totalReceived"]
+            totalSent = resload["totalSent"]
+            txs = resload["txs"]
+            addressinfo = resload["address"]
             bot.send_message(message.chat.id, f"      🧠 BrainWallet Entered 🤯{n}{n} {passphrase} {n}{n}      🕵️ Private Key In HEX 🕵️ {n} {private_key} {n}{n}      👇 ₿itcoin Adress 👇{n} {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs}")
             print('\nPassphrase     = ',passphrase)
             print('Private Key      = ',private_key)
@@ -1262,31 +1182,10 @@ def get_BRAIN_RANDOM(message):
                 with open("data.txt", "a", encoding="utf-8") as f:
                     f.write(f"""{n}BrainWallet Entered {passphrase} {n} Private Key In HEX {private_key} {n} Bitcoin Adress {addressinfo} Balance  {balance}  BTC TotalReceived  {totalReceived} TotalSent  {totalSent} Transactions  {txs}""")
             if float(balance) > 0:
-                sent_from = gmail_user
-                to = ['youremail']
-                subject = 'OMG Super Important Message'
                 body = f"       BrainWallet Entered {n}{n} {passphrase} {n}{n}       Private Key In HEX  {n} {private_key} {n}{n}       Bitcoin Adress {n} {addressinfo} {n}{n}       Balance  {balance}  BTC {n}      TotalReceived  {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs}"
-                
-                email_text = """\
-                    From: %s
-                    To: %s
-                    Subject: %s
-
-                    %s
-                    """ % (sent_from, ", ".join(to), subject, body)
-
-                try:
-                    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                    server.ehlo()
-                    server.login(gmail_user, gmail_password)
-                    server.sendmail(sent_from, to, email_text)
-                    server.close()
-                
-                    print ('Email sent!')
-                except:
-                    print('Something went wrong...')
+                send_email(body)
         except:
-            bot.send_message(message.chat.id, "🤯🧠Something Has Gone Wrong with your Brain🧠🤯")
+            bot.send_message(message.chat.id, "🤯🧠 Something Has Gone Wrong with your Brain 🧠🤯")
             print('[red]Something Has Gone Wrong with your Brain[/red]')
         start(message)
 
@@ -1295,20 +1194,12 @@ def get_WIF(message):
         start(message)
     else:
         WIF = message.text
-        if WIF.startswith('5H') or WIF.startswith('5J') or WIF.startswith('5K') or WIF.startswith('K') or WIF.startswith('L'):
-            if WIF.startswith('5H') or WIF.startswith('5J') or WIF.startswith('5K'):
-                first_encode = base58.b58decode(WIF)
-                private_key_full = binascii.hexlify(first_encode)
-                private_key = private_key_full[2:-8]
-                private_key_hex = private_key.decode("utf-8")
-                dec = int(private_key_hex,16)
-                    
-            elif WIF.startswith('K') or WIF.startswith('L'):
-                first_encode = base58.b58decode(WIF)
-                private_key_full = binascii.hexlify(first_encode)
-                private_key = private_key_full[2:-8]
-                private_key_hex = private_key.decode("utf-8")
-                dec = int(private_key_hex[0:64],16)
+        if WIF.startswith(('5H', '5J', '5K', 'K', 'L')):
+            first_encode = base58.b58decode(WIF)
+            private_key_full = binascii.hexlify(first_encode)
+            private_key = private_key_full[2:-8]
+            private_key_hex = private_key.decode("utf-8")
+            dec = int(private_key_hex, 16) if WIF.startswith(('5H', '5J', '5K')) else int(private_key_hex[0:64], 16)
             HEX = "%064x" % dec
             wifc = ice.btc_pvk_to_wif(HEX)
             wifu = ice.btc_pvk_to_wif(HEX, False) 
@@ -1329,7 +1220,7 @@ def get_WIF(message):
             txs = (resload['txs'])
             addressinfo = (resload['address'])
 
-            resload1 = get_balance1(uaddr)
+            resload1 = get_balance(uaddr)
             info1 = str(resload1)
             balance1 = (resload1['balance'])
             totalReceived1 = (resload1['totalReceived'])
@@ -1337,7 +1228,7 @@ def get_WIF(message):
             txs1 = (resload1['txs'])
             addressinfo1 = (resload1['address'])
             
-            resload2 = get_balance2(p2sh)
+            resload2 = get_balance(p2sh)
             info2 = str(resload2)
             balance2 = (resload2['balance'])
             totalReceived2 = (resload2['totalReceived'])
@@ -1345,7 +1236,7 @@ def get_WIF(message):
             txs2 = (resload2['txs'])
             addressinfo2 = (resload2['address'])
 
-            resload3 = get_balance3(bech32)
+            resload3 = get_balance(bech32)
             info3 = str(resload3)
             balance3 = (resload3['balance'])
             totalReceived3 = (resload3['totalReceived'])
@@ -1358,8 +1249,6 @@ def get_WIF(message):
             balance4 = (resload4['balance'])
             txs4 = (resload4['txs'])
             addressinfo4 = (resload4['address'])
-            
-            n = "\n"
             print('[purple] WIF Entered  >> [ [/purple]', WIF, '[purple]][/purple]')
             print('[purple] HEX Returned  >> [ [/purple]', HEX, '[purple]][/purple]')
             print('[purple] DEC Returned  >> [ [/purple]', dec, '[purple]][/purple]')
@@ -1380,34 +1269,81 @@ def get_WIF(message):
                 with open("data.txt", "a", encoding="utf-8") as f:
                     f.write(f"""{n} WIF Entered  >>  {WIF} {n} HEX Returned  >>{HEX}{n} DEC Returned  >> {dec}  bits {length}{n} WIF Compressed  >> {wifc}{n} WIF Uncompressed  >> {wifu}{n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {addressinfo1} Balance  {balance1}  BTC TotalReceived  {totalReceived1} TotalSent  {totalSent1} Transactions  {txs1}{n} Bitcoin Address = {addressinfo2} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {addressinfo3} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}{n} Ethereum Address = {addressinfo4} Balance  {balance4} Transactions  {txs4}""")
             if float(balance) > 0 or float(balance1) > 0 or float(balance2) > 0 or float(balance3) > 0 or float(balance4) > 0:
-                sent_from = gmail_user
-                to = ['youremail']
-                subject = 'OMG Super Important Message'
                 body = f"  WIF Entered  >>  {n}{WIF}  {n}{n} HEX Returned  >> {n}{HEX} {n}{n} DEC Returned  >>  {n}{dec}  bits {length} {n}{n} WIF Compressed  >> {wifc} {n}{n}  WIF Uncompressed  >>   {n}{wifu} {n}{n} Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance}  BTC {n}       TotalReceived  {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs} {n}{n} Bitcoin Address = {addressinfo1} {n}{n}       Balance  {balance1}  BTC {n}       TotalReceived  {totalReceived1} {n}       TotalSent  {totalSent1} {n}       Transactions  {txs1} {n}{n} Bitcoin Address = {addressinfo2} {n}{n}       Balance  {balance2}  BTC {n}       TotalReceived  {totalReceived2} {n}       TotalSent  {totalSent2} {n}       Transactions  {txs2}{n}{n} Bitcoin Address = {addressinfo3} {n}{n}       Balance  {balance3}  BTC {n}       TotalReceived  {totalReceived3} {n}       TotalSent  {totalSent3} {n}       Transactions  {txs3}{n}{n} Ethereum Address = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
-                
-                email_text = """\
-                    From: %s
-                    To: %s
-                    Subject: %s
-
-                    %s
-                    """ % (sent_from, ", ".join(to), subject, body)
-
-                try:
-                    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                    server.ehlo()
-                    server.login(gmail_user, gmail_password)
-                    server.sendmail(sent_from, to, email_text)
-                    server.close()
-                
-                    print ('Email sent!')
-                except:
-                    print('Something went wrong...')
+                send_email(body)
         else:
             bot.send_message(message.chat.id, "⚠️⛔ Invalid WIF Try Again ⛔⚠️")
             print('[red]Invalid WIF Try Again[/red]')
         start(message)
 
+def get_WORDS_result(message, mnem, caddr, p2sh, bech32, ethaddr, lenght_word):
+    resload = get_balance(caddr)
+    info = str(resload)
+    balance = (resload['balance'])
+    totalReceived = (resload['totalReceived'])
+    totalSent = (resload['totalSent'])
+    txs = (resload['txs'])
+    addressinfo = (resload['address'])
+    
+    resload2 = get_balance(p2sh)
+    info2 = str(resload2)
+    balance2 = (resload2['balance'])
+    totalReceived2 = (resload2['totalReceived'])
+    totalSent2 = (resload2['totalSent'])
+    txs2 = (resload2['txs'])
+    addressinfo2 = (resload2['address'])
+    
+    resload3 = get_balance(bech32)
+    info3 = str(resload3)
+    balance3 = (resload3['balance'])
+    totalReceived3 = (resload3['totalReceived'])
+    totalSent3 = (resload3['totalSent'])
+    txs3 = (resload3['txs'])
+    addressinfo3 = (resload3['address'])
+    
+    resload4 = get_balance4(ethaddr)
+    info4 = str(resload4)
+    balance4 = (resload4['balance'])
+    txs4 = (resload4['txs'])
+    addressinfo4 = (resload4['address'])
+    
+    print(f'[purple] Mnemonics Words {lenght_word} (English)  >> [ [/purple]', mnem, '[purple]][/purple]')
+    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
+    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
+    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
+    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
+    print('BTC Address : ', addressinfo)
+    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
+    print('BTC Address : ', addressinfo2)
+    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
+    print('BTC Address : ', addressinfo3)
+    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
+    print('ETH Address : ', addressinfo4)
+    print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs4) + '][/green]')
+    bot.send_message(message.chat.id, (f" Mnemonics Words {lenght_word} (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿itcoin Address = {addressinfo2} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿itcoin Address = {addressinfo3} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}{n}{n} Ethereum Address = {addressinfo4} {n}{n}      💰 Balance 💰 {balance4} {n}      💵 Transactions 💵 {txs4}"))
+    if txs4 > 0:
+        try:
+            nonTokenTxs = (resload4['nonTokenTxs'])
+            tokens = (resload4['tokens'])
+            bot.send_message(message.chat.id, f"Number of Tokens = {nonTokenTxs}")
+            print('Number of Tokens:[green][' + str(nonTokenTxs) + '][/green]')
+            print('[purple]Tokens   >> [ [/purple]', tokens, '[purple]][/purple]')
+            tokeninfo = str(tokens)
+            if len(tokeninfo) > 4096:
+                for x in range(0, len(tokeninfo), 4096):
+                    bot.send_message(message.chat.id, tokeninfo[x:x+4096])
+            else:
+                bot.send_message(message.chat.id, tokeninfo)
+        except:
+            bot.send_message(message.chat.id, "🚫 No Tokens.🚫 ")
+            print('[red] No Tokens[/red]')
+    if txs > 0 or txs2 > 0 or txs3 > 0 or txs4 > 0:
+        with open("data.txt", "a", encoding="utf-8") as f:
+            f.write(f"""{n} Mnemonics Words {lenght_word} (English)  >> {n} {mnem} {n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {addressinfo2} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {addressinfo3} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}{n} Ethereum Address = {addressinfo4} Balance  {balance4} Transactions  {txs4}""")        
+    if float(balance) > 0 or float(balance2) > 0 or  float(balance3) > 0 or  float(balance4) > 0:
+        body = f" Mnemonics Words {lenght_word} (English)  >> {n} {mnem}  {n}{n} Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance}  BTC {n}       TotalReceived  {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs} {n}{n} Bitcoin Address = {addressinfo2} {n}{n}       Balance  {balance2}  BTC {n}       TotalReceived  {totalReceived2} {n}       TotalSent  {totalSent2} {n}       Transactions  {txs2}{n}{n} Bitcoin Address = {addressinfo3} {n}{n}       Balance  {balance3}  BTC {n}       TotalReceived  {totalReceived3} {n}       TotalSent  {totalSent3} {n}       Transactions  {txs3}{n}{n} Ethereum Address = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
+        send_email(body)
+                
 def get_WORDS(message):                    
     if message.text=="🔙Back":
         start(message)
@@ -1425,95 +1361,8 @@ def get_WORDS(message):
             p2sh = ice.privatekey_to_address(1, True, (int.from_bytes(pvk2, "big")))
             bech32 = ice.privatekey_to_address(2, True, (int.from_bytes(pvk3, "big")))
             ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
-            
-            resload = get_balance(caddr)
-            info = str(resload)
-            balance = (resload['balance'])
-            totalReceived = (resload['totalReceived'])
-            totalSent = (resload['totalSent'])
-            txs = (resload['txs'])
-            addressinfo = (resload['address'])
-            
-            resload2 = get_balance2(p2sh)
-            info2 = str(resload2)
-            balance2 = (resload2['balance'])
-            totalReceived2 = (resload2['totalReceived'])
-            totalSent2 = (resload2['totalSent'])
-            txs2 = (resload2['txs'])
-            addressinfo2 = (resload2['address'])
-            
-            resload3 = get_balance3(bech32)
-            info3 = str(resload3)
-            balance3 = (resload3['balance'])
-            totalReceived3 = (resload3['totalReceived'])
-            totalSent3 = (resload3['totalSent'])
-            txs3 = (resload3['txs'])
-            addressinfo3 = (resload3['address'])
-            
-            resload4 = get_balance4(ethaddr)
-            info4 = str(resload4)
-            balance4 = (resload4['balance'])
-            txs4 = (resload4['txs'])
-            addressinfo4 = (resload4['address'])
-            
-            print('[purple] Mnemonics Words 12 (English)  >> [ [/purple]', mnem, '[purple]][/purple]')
-            print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-            print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-            print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-            print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-            print('BTC Address : ', addressinfo)
-            print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
-            print('BTC Address : ', addressinfo2)
-            print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
-            print('BTC Address : ', addressinfo3)
-            print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
-            print('ETH Address : ', addressinfo4)
-            print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs4) + '][/green]')
-            bot.send_message(message.chat.id, (f" Mnemonics Words 12 (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿itcoin Address = {addressinfo2} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿itcoin Address = {addressinfo3} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}{n}{n} Ethereum Address = {addressinfo4} {n}{n}      💰 Balance 💰 {balance4} {n}      💵 Transactions 💵 {txs4}"))
-            if txs4 > 0:
-                try:
-                    nonTokenTxs = (resload4['nonTokenTxs'])
-                    tokens = (resload4['tokens'])
-                    bot.send_message(message.chat.id, f"Number of Tokens = {nonTokenTxs}")
-                    print('Number of Tokens:[green][' + str(nonTokenTxs) + '][/green]')
-                    print('[purple]Tokens   >> [ [/purple]', tokens, '[purple]][/purple]')
-                    tokeninfo = str(tokens)
-                    if len(tokeninfo) > 4096:
-                        for x in range(0, len(tokeninfo), 4096):
-                            bot.send_message(message.chat.id, tokeninfo[x:x+4096])
-                    else:
-                        bot.send_message(message.chat.id, tokeninfo)
-                except:
-                    bot.send_message(message.chat.id, "🚫 No Tokens.🚫 ")
-                    print('[red] No Tokens[/red]')
-            if txs > 0 or txs2 > 0 or txs3 > 0 or txs4 > 0:
-                with open("data.txt", "a", encoding="utf-8") as f:
-                    f.write(f"""{n} Mnemonics Words 12 (English)  >> {n} {mnem} {n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {addressinfo2} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {addressinfo3} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}{n} Ethereum Address = {addressinfo4} Balance  {balance4} Transactions  {txs4}""")        
-            if float(balance) > 0 or float(balance2) > 0 or  float(balance3) > 0 or  float(balance4) > 0:
-                sent_from = gmail_user
-                to = ['youremail']
-                subject = 'OMG Super Important Message'
-                body = f" Mnemonics Words 12 (English)  >> {n} {mnem}  {n}{n} Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance}  BTC {n}       TotalReceived  {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs} {n}{n} Bitcoin Address = {addressinfo2} {n}{n}       Balance  {balance2}  BTC {n}       TotalReceived  {totalReceived2} {n}       TotalSent  {totalSent2} {n}       Transactions  {txs2}{n}{n} Bitcoin Address = {addressinfo3} {n}{n}       Balance  {balance3}  BTC {n}       TotalReceived  {totalReceived3} {n}       TotalSent  {totalSent3} {n}       Transactions  {txs3}{n}{n} Ethereum Address = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
-                
-                email_text = """\
-                    From: %s
-                    To: %s
-                    Subject: %s
-
-                    %s
-                    """ % (sent_from, ", ".join(to), subject, body)
-
-                try:
-                    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                    server.ehlo()
-                    server.login(gmail_user, gmail_password)
-                    server.sendmail(sent_from, to, email_text)
-                    server.close()
-                
-                    print ('Email sent!')
-                except:
-                    print('Something went wrong...')
-            
+            lenght_word = '12'
+            get_WORDS_result(message, mnem, caddr, p2sh, bech32, ethaddr, lenght_word)
         elif message.text=="✨24 Word ️Mnenomic✨":
             mnem = create_valid_mnemonics(strength=256)
             seed = mnem_to_seed(mnem)
@@ -1525,107 +1374,59 @@ def get_WORDS(message):
             p2sh = ice.privatekey_to_address(1, True, (int.from_bytes(pvk2, "big")))
             bech32 = ice.privatekey_to_address(2, True, (int.from_bytes(pvk3, "big")))
             ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
-            
-            resload = get_balance(caddr)
-            info = str(resload)
-            balance = (resload['balance'])
-            totalReceived = (resload['totalReceived'])
-            totalSent = (resload['totalSent'])
-            txs = (resload['txs'])
-            addressinfo = (resload['address'])
-            
-            resload2 = get_balance2(p2sh)
-            info2 = str(resload2)
-            balance2 = (resload2['balance'])
-            totalReceived2 = (resload2['totalReceived'])
-            totalSent2 = (resload2['totalSent'])
-            txs2 = (resload2['txs'])
-            addressinfo2 = (resload2['address'])
-            
-            resload3 = get_balance3(bech32)
-            info3 = str(resload3)
-            balance3 = (resload3['balance'])
-            totalReceived3 = (resload3['totalReceived'])
-            totalSent3 = (resload3['totalSent'])
-            txs3 = (resload3['txs'])
-            addressinfo3 = (resload3['address'])
-            
-            resload4 = get_balance4(ethaddr)
-            info4 = str(resload4)
-            balance4 = (resload4['balance'])
-            txs4 = (resload4['txs'])
-            addressinfo4 = (resload4['address'])
-            
-            print('[purple] Mnemonics 24 Words (English)  >> [ [/purple]', mnem, '[purple]][/purple]')
-            print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-            print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-            print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-            print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-            print('BTC Address : ', addressinfo)
-            print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance) + '][/green] totalReceived: [green][' +  str(totalReceived) + '][/green] totalSent:[green][' + str(totalSent) + '][/green] txs :[green][' + str(txs) + '][/green]')
-            print('BTC Address : ', addressinfo2)
-            print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance2) + '][/green] totalReceived: [green][' +  str(totalReceived2) + '][/green] totalSent:[green][' + str(totalSent2) + '][/green] txs :[green][' + str(txs2) + '][/green]')
-            print('BTC Address : ', addressinfo3)
-            print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance3) + '][/green] totalReceived: [green][' +  str(totalReceived3) + '][/green] totalSent:[green][' + str(totalSent3) + '][/green] txs :[green][' + str(txs3) + '][/green]')
-            print('ETH Address : ', addressinfo4)
-            print('[red][*][/red] [purple] >>[/purple] Balance: [green] [' + str(balance4) + '][/green] Transactions: [green][' +  str(txs4) + '][/green]')
-            bot.send_message(message.chat.id, (f" Mnemonics 24 Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {addressinfo} {n}{n}      💰 Balance 💰 {balance}  BTC {n}      💸 TotalReceived 💸 {totalReceived} {n}      📤 TotalSent 📤 {totalSent} {n}      💵 Transactions 💵 {txs} {n}{n} ₿itcoin Address = {addressinfo2} {n}{n}      💰 Balance 💰 {balance2}  BTC {n}      💸 TotalReceived 💸 {totalReceived2} {n}      📤 TotalSent 📤 {totalSent2} {n}      💵 Transactions 💵 {txs2}{n}{n} ₿itcoin Address = {addressinfo3} {n}{n}      💰 Balance 💰 {balance3}  BTC {n}      💸 TotalReceived 💸 {totalReceived3} {n}      📤 TotalSent 📤 {totalSent3} {n}      💵 Transactions 💵 {txs3}{n}{n} Ethereum Address = {addressinfo4} {n}{n}      💰 Balance 💰 {balance4} {n}      💵 Transactions 💵 {txs4}"))
-            if txs4 > 0:
-                try:
-                    nonTokenTxs = (resload4['nonTokenTxs'])
-                    tokens = (resload4['tokens'])
-                    bot.send_message(message.chat.id, f"Number of Tokens = {nonTokenTxs}")
-                    print('Number of Tokens:[green][' + str(nonTokenTxs) + '][/green]')
-                    print('[purple]Tokens   >> [ [/purple]', tokens, '[purple]][/purple]')
-                    tokeninfo = str(tokens)
-                    if len(tokeninfo) > 4096:
-                        for x in range(0, len(tokeninfo), 4096):
-                            bot.send_message(message.chat.id, tokeninfo[x:x+4096])
-                    else:
-                        bot.send_message(message.chat.id, tokeninfo)
-                except:
-                    bot.send_message(message.chat.id, "🚫 No Tokens.🚫 ")
-                    print('[red] No Tokens[/red]')
-            if txs > 0 or txs2 > 0 or txs3 > 0 or txs4 > 0:
-                with open("data.txt", "a", encoding="utf-8") as f:
-                    f.write(f"""{n} Mnemonics Words 12 (English)  >> {n} {mnem} {n} Bitcoin Address = {addressinfo} Balance  {balance}  BTC TotalReceived {totalReceived}  TotalSent  {totalSent} Transactions  {txs} {n} Bitcoin Address = {addressinfo2} Balance  {balance2}  BTC TotalReceived  {totalReceived2} TotalSent  {totalSent2} Transactions  {txs2}{n}Bitcoin Address = {addressinfo3} Balance  {balance3}  BTC TotalReceived  {totalReceived3} TotalSent  {totalSent3} Transactions  {txs3}{n} Ethereum Address = {addressinfo4} Balance  {balance4} Transactions  {txs4}""")
-            if float(balance) > 0 or float(balance2) > 0 or  float(balance3) > 0 or  float(balance4) > 0:
-                sent_from = gmail_user
-                to = ['youremail']
-                subject = 'OMG Super Important Message'
-                body = f" Mnemonics 24 Words (English)  >> {n} {mnem}  {n}{n} Bitcoin Address = {addressinfo} {n}{n}       Balance  {balance}  BTC {n}       TotalReceived  {totalReceived} {n}       TotalSent  {totalSent} {n}       Transactions  {txs} {n}{n} Bitcoin Address = {addressinfo2} {n}{n}       Balance  {balance2}  BTC {n}       TotalReceived  {totalReceived2} {n}       TotalSent  {totalSent2} {n}       Transactions  {txs2}{n}{n} Bitcoin Address = {addressinfo3} {n}{n}       Balance  {balance3}  BTC {n}       TotalReceived  {totalReceived3} {n}       TotalSent  {totalSent3} {n}       Transactions  {txs3}{n}{n} Ethereum Address = {addressinfo4} {n}{n}       Balance  {balance4} {n}       Transactions  {txs4}"
-                
-                email_text = """\
-                    From: %s
-                    To: %s
-                    Subject: %s
-
-                    %s
-                    """ % (sent_from, ", ".join(to), subject, body)
-
-                try:
-                    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-                    server.ehlo()
-                    server.login(gmail_user, gmail_password)
-                    server.sendmail(sent_from, to, email_text)
-                    server.close()
-                
-                    print ('Email sent!')
-                except:
-                    print('Something went wrong...')
+            lenght_word = '24'
+            get_WORDS_result(message, mnem, caddr, p2sh, bech32, ethaddr, lenght_word)
         else:
             bot.send_message(message.chat.id, "⚠️⛔ Invalid WORDS Try Again ⛔⚠️")
             print('[red]Invalid WORDS Try Again[/red]')
         start(message)
-      
-def get_POWER(message):
+
+def foundmnemo(message, rnds, mnem, caddr, p2sh, bech32, ethaddr):
+    print('[purple] Mnemonics [/purple]',rnds, '[purple] Words (English)  >> [ [/purple]', mnem, '[purple]][/purple]')
+    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
+    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
+    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
+    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
+    f=open("winner.txt","a")
+    f.write('\nMnemonics: ' + mnem)
+    f.write('\nPublic Address 1 Compressed: ' + caddr)
+    f.write('\nPublic Address 3 P2SH: ' + p2sh)
+    f.write('\nPublic Address bc1 BECH32: ' + bech32)
+    f.write('\nPublic ETH Address   : ' + ethaddr)
+    f.close()
+    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n}  Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 "))
+
+def mnemoscan(message, count, total, current_time):
+    num = 1
+    derivation_total_path_to_check = 1
+    lenght= ('128','256')
+    rnds = random.choice(lenght)
+    mnem = create_valid_mnemonics(strength=int(rnds))
+    seed = mnem_to_seed(mnem)
+    pvk = bip39seed_to_private_key(seed, derivation_total_path_to_check)
+    pvk2 = bip39seed_to_private_key2(seed, derivation_total_path_to_check)
+    pvk3 = bip39seed_to_private_key3(seed, derivation_total_path_to_check)
+    pvk4 = bip39seed_to_private_key4(seed, derivation_total_path_to_check)
+    caddr = ice.privatekey_to_address(0, True, (int.from_bytes(pvk, "big")))
+    p2sh = ice.privatekey_to_address(1, True, (int.from_bytes(pvk2, "big")))
+    bech32 = ice.privatekey_to_address(2, True, (int.from_bytes(pvk3, "big")))
+    ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
+    if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filtereth:
+        foundmnemo(message, rnds, mnem, caddr, p2sh, bech32, ethaddr)
+    else:
+        print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
+        if num in range(100000):
+            if num % 4000 == 0:
+                print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
+                bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} "))
+            num += 1
+
+def get_mnemo(message):
     if message.text=="🔙Back":
         start(message)
     else:
         count = 0
         total = 0
-        num = 1
-        derivation_total_path_to_check = 1
         if message.text=="1 Minutes Magic Random Words":
             bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄1 Minutes Magic Random Words 🪄"))
             print('[yellow]\n---------------------1 Minutes Magic Random Words---------------------------------[/yellow]')
@@ -1638,42 +1439,9 @@ def get_POWER(message):
                 finish= 0
                 count += 1
                 total += 4
-                lenght= ('128','256')
-                rnds = random.choice(lenght)
-                mnem = create_valid_mnemonics(strength=int(rnds))
-                seed = mnem_to_seed(mnem)
-                pvk = bip39seed_to_private_key(seed, derivation_total_path_to_check)
-                pvk2 = bip39seed_to_private_key2(seed, derivation_total_path_to_check)
-                pvk3 = bip39seed_to_private_key3(seed, derivation_total_path_to_check)
-                pvk4 = bip39seed_to_private_key4(seed, derivation_total_path_to_check)
-                caddr = ice.privatekey_to_address(0, True, (int.from_bytes(pvk, "big")))
-                p2sh = ice.privatekey_to_address(1, True, (int.from_bytes(pvk2, "big")))
-                bech32 = ice.privatekey_to_address(2, True, (int.from_bytes(pvk3, "big")))
-                ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Mnemonics [/purple]',rnds, '[purple] Words (English)  >> [ [/purple]', mnem, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nMnemonics: ' + mnem)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic ETH Address   : ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n}  Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 "))
+                mnemoscan(message, count, total, current_time)
 
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} "))
-                        num += 1
-
-        if message.text=="5 Minutes Magic Random Words":
+        elif message.text=="5 Minutes Magic Random Words":
             bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄5 Minutes Magic Random Words 🪄"))
             print('[yellow]\n---------------------5 Minutes Magic Random Words---------------------------------[/yellow]')
             print(ICEWORDS)
@@ -1685,42 +1453,9 @@ def get_POWER(message):
                 finish= 0
                 count += 1
                 total += 4
-                lenght= ('128','256')
-                rnds = random.choice(lenght)
-                mnem = create_valid_mnemonics(strength=int(rnds))
-                seed = mnem_to_seed(mnem)
-                pvk = bip39seed_to_private_key(seed, derivation_total_path_to_check)
-                pvk2 = bip39seed_to_private_key2(seed, derivation_total_path_to_check)
-                pvk3 = bip39seed_to_private_key3(seed, derivation_total_path_to_check)
-                pvk4 = bip39seed_to_private_key4(seed, derivation_total_path_to_check)
-                caddr = ice.privatekey_to_address(0, True, (int.from_bytes(pvk, "big")))
-                p2sh = ice.privatekey_to_address(1, True, (int.from_bytes(pvk2, "big")))
-                bech32 = ice.privatekey_to_address(2, True, (int.from_bytes(pvk3, "big")))
-                ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Mnemonics [/purple]',rnds, '[purple] Words (English)  >> [ [/purple]', mnem, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nMnemonics: ' + mnem)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic ETH Address   : ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n}  Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 "))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} "))
-                        num += 1
+                mnemoscan(message, count, total, current_time)
                 
-        if message.text=="15 Minutes Magic Random Words ✨(Pro Access)✨":
+        elif message.text=="15 Minutes Magic Random Words ✨(Pro Access)✨":
             bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄15 Minutes Magic Random Words 🪄✨(Pro Access)✨"))
             print('[yellow]\n---------------------15 Minutes Magic Random Words---------------------------------[/yellow]')
             print(ICEWORDS)
@@ -1732,41 +1467,8 @@ def get_POWER(message):
                 finish= 0
                 count += 1
                 total += 4
-                lenght= ('128','256')
-                rnds = random.choice(lenght)
-                mnem = create_valid_mnemonics(strength=int(rnds))
-                seed = mnem_to_seed(mnem)
-                pvk = bip39seed_to_private_key(seed, derivation_total_path_to_check)
-                pvk2 = bip39seed_to_private_key2(seed, derivation_total_path_to_check)
-                pvk3 = bip39seed_to_private_key3(seed, derivation_total_path_to_check)
-                pvk4 = bip39seed_to_private_key4(seed, derivation_total_path_to_check)
-                caddr = ice.privatekey_to_address(0, True, (int.from_bytes(pvk, "big")))
-                p2sh = ice.privatekey_to_address(1, True, (int.from_bytes(pvk2, "big")))
-                bech32 = ice.privatekey_to_address(2, True, (int.from_bytes(pvk3, "big")))
-                ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Mnemonics [/purple]',rnds, '[purple] Words (English)  >> [ [/purple]', mnem, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nMnemonics: ' + mnem)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic ETH Address   : ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n}  Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 "))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} "))
-                        num += 1
-        if message.text=="30 Minutes Magic Random Words ✨(Pro Access)✨":
+                mnemoscan(message, count, total, current_time)
+        elif message.text=="30 Minutes Magic Random Words ✨(Pro Access)✨":
             bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄30 Minutes Magic Random Words 🪄✨(Pro Access)✨"))
             print('[purple]\n---------------------30 Minutes Magic Random Words(Pro Access)---------------------------------[/purple]')
             print(ICEWORDS)
@@ -1778,41 +1480,8 @@ def get_POWER(message):
                 finish= 0
                 count += 1
                 total += 4
-                lenght= ('128','256')
-                rnds = random.choice(lenght)
-                mnem = create_valid_mnemonics(strength=int(rnds))
-                seed = mnem_to_seed(mnem)
-                pvk = bip39seed_to_private_key(seed, derivation_total_path_to_check)
-                pvk2 = bip39seed_to_private_key2(seed, derivation_total_path_to_check)
-                pvk3 = bip39seed_to_private_key3(seed, derivation_total_path_to_check)
-                pvk4 = bip39seed_to_private_key4(seed, derivation_total_path_to_check)
-                caddr = ice.privatekey_to_address(0, True, (int.from_bytes(pvk, "big")))
-                p2sh = ice.privatekey_to_address(1, True, (int.from_bytes(pvk2, "big")))
-                bech32 = ice.privatekey_to_address(2, True, (int.from_bytes(pvk3, "big")))
-                ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Mnemonics [/purple]',rnds, '[purple] Words (English)  >> [ [/purple]', mnem, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nMnemonics: ' + mnem)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic ETH Address   : ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n}  Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 "))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} "))
-                        num += 1
-        if message.text=="1 Hour Magic Random Words ✨(Pro Access)✨":
+                mnemoscan(message, count, total, current_time)
+        elif message.text=="1 Hour Magic Random Words ✨(Pro Access)✨":
             bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄1 Hour Magic Random Words 🪄✨(Pro Access)✨"))
             print('[purple]\n---------------------1 Hour Magic Random Words(Pro Access)---------------------------------[/purple]')
             print(ICEWORDS)
@@ -1824,1575 +1493,130 @@ def get_POWER(message):
                 finish= 0
                 count += 1
                 total += 4
-                lenght= ('128','256')
-                rnds = random.choice(lenght)
-                mnem = create_valid_mnemonics(strength=int(rnds))
-                seed = mnem_to_seed(mnem)
-                pvk = bip39seed_to_private_key(seed, derivation_total_path_to_check)
-                pvk2 = bip39seed_to_private_key2(seed, derivation_total_path_to_check)
-                pvk3 = bip39seed_to_private_key3(seed, derivation_total_path_to_check)
-                pvk4 = bip39seed_to_private_key4(seed, derivation_total_path_to_check)
-                caddr = ice.privatekey_to_address(0, True, (int.from_bytes(pvk, "big")))
-                p2sh = ice.privatekey_to_address(1, True, (int.from_bytes(pvk2, "big")))
-                bech32 = ice.privatekey_to_address(2, True, (int.from_bytes(pvk3, "big")))
-                ethaddr = ice.privatekey_to_ETH_address(int.from_bytes(pvk4, "big"))
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Mnemonics [/purple]',rnds, '[purple] Words (English)  >> [ [/purple]', mnem, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nMnemonics: ' + mnem)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic ETH Address   : ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n}  Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 "))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} Mnemonics {rnds} Words (English)  >> {n} {mnem}  {n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} ETH Address = {ethaddr} "))
-                        num += 1
+                mnemoscan(message, count, total, current_time)
         else:
             bot.send_message(message.chat.id, "Going back to the Main Menu ")
             print('[red]Going back to the Main Menu[/red]')
         start(message)
 
-def get_POWER_FULLRANGE(message):
-    if message.text=="🔙Back":
+def range_scan(message, startscan ,stopscan, count, total, num):
+    t = time.localtime()
+    current_time = time.strftime("%H:%M:%S", t)
+    ran=random.randrange(startscan,stopscan)
+    dec = str(ran)
+    caddr, uaddr, p2sh, bech32, ethaddr, HEX, wifc, wifu, length = generate_addresses(dec)
+    if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filtereth:
+        print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
+        print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
+        print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
+        print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
+        print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
+        print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
+        print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
+        print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
+        print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
+        f=open("winner.txt","a")
+        f.write('\nPrivatekey (dec): ' + str(dec))
+        f.write('\nPrivatekey (hex): ' + HEX)
+        f.write('\nPrivatekey compressed: ' + wifc)
+        f.write('\nPrivatekey Uncompressed: ' + wifu)
+        f.write('\nPublic Address 1 Compressed: ' + caddr)
+        f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
+        f.write('\nPublic Address 3 P2SH: ' + p2sh)
+        f.write('\nPublic Address bc1 BECH32: ' + bech32)
+        f.write('\nPublic Address ETH: ' + ethaddr)
+        f.close()
+        bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
+    else:
+        print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
+        if num in range(100000):
+            if num % 4000 == 0:
+                print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
+                bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr}"))
+
+def get_range_time(message):
+    if message.text == "🔙Back":
         start(message)
     else:
         count = 0
         total = 0
         num = 1
         n = "\n"
-        startscan=2**1
-        stopscan=2**256
+        startscan = 2 ** 1
+        stopscan = 2 ** 256
         print(FULLRANGE)
-        if message.text=="1 Minutes Magic Random Range":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄1 Minutes Magic Random Range 🪄"))
-            print('[yellow]\n---------------------1 Minutes Magic Random Range---------------------------------[/yellow]')
-            
-            t_end = time.time() + 60 * 1
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
+        
+        time_ranges = {
+            "1 Minutes Magic Random Range": 1,
+            "5 Minutes Magic Random Range": 5,
+            "15 Minutes Magic Random Range ✨(Pro Access)✨": 15,
+            "30 Minutes Magic Random Range ✨(Pro Access)✨": 30,
+            "1 Hour Magic Random Range ✨(Pro Access)✨": 60,
+        }
+
+        if message.text in time_ranges:
+            range_name = message.text
+            range_minutes = time_ranges[range_name]
+            range_label = "Magic Random Range"
+            if "✨(Pro Access)✨" in range_name:
+                range_label += " ✨(Pro Access)✨"
+            bot.send_message(message.chat.id, f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄{range_name} 🪄{range_label}")
+            print(f'[yellow]\n---------------------{range_name} ---------------------------------[/yellow]')
+            t_end = time.time() + 60 * range_minutes
             while time.time() < t_end:
+                range_scan(message, startscan, stopscan, count, total, num)
                 count += 1
-                total += 4
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    #print('\nDecimal = ',dec, '  bits ', length, '\n Hexadecimal = ', HEX)
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr}"))
-                        num += 1
-
-        if message.text=="5 Minutes Magic Random Range":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄5 Minutes Magic Random Range 🪄"))
-            print('[yellow]\n---------------------5 Minutes Magic Random Range---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 5
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    #print('\nDecimal = ',dec, '  bits ', length, '\n Hexadecimal = ', HEX)
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr}"))
-                        num += 1
-                
-        if message.text=="15 Minutes Magic Random Range ✨(Pro Access)✨":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄15 Minutes Magic Random Range 🪄✨(Pro Access)✨"))
-            print('[yellow]\n---------------------15 Minutes Magic Random Range---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 15
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    #print('\nDecimal = ',dec, '  bits ', length, '\n Hexadecimal = ', HEX)
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr}"))
-                        num += 1
-                        
-        if message.text=="30 Minutes Magic Random Range ✨(Pro Access)✨":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄30 Minutes Magic Random Range 🪄✨(Pro Access)✨"))
-            print('[purple]\n---------------------30 Minutes Magic Random Range(Pro Access)---------------------------------[/purple]')
-            t_end = time.time() + 60 * 30
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    #print('\nDecimal = ',dec, '  bits ', length, '\n Hexadecimal = ', HEX)
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr}"))
-                        num += 1
-                        
-        if message.text=="1 Hour Magic Random Range ✨(Pro Access)✨":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄1 Hour Magic Random Range 🪄✨(Pro Access)✨"))
-            print('[purple]\n---------------------1 Hour Magic Random Range(Pro Access)---------------------------------[/purple]')
-            t_end = time.time() + 60 * 60
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    #print('\nDecimal = ',dec, '  bits ', length, '\n Hexadecimal = ', HEX)
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr}"))
-                        num += 1
+                total += 5
+                num += 1
         else:
             bot.send_message(message.chat.id, "Going back to the Main Menu ")
             print('[red]Going back to the Main Menu[/red]')
         start(message)
 
-def get_POWER_RANGE(message):
-    if message.text=="🔙Back":
+def get_ranges(message):
+    if message.text == "🔙Back":
         start(message)
     else:
         count = 0
         total = 0
         num = 1
         n = "\n"
-        print(RANGER)
-        if message.text=="1-64 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 1-64 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------1-64 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
+        t_end = time.time() + 60 * 2
+        ranges = {
+            "1-64 Bits": (2 ** 1, 2 ** 64),
+            "64-70 Bits": (2 ** 64, 2 ** 70),
+            "70-80 Bits": (2 ** 70, 2 ** 80),
+            "80-90 Bits": (2 ** 80, 2 ** 90),
+            "90-100 Bits": (2 ** 90, 2 ** 100),
+            "100-110 Bits": (2 ** 100, 2 ** 110),
+            "110-120 Bits": (2 ** 110, 2 ** 120),
+            "120-130 Bits": (2 ** 120, 2 ** 130),
+            "130-140 Bits": (2 ** 130, 2 ** 140),
+            "140-150 Bits": (2 ** 140, 2 ** 150),
+            "150-160 Bits": (2 ** 150, 2 ** 160),
+            "160-170 Bits": (2 ** 160, 2 ** 170),
+            "170-180 Bits": (2 ** 170, 2 ** 180),
+            "180-190 Bits": (2 ** 180, 2 ** 190),
+            "190-200 Bits": (2 ** 190, 2 ** 200),
+            "200-210 Bits": (2 ** 200, 2 ** 210),
+            "210-220 Bits": (2 ** 210, 2 ** 220),
+            "220-230 Bits": (2 ** 220, 2 ** 230),
+            "230-240 Bits": (2 ** 230, 2 ** 240),
+            "240-250 Bits": (2 ** 240, 2 ** 250),
+            "250-253 Bits": (2 ** 250, 2 ** 253),
+            "253-255 Bits": (2 ** 253, 2 ** 255),
+            "255-256 Bits": (2 ** 255, 2 ** 256),
+        }
+
+        if message.text in ranges:
+            startscan, stopscan = ranges[message.text]
+            bot.send_message(message.chat.id, f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} {message.text} Magic Random Range This will run for 2mins 🪄")
+            print(f'[yellow]\n---------------------{message.text} Random Range ---------------------------------[/yellow]')
             while time.time() < t_end:
+                range_scan(message, startscan, stopscan, count, total, num)
                 count += 1
-                total += 4
-                startscan=2**1
-                stopscan=2**64
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 1-64 Bits Random Range"))
-                        num += 1
-        if message.text=="64-70 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 64-70 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------64-70 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**64
-                stopscan=2**70
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 64-70 Bits Random Range"))
-                        num += 1
-        
-        if message.text=="70-80 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 70-80 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------70-80 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**70
-                stopscan=2**80
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 70-80 Bits Random Range"))
-                        num += 1
-        
-        if message.text=="80-90 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 80-90 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------80-90 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**80
-                stopscan=2**90
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 80-90 Bits Random Range"))
-                        num += 1
-                        
-        if message.text=="90-100 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 90-100 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------90-100 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**90
-                stopscan=2**100
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 90-100 Bits Random Range"))
-                        num += 1
-        
-        if message.text=="100-110 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 100-110 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------100-110 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**100
-                stopscan=2**110
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 100-110 Bits Random Range"))
-                        num += 1
-                        
-        if message.text=="110-120 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 110-120 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------110-120 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**110
-                stopscan=2**120
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 110-120 Bits Random Range"))
-                        num += 1
-                        
-        if message.text=="120-130 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 120-130 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------120-130 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**120
-                stopscan=2**130
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 120-130 Bits Random Range"))
-                        num += 1
-        
-        if message.text=="130-140 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 130-140 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------130-140 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**130
-                stopscan=2**140
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 130-140 Bits Random Range"))
-                        num += 1
-                        
-        if message.text=="140-150 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 140-150 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------140-150 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**140
-                stopscan=2**150
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 140-150 Bits Random Range"))
-                        num += 1
-                        
-        if message.text=="150-160 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 150-160 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------150-160 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**150
-                stopscan=2**160
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 150-160 Bits Random Range"))
-                        num += 1
-                        
-        if message.text=="160-170 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 160-170 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------160-170 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**160
-                stopscan=2**170
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 160-170 Bits Random Range"))
-                        num += 1
-        
-        if message.text=="170-180 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 170-180 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------170-180 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**170
-                stopscan=2**180
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 170-180 Bits Random Range"))
-                        num += 1
-                        
-        if message.text=="180-190 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 180-190 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------180-190 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**180
-                stopscan=2**190
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 180-190 Bits Random Range"))
-                        num += 1
-
-        if message.text=="190-200 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 190-200 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------190-200 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**190
-                stopscan=2**200
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 190-200 Bits Random Range"))
-                        num += 1
-
-        if message.text=="200-210 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 200-210 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------200-210 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**200
-                stopscan=2**210
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 200-210 Bits Random Range"))
-                        num += 1
-
-        if message.text=="210-220 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 210-220 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------210-220 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**210
-                stopscan=2**220
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 210-220 Bits Random Range"))
-                        num += 1
-
-        if message.text=="220-230 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 220-230 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------220-230 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**220
-                stopscan=2**230
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 220-230 Bits Random Range"))
-                        num += 1
-
-        if message.text=="230-240 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 230-240 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------230-240 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**230
-                stopscan=2**240
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 230-240 Bits Random Range"))
-                        num += 1
-
-        if message.text=="240-250 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 240-250 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------240-250 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**240
-                stopscan=2**250
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 240-250 Bits Random Range"))
-                        num += 1
-
-        if message.text=="250-253 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 250-253 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------250-253 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**250
-                stopscan=2**253
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 250-253 Bits Random Range"))
-                        num += 1
-
-        if message.text=="253-255 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 253-255 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------253-255 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**253
-                stopscan=2**255
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 253-255 Bits Random Range"))
-                        num += 1
-
-        if message.text=="255-256 Bits":
-            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} 🤞🍀 Good Luck and Happy Hunting 🍀🤞 {n}{n} 🪄 255-256 Bits Magic Random Range This will run for 2mins 🪄"))
-            print('[yellow]\n---------------------255-256 Bits Random Range ---------------------------------[/yellow]')
-            t_end = time.time() + 60 * 2
-            t = time.localtime()
-            current_time = time.strftime("%H:%M:%S", t)
-            while time.time() < t_end:
-                count += 1
-                total += 4
-                startscan=2**255
-                stopscan=2**256
-                ran=random.randrange(startscan,stopscan)
-                dec = str(ran)
-                HEX = "%064x" % ran
-                wifc = ice.btc_pvk_to_wif(HEX)
-                wifu = ice.btc_pvk_to_wif(HEX, False)
-                caddr = ice.privatekey_to_address(0, True, int(dec)) #Compressed
-                uaddr = ice.privatekey_to_address(0, False, int(dec))  #Uncompressed
-                p2sh = ice.privatekey_to_address(1, True, int(dec)) #p2sh
-                bech32 = ice.privatekey_to_address(2, True, int(dec))  #bech32
-                ethaddr = ice.privatekey_to_ETH_address(int(dec))            
-                length = len(bin(int(dec)))
-                length -=2
-                if caddr in bloom_filter or p2sh in bloom_filter or bech32 in bloom_filter or ethaddr in bloom_filter1:
-                    print('[purple] Private Key DEC   >> [ [/purple]', dec, '[purple]][/purple]')
-                    print('[purple] Private Key HEX   >> [ [/purple]', HEX, '[purple]][/purple]')
-                    print('[purple] WIF Compressed  >> [ [/purple]', wifc, '[purple]][/purple]')
-                    print('[purple] WIF Uncompressed  >> [ [/purple]', wifu, '[purple]][/purple]')
-                    print('[purple] BTC Compressed  >> [ [/purple]', caddr, '[purple]][/purple]')
-                    print('[purple] BTC UnCompressed  >> [ [/purple]', uaddr, '[purple]][/purple]')
-                    print('[purple] BTC p2sh  >> [ [/purple]', p2sh, '[purple]][/purple]')
-                    print('[purple] BTC Bc1  >> [ [/purple]', bech32, '[purple]][/purple]')
-                    print('[purple] ETH Address  >> [ [/purple]', ethaddr, '[purple]][/purple]')
-                    f=open("winner.txt","a")
-                    f.write('\nPrivatekey (dec): ' + str(dec))
-                    f.write('\nPrivatekey (hex): ' + HEX)
-                    f.write('\nPrivatekey compressed: ' + wifc)
-                    f.write('\nPrivatekey Uncompressed: ' + wifu)
-                    f.write('\nPublic Address 1 Compressed: ' + caddr)
-                    f.write('\nPublic Address 1 Uncompressed: ' + uaddr)
-                    f.write('\nPublic Address 3 P2SH: ' + p2sh)
-                    f.write('\nPublic Address bc1 BECH32: ' + bech32)
-                    f.write('\nPublic Address ETH: ' + ethaddr)
-                    f.close()
-                    bot.send_message(message.chat.id, (f" 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸 {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 💸💰🤑WOW YOU HAVE FOUND!!!🤑💰💸"))
-
-                else:
-                    print('[purple]Scan Number [ [/purple]', str(count), '[purple] ] Total Checked [ [/purple]', str(total), '[purple] ]  [/purple] Start Time = ', current_time, end='\r')
-                    if num in range(100000):
-                        if num % 4000 == 0:
-                            print('[yellow] SENDING MESSAGE TO TELEGRAM EVERY 4000 TIMES [/yellow]')
-                            bot.send_message(message.chat.id, (f"SENDING MESSAGE TO TELEGRAM EVERY 4000 GENERATIONS {n}{n} Scan Number {count}  Total Addresses Scanned {total}  {n}{n} ⛏️ Private Key DEC  >> ⛏️{n}{dec}  bits {length}{n}{n} 🔨 Private Key HEX  >> 🔨{n}{HEX} {n}{n} 🗝️ WIF Compressed  >> 🗝️ {n}{wifc}{n}{n} 🔑 WIF Uncompressed  >> 🔑 {n}{wifu}{n}{n} ₿itcoin Address = {caddr} {n}{n} ₿itcoin Address = {uaddr} {n}{n} ₿itcoin Address = {p2sh} {n}{n} ₿itcoin Address = {bech32} {n}{n} Ethereum Address = {ethaddr} {n}{n} 255-256 Bits Random Range"))
-                        num += 1
+                total += 5
+                num += 1
         else:
             bot.send_message(message.chat.id, "Going back to the Main Menu ")
             print('[red]Going back to the Main Menu[/red]')
