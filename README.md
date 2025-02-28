@@ -126,4 +126,4 @@ Create a Bot room and Get API KEY
 ![image](https://user-images.githubusercontent.com/88630056/169119186-1f287adb-a688-4c99-a941-03e6f0eae634.png)
 ![image](https://user-images.githubusercontent.com/88630056/169120062-582ea1d9-c479-4234-87de-4550344bfce9.png)
 
-### Donations 3GCypcW8LWzNfJEsTvcFwUny3ygPzpTfL4
+### Donations 15iwTNuMDSj4HVdX8HDmzb1FCZ51xvALCW
